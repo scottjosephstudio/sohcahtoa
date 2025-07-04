@@ -42,8 +42,11 @@ const GlyphContainer = styled.div`
   min-height: 0px;
   overflow: hidden;
 
-  @media (max-width: 768px) {
-  right: -12px;
+    @media (max-width: 768px) {
+  left: 0px;
+  padding-right: 12px;
+  }
+
   }
 
 
@@ -148,23 +151,28 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
     // Font metrics from OpenType.js
     const { ascender, descender, unitsPerEm } = font.opentype;
     const xHeight = font.opentype.tables?.os2?.sxHeight || ascender * 0.5;
-    const capHeight = font.opentype.tables?.os2?.sCapHeight || ascender * 0.7;
+    const capHeight = font.opentype.tables?.os2?.sCapHeight || ascender * 0.5;
 
     // Use proper scale calculation like the official examples
     const head = font.opentype.tables.head;
     const maxHeight = head.yMax - head.yMin;
-    const margin = 15;
-    const w = rect.width - margin * 1.2;
-    const h = rect.height - margin * 4;
+    const margin = 20;
+    const w = rect.width - margin * 2;
+    const h = rect.height - margin * 2;
     const glyphScale = Math.min(w / (head.xMax - head.xMin), h / maxHeight);
     const fontSize = glyphScale * font.opentype.unitsPerEm;
-    const baseline = margin + h * head.yMax / maxHeight;
-    
-    // Calculate positions using the same scale
+
+    // Center the ascender-descender range vertically in the container
+    const ascDescRange = ascender - descender;
+    const ascDescPixelHeight = ascDescRange * glyphScale;
+    const verticalOffset = (rect.height - ascDescPixelHeight) / 2;
+    const baseline = verticalOffset + ascender * glyphScale;
+
+    // Calculate positions using the same scale and offset
     const ascenderY = baseline - ascender * glyphScale;
     const capHeightY = baseline - capHeight * glyphScale;
     const xHeightY = baseline - xHeight * glyphScale;
-    const descenderY = baseline + Math.abs(descender) * glyphScale;
+    const descenderY = baseline - descender * glyphScale;
 
     // Calculate glyph positioning for centering
     const glyphAdvanceWidth = opentypeGlyph.advanceWidth || 0;

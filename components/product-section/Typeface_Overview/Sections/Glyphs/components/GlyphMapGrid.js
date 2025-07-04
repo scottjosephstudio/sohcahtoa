@@ -70,6 +70,7 @@ const GlyphPanel = styled(motion.div)`
     border-right: none;
     grid-column: 1;
     cursor: pointer;
+  
   }
 `;
 
