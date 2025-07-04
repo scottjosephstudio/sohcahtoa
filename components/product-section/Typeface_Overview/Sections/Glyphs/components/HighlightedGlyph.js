@@ -42,6 +42,10 @@ const GlyphContainer = styled.div`
   min-height: 0px;
   overflow: hidden;
 
+  @media (max-width: 768px) {
+  right: -12px;
+  }
+
 
 `;
 
@@ -50,9 +54,7 @@ const Canvas = styled.canvas`
   height: 100%;
   display: block;
 
-    @media (max-width: 768px) {
-  margin-right: -12px;
-  }
+
 `;
 
 const MetricOverlay = styled.div`
