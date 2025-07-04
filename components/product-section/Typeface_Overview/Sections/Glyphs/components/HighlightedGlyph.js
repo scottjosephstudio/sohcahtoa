@@ -42,10 +42,6 @@ const GlyphContainer = styled.div`
   min-height: 0px;
   overflow: hidden;
 
-    @media (max-width: 768px) {
-  left: 0px;
-  padding-right: 12px;
-  }
 
   }
 
@@ -69,11 +65,7 @@ const MetricOverlay = styled.div`
   pointer-events: none;
   right: -12px;
 
-  @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) and (max-height: 1366px) {
-    /* iPad portrait: Extend overlay to match container margins */
-    left: -12px;
-    right: -12px;
-  }
+
 `;
 
 const MetricLine = styled.div`
