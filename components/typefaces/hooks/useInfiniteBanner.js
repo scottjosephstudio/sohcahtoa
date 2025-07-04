@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useRef, useEffect, useState } from 'react';
-import { useAnimationControls } from 'framer-motion';
+import { useRef, useEffect, useState } from "react";
+import { useAnimationControls } from "framer-motion";
 
 export default function useInfiniteBanner(bannerText) {
   const containerRef = useRef(null);
@@ -21,8 +21,8 @@ export default function useInfiniteBanner(bannerText) {
     };
 
     updateWidths();
-    window.addEventListener('resize', updateWidths);
-    return () => window.removeEventListener('resize', updateWidths);
+    window.addEventListener("resize", updateWidths);
+    return () => window.removeEventListener("resize", updateWidths);
   }, []);
 
   useEffect(() => {
@@ -31,8 +31,8 @@ export default function useInfiniteBanner(bannerText) {
         await controls.start({
           x: [0, -textWidth],
           transition: {
-            duration: (textWidth / containerWidth) * 6 , // Adjust duration based on width
-            ease: 'linear',
+            duration: (textWidth / containerWidth) * 6, // Adjust duration based on width
+            ease: "linear",
             repeat: Infinity,
           },
         });

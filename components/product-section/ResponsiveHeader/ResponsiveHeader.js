@@ -1,9 +1,9 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import styled from 'styled-components';
-import TypefaceHeaderTabs from '../Typeface_Overview/TabMenu/TypefaceTabs';
-import CartPreview from '../Elements/Cart/CartPreview';
-import LoginButton from '../Elements/Auth/LoginButton';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import styled from "styled-components";
+import TypefaceHeaderTabs from "../Typeface_Overview/TabMenu/TypefaceTabs";
+import CartPreview from "../Elements/Cart/CartPreview";
+import LoginButton from "../Elements/Auth/LoginButton";
 
 const HeaderContainer = styled(motion.header)`
   position: fixed;
@@ -48,7 +48,7 @@ const CenterSection = styled.div`
   @media (max-width: 600px) {
     position: fixed;
     top: 28px;
-    right: ${props => props.$hasCartCount ? '68px' : '20px'};
+    right: ${(props) => (props.$hasCartCount ? "68px" : "20px")};
     left: auto;
     transform: none;
     transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -61,7 +61,7 @@ const ResponsiveHeader = ({
   onTabChange,
   cartState,
   authState,
-  uiHandlers
+  uiHandlers,
 }) => {
   const {
     cartItems,
@@ -71,36 +71,33 @@ const ResponsiveHeader = ({
     handlers: cartHandlers,
   } = cartState;
 
-  const {
-    isLoggedIn,
-    handlers: authHandlers
-  } = authState;
+  const { isLoggedIn, handlers: authHandlers } = authState;
 
   return (
     <HeaderContainer
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ 
+      exit={{
         opacity: 0,
         transition: {
           duration: 0.8,
-          ease: [0.25, 0.1, 0.25, 1]
-        }
+          ease: [0.25, 0.1, 0.25, 1],
+        },
       }}
     >
-      <LoginButton 
+      <LoginButton
         isLoggedIn={isLoggedIn}
         handleLoginClick={authHandlers.handleLoginClick}
         isNavigatingHome={isNavigatingHome}
       />
 
-<CenterSection $hasCartCount={cartItems > 0}>
-  <TypefaceHeaderTabs
-    activeTab={activeTab}
-    onTabChange={onTabChange}
-    isNavigatingHome={isNavigatingHome}
-  />
-</CenterSection>
+      <CenterSection $hasCartCount={cartItems > 0}>
+        <TypefaceHeaderTabs
+          activeTab={activeTab}
+          onTabChange={onTabChange}
+          isNavigatingHome={isNavigatingHome}
+        />
+      </CenterSection>
 
       <CartPreview
         className="cart-preview"

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import styled from 'styled-components';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import styled from "styled-components";
 
 const DescriptionTitle = styled.p`
   text-decoration: underline !important;
@@ -42,9 +42,9 @@ const ProjectDescriptionContainer = styled(motion.div)`
   background-color: #e0e0e0;
   border-radius: 10px;
   padding: 24px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  
+
   &::before {
     content: "";
     position: absolute;
@@ -61,9 +61,9 @@ const ProjectDescriptionContainer = styled(motion.div)`
     pointer-events: none;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
-      border-radius: 10px;
-    }
-  
+    border-radius: 10px;
+  }
+
   .long-description {
     position: relative;
     z-index: 1;
@@ -81,8 +81,8 @@ const ProjectDescriptionContainer = styled(motion.div)`
   /* CSS columns for non-Safari browsers */
   @media (max-width: 600px) {
     .long-description:not(.safari-columns) {
-    column-count: 1;
-    column-gap: 0;
+      column-count: 1;
+      column-gap: 0;
     }
   }
 
@@ -95,8 +95,8 @@ const ProjectDescriptionContainer = styled(motion.div)`
 
   @media (min-width: 1440px) {
     .long-description:not(.safari-columns) {
-    column-count: 3;
-    column-gap: 24px;
+      column-count: 3;
+      column-gap: 24px;
     }
   }
 
@@ -237,17 +237,18 @@ const ProjectDescriptionContainer = styled(motion.div)`
   }
 `;
 
-export default function ProjectDescription({ 
-  project, 
-  processedLongDescription, 
-  isVisible, 
-  isExiting, 
-  isSafari, 
-  containerVariants, 
-  itemVariants 
+export default function ProjectDescription({
+  project,
+  processedLongDescription,
+  isVisible,
+  isExiting,
+  isSafari,
+  containerVariants,
+  itemVariants,
 }) {
   const [animationReady, setAnimationReady] = useState(false);
-  const [hasCompletedInitialAnimation, setHasCompletedInitialAnimation] = useState(false);
+  const [hasCompletedInitialAnimation, setHasCompletedInitialAnimation] =
+    useState(false);
 
   // Delay to ensure layout is stable before triggering CSS animations
   useEffect(() => {
@@ -272,11 +273,9 @@ export default function ProjectDescription({
     setAnimationReady(false);
   }, [project.id]);
 
-
-
   // Helper function to get column count based on screen width
   const getColumnCount = () => {
-    if (typeof window === 'undefined') return 1;
+    if (typeof window === "undefined") return 1;
     const width = window.innerWidth;
     if (width >= 1440) return 3;
     if (width >= 601 && width <= 1023) return 2;
@@ -286,7 +285,7 @@ export default function ProjectDescription({
   // Split content into columns for Safari
   const splitIntoColumns = (content, columnCount) => {
     if (columnCount === 1) return [content];
-    
+
     const columns = Array.from({ length: columnCount }, () => []);
     content.forEach((item, index) => {
       columns[index % columnCount].push(item);
@@ -304,13 +303,15 @@ export default function ProjectDescription({
         setColumnCount(newColumnCount);
       }
     };
-    
+
     updateColumnCount();
-    window.addEventListener('resize', updateColumnCount);
-    return () => window.removeEventListener('resize', updateColumnCount);
+    window.addEventListener("resize", updateColumnCount);
+    return () => window.removeEventListener("resize", updateColumnCount);
   }, [columnCount]);
 
-  const safariColumns = isSafari ? splitIntoColumns(processedLongDescription, columnCount) : [];
+  const safariColumns = isSafari
+    ? splitIntoColumns(processedLongDescription, columnCount)
+    : [];
 
   return (
     <div className="description">
@@ -322,24 +323,30 @@ export default function ProjectDescription({
           exit="exit"
           variants={containerVariants}
           className={
-            isSafari && animationReady 
-              ? hasCompletedInitialAnimation 
-                ? 'fade-in animation-complete' 
-                : 'fade-in'
-              : ''
+            isSafari && animationReady
+              ? hasCompletedInitialAnimation
+                ? "fade-in animation-complete"
+                : "fade-in"
+              : ""
           }
         >
           {isSafari ? (
             // Safari-specific manual column layout
             <div>
-              <DescriptionTitle className="safari-title">{project.title}</DescriptionTitle>
+              <DescriptionTitle className="safari-title">
+                {project.title}
+              </DescriptionTitle>
               <div className="long-description safari-columns">
                 {safariColumns.map((column, columnIndex) => (
                   <div key={columnIndex} className="safari-column">
                     {column.map((paragraph, paragraphIndex) => (
-                      <p 
+                      <p
                         key={paragraphIndex}
-                        className={paragraph.isProductionCredit ? "production-credit" : ""}
+                        className={
+                          paragraph.isProductionCredit
+                            ? "production-credit"
+                            : ""
+                        }
                         dangerouslySetInnerHTML={{ __html: paragraph.text }}
                       />
                     ))}
@@ -349,7 +356,9 @@ export default function ProjectDescription({
               {project.technologies && (
                 <div className="technologies safari-technologies">
                   {project.technologies.map((tech, index) => (
-                    <span key={index} className="technology-tag">{tech}</span>
+                    <span key={index} className="technology-tag">
+                      {tech}
+                    </span>
                   ))}
                 </div>
               )}
@@ -360,8 +369,8 @@ export default function ProjectDescription({
               <DescriptionItem variants={itemVariants} $isExiting={isExiting}>
                 <DescriptionTitle>{project.title}</DescriptionTitle>
               </DescriptionItem>
-              
-              <motion.div 
+
+              <motion.div
                 className="long-description"
                 initial="hidden"
                 animate={animationReady ? "visible" : "hidden"}
@@ -369,27 +378,34 @@ export default function ProjectDescription({
                 variants={containerVariants}
               >
                 {processedLongDescription.map((paragraph, index) => (
-                  <DescriptionItem 
-                    key={index} 
-                    variants={itemVariants} 
+                  <DescriptionItem
+                    key={index}
+                    variants={itemVariants}
                     $isExiting={isExiting}
                   >
-                    <p 
-                      className={paragraph.isProductionCredit ? "production-credit" : ""}
+                    <p
+                      className={
+                        paragraph.isProductionCredit ? "production-credit" : ""
+                      }
                       dangerouslySetInnerHTML={{ __html: paragraph.text }}
                     />
                   </DescriptionItem>
                 ))}
               </motion.div>
-          
-          {project.technologies && (
-            <TechnologiesContainer variants={itemVariants} $isExiting={isExiting}>
-              <div className="technologies">
-                {project.technologies.map((tech, index) => (
-                  <span key={index} className="technology-tag">{tech}</span>
-                ))}
-              </div>
-            </TechnologiesContainer>
+
+              {project.technologies && (
+                <TechnologiesContainer
+                  variants={itemVariants}
+                  $isExiting={isExiting}
+                >
+                  <div className="technologies">
+                    {project.technologies.map((tech, index) => (
+                      <span key={index} className="technology-tag">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </TechnologiesContainer>
               )}
             </div>
           )}

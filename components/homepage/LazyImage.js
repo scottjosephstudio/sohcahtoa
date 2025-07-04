@@ -1,26 +1,26 @@
 // LazyImage - Safari Optimized
 
-import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect, useRef } from "react";
+import styled from "styled-components";
 
 const ImageContainer = styled.div`
   position: relative;
   width: 100%;
   height: 0;
-  padding-bottom: ${props => {
+  padding-bottom: ${(props) => {
     if (props.$aspectRatio) {
       // Convert decimal aspect ratio to padding percentage
-      return typeof props.$aspectRatio === 'number' 
-        ? `${(1 / props.$aspectRatio) * 100}%` 
+      return typeof props.$aspectRatio === "number"
+        ? `${(1 / props.$aspectRatio) * 100}%`
         : props.$aspectRatio;
     }
-    return '75%'; // Default 4:3 ratio
+    return "75%"; // Default 4:3 ratio
   }};
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 12px 12px 12px rgba(16, 12, 8, 0.6);
   background-color: #666666;
-  background-image: 
+  background-image:
     linear-gradient(135deg, rgba(255, 255, 255, 0.4) 40%, transparent 40%),
     linear-gradient(rgba(255, 255, 255, 0.4) 40%, transparent 40%);
   background-size: 6px 6px;
@@ -37,21 +37,26 @@ const ProjectImage = styled.img`
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: filter 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  filter: ${props => props.isloaded === 'true' ? 'blur(0px)' : 'blur(10px)'};
-  opacity: ${props => props.isloaded === 'true' ? 1 : 0};
+  transition:
+    filter 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: ${(props) =>
+    props.isloaded === "true" ? "blur(0px)" : "blur(10px)"};
+  opacity: ${(props) => (props.isloaded === "true" ? 1 : 0)};
   user-select: none;
   pointer-events: none;
-  
+
   /* Performance optimizations */
-  will-change: ${props => props.isloaded === 'true' ? 'auto' : 'opacity, filter'};
+  will-change: ${(props) =>
+    props.isloaded === "true" ? "auto" : "opacity, filter"};
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transform: translateZ(0);
-  
+
   /* Safari-specific optimizations */
   @supports (-webkit-touch-callout: none) {
-    will-change: ${props => props.isloaded === 'true' ? 'auto' : 'opacity, filter'};
+    will-change: ${(props) =>
+      props.isloaded === "true" ? "auto" : "opacity, filter"};
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     -webkit-transform: translateZ(0);
@@ -64,7 +69,7 @@ const LazyImage = ({ src, alt, index }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [isPreloaded, setIsPreloaded] = useState(false);
-  const [aspectRatio, setAspectRatio] = useState('75%'); // Default 4:3 ratio
+  const [aspectRatio, setAspectRatio] = useState("75%"); // Default 4:3 ratio
   const imgRef = useRef(null);
   const preloadedImageRef = useRef(null);
 
@@ -82,9 +87,11 @@ const LazyImage = ({ src, alt, index }) => {
 
   // Safari detection
   const isSafari = () => {
-    if (typeof window === 'undefined') return false;
-    return navigator.userAgent.includes('Safari') && 
-           !navigator.userAgent.includes('Chrome');
+    if (typeof window === "undefined") return false;
+    return (
+      navigator.userAgent.includes("Safari") &&
+      !navigator.userAgent.includes("Chrome")
+    );
   };
 
   // Optimized image preloading with Safari-specific optimizations
@@ -92,27 +99,27 @@ const LazyImage = ({ src, alt, index }) => {
     if (isInView && !isPreloaded) {
       // Create a new image for preloading
       const img = new Image();
-      
+
       // Safari-specific optimizations
       if (isSafari()) {
-        img.loading = 'eager';
-        img.decoding = 'sync';
+        img.loading = "eager";
+        img.decoding = "sync";
         // Safari benefits from immediate processing
       } else {
-        img.loading = 'eager';
-        img.decoding = 'async';
+        img.loading = "eager";
+        img.decoding = "async";
       }
-      
+
       img.onload = () => {
         // Calculate actual aspect ratio from image dimensions
         if (img.naturalWidth && img.naturalHeight) {
           const ratio = (img.naturalHeight / img.naturalWidth) * 100;
           setAspectRatio(`${ratio}%`);
         }
-        
+
         setIsPreloaded(true);
         preloadedImageRef.current = img;
-        
+
         // Safari-specific timing optimization
         if (isSafari()) {
           // Immediate for Safari to prevent layout shifts
@@ -126,12 +133,12 @@ const LazyImage = ({ src, alt, index }) => {
           });
         }
       };
-      
+
       img.onerror = () => {
         setIsPreloaded(true);
         setIsLoaded(true);
       };
-      
+
       // Start loading the image
       img.src = src;
     }
@@ -140,10 +147,10 @@ const LazyImage = ({ src, alt, index }) => {
   useEffect(() => {
     // Safari-optimized Intersection Observer
     const observerOptions = {
-      rootMargin: isSafari() ? '100px' : '50px', // Larger margin for Safari
+      rootMargin: isSafari() ? "100px" : "50px", // Larger margin for Safari
       threshold: isSafari() ? [0, 0.1] : 0.1,
     };
-    
+
     const observerCallback = (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting && entry.intersectionRatio >= 0.1) {
@@ -155,8 +162,11 @@ const LazyImage = ({ src, alt, index }) => {
         }
       });
     };
-    
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions,
+    );
 
     const initObserver = () => {
       if (imgRef.current && observer) {
@@ -165,7 +175,7 @@ const LazyImage = ({ src, alt, index }) => {
     };
 
     // Initialize observer
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       initObserver();
     }
 
@@ -183,7 +193,7 @@ const LazyImage = ({ src, alt, index }) => {
       const img = e.target;
       if (img.naturalWidth && img.naturalHeight) {
         setIsPreloaded(true);
-        
+
         // Safari-specific timing
         if (isSafari()) {
           setIsLoaded(true);

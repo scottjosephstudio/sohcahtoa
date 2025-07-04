@@ -5,18 +5,18 @@
  */
 export const getAspectRatioPercentage = (ratio) => {
   if (!ratio) return null;
-  
+
   // If it's already a percentage, return it
-  if (ratio.endsWith('%')) return ratio;
-  
+  if (ratio.endsWith("%")) return ratio;
+
   // Handle fraction format like '3/4' or '16/9'
-  if (ratio.includes('/')) {
-    const [width, height] = ratio.split('/').map(Number);
+  if (ratio.includes("/")) {
+    const [width, height] = ratio.split("/").map(Number);
     if (width && height) {
       return `${(height / width) * 100}%`;
     }
   }
-  
+
   // Default to null (will use the dynamic calculation in LazyLoadImage)
   return null;
-}; 
+};

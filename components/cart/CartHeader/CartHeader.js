@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { 
+import React, { useState, useEffect } from "react";
+import {
   CloseButton,
   CartProgressContainer,
   CartPill,
@@ -7,10 +7,10 @@ import {
   StageContainer,
   StageNumber,
   headerElementsVariants,
-  stageNumberVariants
-} from '../styles';
+  stageNumberVariants,
+} from "../styles";
 
-export const CartHeader = ({ 
+export const CartHeader = ({
   showCloseButton = true,
   showCartPill = true,
   enableScrollOpacity = true,
@@ -26,7 +26,7 @@ export const CartHeader = ({
   summaryModifiedAfterTab,
   cartPanelRef,
   onStageChange,
-  onClose
+  onClose,
 }) => {
   const [opacity, setOpacity] = useState(1);
 
@@ -40,8 +40,8 @@ export const CartHeader = ({
 
     const cartPanel = cartPanelRef?.current;
     if (cartPanel) {
-      cartPanel.addEventListener('scroll', handleScroll);
-      return () => cartPanel.removeEventListener('scroll', handleScroll);
+      cartPanel.addEventListener("scroll", handleScroll);
+      return () => cartPanel.removeEventListener("scroll", handleScroll);
     }
   }, [enableScrollOpacity]);
 
@@ -51,11 +51,11 @@ export const CartHeader = ({
         showPaymentForm: false,
         didReturnToStageOne: true,
         summaryModifiedAfterTab: true,
-        scrollToTop: true
+        scrollToTop: true,
       });
       return;
     }
-    
+
     if (showUsageSelection || showRegistration) {
       onStageChange({
         showUsageSelection: false,
@@ -65,7 +65,7 @@ export const CartHeader = ({
         isAuthenticatedAndPending: false,
         summaryModifiedAfterTab: true,
         hasProceedBeenClicked: false,
-        scrollToTop: true
+        scrollToTop: true,
       });
     }
   };
@@ -75,13 +75,18 @@ export const CartHeader = ({
       onStageChange({
         showPaymentForm: false,
         showUsageSelection: true,
-        scrollToTop: true
+        scrollToTop: true,
       });
-    } else if (hasProceedBeenClicked && weightOption && hasLicenseSelected && !summaryModifiedAfterTab) {
+    } else if (
+      hasProceedBeenClicked &&
+      weightOption &&
+      hasLicenseSelected &&
+      !summaryModifiedAfterTab
+    ) {
       if (!showRegistration && !showUsageSelection) {
         onStageChange({
           showRegistration: true,
-          scrollToTop: true
+          scrollToTop: true,
         });
       }
     }
@@ -91,47 +96,56 @@ export const CartHeader = ({
     if (isRegistrationComplete) {
       onStageChange({
         showPaymentForm: true,
-        scrollToTop: true
+        scrollToTop: true,
       });
     }
   };
 
-  const isStageOneActive = !showRegistration && !showUsageSelection && !showPaymentForm;
-  const isStageTwoActive = (showRegistration && !isRegistrationComplete) || (showUsageSelection && !isRegistrationComplete);
+  const isStageOneActive =
+    !showRegistration && !showUsageSelection && !showPaymentForm;
+  const isStageTwoActive =
+    (showRegistration && !isRegistrationComplete) ||
+    (showUsageSelection && !isRegistrationComplete);
   const isStageThreeActive = isRegistrationComplete || showPaymentForm;
 
-  const isStageTwoClickable = showPaymentForm || 
-    (isAuthenticated && isRegistrationComplete && hasLicenseSelected && 
+  const isStageTwoClickable =
+    showPaymentForm ||
+    (isAuthenticated &&
+      isRegistrationComplete &&
+      hasLicenseSelected &&
       (didReturnToStageOne || showUsageSelection)) ||
-    (hasProceedBeenClicked && weightOption && hasLicenseSelected && !summaryModifiedAfterTab);
-  
+    (hasProceedBeenClicked &&
+      weightOption &&
+      hasLicenseSelected &&
+      !summaryModifiedAfterTab);
+
   const isStageThreeClickable = isRegistrationComplete;
 
   return (
     <>
       {showCloseButton && (
-        <CloseButton 
-          onClick={onClose} 
+        <CloseButton
+          onClick={onClose}
           style={{ opacity }}
           variants={headerElementsVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
         >
-         <svg 
-  id="a" 
-  xmlns="http://www.w3.org/2000/svg" 
-  width="40" 
-  height="40" 
-  viewBox="0 0 17.96 17.95"
-  style={{ transform: 'rotate(45deg)' }}
->
-  <path 
-    d="M16.73,7.75h-6.53V1.23c0-.68-.55-1.23-1.22-1.23s-1.23.55-1.23,1.23v6.53H1.23c-.68,0-1.23.55-1.23,1.23s.55,1.23,1.23,1.23h6.53v6.53c0,.68.55,1.22,1.23,1.22s1.22-.55,1.22-1.22v-6.53h6.53c.68,0,1.22-.55,1.22-1.23s-.55-1.23-1.22-1.23Z" 
-    fill="lime" 
-    strokeWidth="0"
-  />
-</svg>
+          <svg
+            id="a"
+            xmlns="http://www.w3.org/2000/svg"
+            width="40"
+            height="40"
+            viewBox="0 0 17.96 17.95"
+            style={{ transform: "rotate(45deg)" }}
+          >
+            <path
+              d="M16.73,7.75h-6.53V1.23c0-.68-.55-1.23-1.22-1.23s-1.23.55-1.23,1.23v6.53H1.23c-.68,0-1.23.55-1.23,1.23s.55,1.23,1.23,1.23h6.53v6.53c0,.68.55,1.22,1.23,1.22s1.22-.55,1.22-1.22v-6.53h6.53c.68,0,1.22-.55,1.22-1.23s-.55-1.23-1.22-1.23Z"
+              fill="lime"
+              strokeWidth="0"
+            />
+          </svg>
         </CloseButton>
       )}
 
@@ -141,14 +155,14 @@ export const CartHeader = ({
         animate="visible"
         exit="exit"
       >
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           {showCartPill && (
             <CartPill style={{ opacity }}>
               <CartText>Cart</CartText>
             </CartPill>
           )}
           <StageContainer>
-            <StageNumber 
+            <StageNumber
               active={isStageOneActive}
               clickable={true}
               onClick={handleStageOneClick}
@@ -160,7 +174,7 @@ export const CartHeader = ({
             >
               1
             </StageNumber>
-            <StageNumber 
+            <StageNumber
               active={isStageTwoActive}
               clickable={isStageTwoClickable}
               onClick={isStageTwoClickable ? handleStageTwoClick : undefined}
@@ -168,19 +182,27 @@ export const CartHeader = ({
               variants={stageNumberVariants}
               initial="initial"
               whileHover="hover"
-              custom={{ clickable: isStageTwoClickable, active: isStageTwoActive }}
+              custom={{
+                clickable: isStageTwoClickable,
+                active: isStageTwoActive,
+              }}
             >
               2
             </StageNumber>
-            <StageNumber 
+            <StageNumber
               active={isStageThreeActive}
               clickable={isStageThreeClickable}
-              onClick={isStageThreeClickable ? handleStageThreeClick : undefined}
+              onClick={
+                isStageThreeClickable ? handleStageThreeClick : undefined
+              }
               style={{ opacity }}
               variants={stageNumberVariants}
               initial="initial"
               whileHover="hover"
-              custom={{ clickable: isStageThreeClickable, active: isStageThreeActive }}
+              custom={{
+                clickable: isStageThreeClickable,
+                active: isStageThreeActive,
+              }}
             >
               3
             </StageNumber>

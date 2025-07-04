@@ -1,7 +1,11 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import styled from 'styled-components';
-import { LICENSE_TYPES, packages, licenseOptions } from '../Constants/constants';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import styled from "styled-components";
+import {
+  LICENSE_TYPES,
+  packages,
+  licenseOptions,
+} from "../Constants/constants";
 import {
   SummarySection,
   SummaryHeader,
@@ -20,8 +24,8 @@ import {
   OptionHeader,
   summaryContentVariants,
   addLicenseLinkVariants,
-  buttonVariants
-} from '../styles';
+  buttonVariants,
+} from "../styles";
 
 const TotalSectionWrapper = styled(motion.div)`
   @media (min-width: 769px) {
@@ -60,17 +64,25 @@ const CartSummary = ({
   isLoadingPayment,
 }) => {
   const getActiveLicenses = () => {
-    const { customPrintLicense, customWebLicense, customAppLicense, customSocialLicense } = customLicenses;
+    const {
+      customPrintLicense,
+      customWebLicense,
+      customAppLicense,
+      customSocialLicense,
+    } = customLicenses;
     return [
-      { type: 'print', value: customPrintLicense },
-      { type: 'web', value: customWebLicense },
-      { type: 'app', value: customAppLicense },
-      { type: 'social', value: customSocialLicense }
-    ].filter(license => license.value !== null);
+      { type: "print", value: customPrintLicense },
+      { type: "web", value: customWebLicense },
+      { type: "app", value: customAppLicense },
+      { type: "social", value: customSocialLicense },
+    ].filter((license) => license.value !== null);
   };
 
   const getLicenseTypeDisplay = (type) => {
-    return LICENSE_TYPES[type]?.displayName || type.charAt(0).toUpperCase() + type.slice(1);
+    return (
+      LICENSE_TYPES[type]?.displayName ||
+      type.charAt(0).toUpperCase() + type.slice(1)
+    );
   };
 
   const getLicenseDetails = (type, value) => {
@@ -79,8 +91,11 @@ const CartSummary = ({
   };
 
   const calculateCustomTotal = () => {
-    return getActiveLicenses().reduce((total, license) => 
-      total + getLicenseDetails(license.type, license.value).price, 0);
+    return getActiveLicenses().reduce(
+      (total, license) =>
+        total + getLicenseDetails(license.type, license.value).price,
+      0,
+    );
   };
 
   const handlePaymentClick = () => {
@@ -91,34 +106,37 @@ const CartSummary = ({
     }
   };
 
-  const isButtonDisabled = showPaymentForm 
-    ? selectedPaymentMethod === 'card' 
+  const isButtonDisabled = showPaymentForm
+    ? selectedPaymentMethod === "card"
       ? !isStripeFormComplete || isProcessing
-      : !selectedPaymentMethod 
+      : !selectedPaymentMethod
     : isCheckoutDisabled;
 
-  const totalAmount = selectedPackage 
-    ? packages[selectedPackage].price 
+  const totalAmount = selectedPackage
+    ? packages[selectedPackage].price
     : calculateCustomTotal();
-    
-  const hasContent = !!selectedPackage || (customizing && getActiveLicenses().length > 0);
+
+  const hasContent =
+    !!selectedPackage || (customizing && getActiveLicenses().length > 0);
 
   // Create a unified key that represents the current license state and stage
   const getLicenseStateKey = () => {
     const stageKey = `stage-${currentStage || 1}`;
-    
+
     if (selectedPackage) {
       return `${stageKey}-package-${selectedPackage}`;
     }
     if (customizing && getActiveLicenses().length > 0) {
-      return `${stageKey}-custom-${getActiveLicenses().map(l => `${l.type}-${l.value}`).join('-')}`;
+      return `${stageKey}-custom-${getActiveLicenses()
+        .map((l) => `${l.type}-${l.value}`)
+        .join("-")}`;
     }
     return `${stageKey}-placeholder`;
   };
 
   return (
     <AnimatePresence mode="wait">
-      <SummarySection 
+      <SummarySection
         as={motion.div}
         key={`summary-${currentStage || 1}`}
         variants={summaryContentVariants}
@@ -138,7 +156,9 @@ const CartSummary = ({
           {weightOption && (
             <StyleDetail>
               <LicenseDetail>Soh Cah Toa Display</LicenseDetail>
-              <RemoveLink onClick={onRemoveStyle}><span>Remove</span></RemoveLink>
+              <RemoveLink onClick={onRemoveStyle}>
+                <span>Remove</span>
+              </RemoveLink>
             </StyleDetail>
           )}
 
@@ -153,28 +173,41 @@ const CartSummary = ({
               {selectedPackage ? (
                 <SummaryItem>
                   <PriceDetail>
-                    <span>{selectedPackage.charAt(0).toUpperCase() + selectedPackage.slice(1)}</span>
+                    <span>
+                      {selectedPackage.charAt(0).toUpperCase() +
+                        selectedPackage.slice(1)}
+                    </span>
                     <span>${packages[selectedPackage].price}.00</span>
                   </PriceDetail>
                   <LicenseDetailContainer>
                     <div>
                       {Object.entries(packages[selectedPackage])
-                        .filter(([key]) => key !== 'price')
+                        .filter(([key]) => key !== "price")
                         .map(([key, value]) => (
-                          <LicenseDetail key={`${selectedPackage}-${key}-${value}`}>
-                            — {key.charAt(0).toUpperCase() + key.slice(1)} Licence {value}
+                          <LicenseDetail
+                            key={`${selectedPackage}-${key}-${value}`}
+                          >
+                            — {key.charAt(0).toUpperCase() + key.slice(1)}{" "}
+                            Licence {value}
                           </LicenseDetail>
                         ))}
                     </div>
-                    <RemoveLink onClick={onRemovePackage}><span>Remove</span></RemoveLink>
+                    <RemoveLink onClick={onRemovePackage}>
+                      <span>Remove</span>
+                    </RemoveLink>
                   </LicenseDetailContainer>
                 </SummaryItem>
               ) : customizing && getActiveLicenses().length > 0 ? (
                 <>
                   {getActiveLicenses().map((license) => {
-                    const licenseDetails = getLicenseDetails(license.type, license.value);
+                    const licenseDetails = getLicenseDetails(
+                      license.type,
+                      license.value,
+                    );
                     return (
-                      <SummaryItem key={`license-${license.type}-${license.value}`}>
+                      <SummaryItem
+                        key={`license-${license.type}-${license.value}`}
+                      >
                         <PriceDetail>
                           <span>{licenseDetails.name}</span>
                           <span>${licenseDetails.price}.00</span>
@@ -182,10 +215,13 @@ const CartSummary = ({
                         <LicenseDetailContainer>
                           <div>
                             <LicenseDetail>
-                              — {getLicenseTypeDisplay(license.type)} Licence {licenseDetails.limit}
+                              — {getLicenseTypeDisplay(license.type)} Licence{" "}
+                              {licenseDetails.limit}
                             </LicenseDetail>
                           </div>
-                          <RemoveLink onClick={() => onRemoveLicense(license.type)}>
+                          <RemoveLink
+                            onClick={() => onRemoveLicense(license.type)}
+                          >
                             <span>Remove</span>
                           </RemoveLink>
                         </LicenseDetailContainer>
@@ -200,7 +236,7 @@ const CartSummary = ({
               )}
 
               {customizing && getActiveLicenses().length > 0 && (
-                <AddLicenseLink 
+                <AddLicenseLink
                   onClick={onAddLicense}
                   variants={addLicenseLinkVariants}
                   initial="initial"
@@ -212,26 +248,26 @@ const CartSummary = ({
             </motion.div>
           </AnimatePresence>
         </SummaryContentContainer>
-        
+
         <AnimatePresence>
           {hasContent && (
             <TotalSectionWrapper
               initial={{ opacity: 0, height: 0, overflow: "hidden" }}
-              animate={{ 
-                opacity: 1, 
+              animate={{
+                opacity: 1,
                 height: "auto",
                 transition: {
                   opacity: { duration: 0.3, ease: "easeInOut" },
-                  height: { duration: 0.4, ease: "easeInOut" }
-                }
+                  height: { duration: 0.4, ease: "easeInOut" },
+                },
               }}
-              exit={{ 
-                opacity: 0, 
+              exit={{
+                opacity: 0,
                 height: 0,
                 transition: {
                   opacity: { duration: 0.2, ease: "easeInOut" },
-                  height: { duration: 0.3, ease: "easeInOut" }
-                }
+                  height: { duration: 0.3, ease: "easeInOut" },
+                },
               }}
             >
               <StyledFixedTotalSection ref={totalSectionRef}>
@@ -258,9 +294,11 @@ const CartSummary = ({
                   whileHover={isButtonDisabled ? {} : "hover"}
                   whileTap={isButtonDisabled ? {} : "hover"}
                 >
-                  {showPaymentForm 
-                    ? (isProcessing ? 'Processing...' : 'Complete Payment') 
-                    : 'Proceed'}
+                  {showPaymentForm
+                    ? isProcessing
+                      ? "Processing..."
+                      : "Complete Payment"
+                    : "Proceed"}
                 </CheckoutButton>
               </StyledFixedTotalSection>
             </TotalSectionWrapper>

@@ -1,33 +1,39 @@
-'use client'
+"use client";
 
-import React, { useRef, forwardRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { TypefaceContentContainer } from './TypefaceStyledComponents'
-import SpecimenSection from '../Sections/Specimen/Specimen'
-import TrialSection from '../Sections/Tester/Test'
-import TechnicalSection from '../Sections/Glyphs/Glyphs'
+import React, { useRef, forwardRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { TypefaceContentContainer } from "./TypefaceStyledComponents";
+import SpecimenSection from "../Sections/Specimen/Specimen";
+import TrialSection from "../Sections/Tester/Test";
+import TechnicalSection from "../Sections/Glyphs/Glyphs";
 
-export default forwardRef(function TypefaceContent({
-  activeTab,
-  variants,
-  handleHomeClick,
-  fontSettings,
-  isNavigatingHome,
-  isTestExiting,
-  isGlyphsExiting  // Add this prop
-}, ref) {
-  const currentTab = activeTab.toLowerCase()
+export default forwardRef(function TypefaceContent(
+  {
+    activeTab,
+    variants,
+    handleHomeClick,
+    fontSettings,
+    isNavigatingHome,
+    isTestExiting,
+    isGlyphsExiting, // Add this prop
+  },
+  ref,
+) {
+  const currentTab = activeTab.toLowerCase();
   const technicalSectionRef = useRef(null);
 
   // Expose search function to parent components
   React.useImperativeHandle(ref, () => ({
     handleSearch: (query) => {
-      if (currentTab === 'glyphs' && technicalSectionRef.current?.handleSearch) {
+      if (
+        currentTab === "glyphs" &&
+        technicalSectionRef.current?.handleSearch
+      ) {
         technicalSectionRef.current.handleSearch(query);
       }
-    }
+    },
   }));
-  
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -36,16 +42,16 @@ export default forwardRef(function TypefaceContent({
         initial="initial"
         animate="animate"
         exit="exit"
-        style={{ position: 'relative' }}
+        style={{ position: "relative" }}
       >
         <TypefaceContentContainer>
-          {currentTab === 'specimen' && (
+          {currentTab === "specimen" && (
             <SpecimenSection
               variants={variants}
               handleHomeClick={handleHomeClick}
             />
           )}
-          {currentTab === 'test' && (
+          {currentTab === "test" && (
             <TrialSection
               variants={variants}
               activeTab={currentTab}
@@ -55,7 +61,7 @@ export default forwardRef(function TypefaceContent({
               isNavigatingHome={isNavigatingHome}
             />
           )}
-          {currentTab === 'glyphs' && (
+          {currentTab === "glyphs" && (
             <TechnicalSection
               variants={variants}
               activeTab={currentTab}
@@ -68,5 +74,5 @@ export default forwardRef(function TypefaceContent({
         </TypefaceContentContainer>
       </motion.div>
     </AnimatePresence>
-  )
-})
+  );
+});

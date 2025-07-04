@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { createContext, useContext, useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 const MenuOverlayContext = createContext();
 
 export const useMenuOverlay = () => {
   const context = useContext(MenuOverlayContext);
   if (!context) {
-    throw new Error('useMenuOverlay must be used within a MenuOverlayProvider');
+    throw new Error("useMenuOverlay must be used within a MenuOverlayProvider");
   }
   return context;
 };
@@ -61,27 +61,29 @@ export const MenuOverlayProvider = ({ children }) => {
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('popstate', handlePopState);
-    
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("popstate", handlePopState);
+
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", handlePopState);
     };
   }, [isMenuOpen, openDropdown, isLoginModalOpen]);
 
   return (
-    <MenuOverlayContext.Provider value={{ 
-      isMenuOpen, 
-      setIsMenuOpen, 
-      openDropdown, 
-      setOpenDropdown,
-      isLoginModalOpen,
-      setIsLoginModalOpen,
-      // Helper to check if any menu interface is open
-      isAnyMenuOpen: isMenuOpen || !!openDropdown || isLoginModalOpen
-    }}>
+    <MenuOverlayContext.Provider
+      value={{
+        isMenuOpen,
+        setIsMenuOpen,
+        openDropdown,
+        setOpenDropdown,
+        isLoginModalOpen,
+        setIsLoginModalOpen,
+        // Helper to check if any menu interface is open
+        isAnyMenuOpen: isMenuOpen || !!openDropdown || isLoginModalOpen,
+      }}
+    >
       {children}
     </MenuOverlayContext.Provider>
   );
-}; 
+};

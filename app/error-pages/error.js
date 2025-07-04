@@ -1,71 +1,71 @@
-'use client';
+"use client";
 
-import React from 'react';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { useNavigation } from '../../context/NavigationContext';
-import TransitionWrapper from '../../components/providers/TransitionWrapper';
+import React from "react";
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import { useNavigation } from "../../context/NavigationContext";
+import TransitionWrapper from "../../components/providers/TransitionWrapper";
 
 // Motion variants for button interactions
 const acceptButtonVariants = {
   initial: {
-    backgroundColor: '#39ff14',
-    color: 'rgb(16, 12, 8)',
+    backgroundColor: "#39ff14",
+    color: "rgb(16, 12, 8)",
     opacity: 1,
     scale: 1,
   },
   hover: {
-    backgroundColor: 'white',
-    color: 'rgb(16, 12, 8)',
+    backgroundColor: "white",
+    color: "rgb(16, 12, 8)",
     opacity: 1,
     scale: 1,
     transition: {
       duration: 0.3,
       ease: [0.4, 0, 0.2, 1],
-      opacity: { duration: 0.2, ease: 'easeInOut' },
-      backgroundColor: { duration: 0.3, ease: [0.4, 0, 0.2, 1] }
-    }
+      opacity: { duration: 0.2, ease: "easeInOut" },
+      backgroundColor: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+    },
   },
   tap: {
     opacity: 0.8,
     scale: 1,
     transition: {
       duration: 0.1,
-      ease: 'easeInOut'
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
 
 const declineButtonVariants = {
   initial: {
-    backgroundColor: 'transparent',
-    borderColor: 'white',
-    color: 'white',
+    backgroundColor: "transparent",
+    borderColor: "white",
+    color: "white",
     opacity: 1,
     scale: 1,
   },
   hover: {
-    backgroundColor: 'white',
-    borderColor: 'white',
-    color: 'rgb(16, 12, 8)',
+    backgroundColor: "white",
+    borderColor: "white",
+    color: "rgb(16, 12, 8)",
     opacity: 1,
     scale: 1,
     transition: {
       duration: 0.3,
       ease: [0.4, 0, 0.2, 1],
-      opacity: { duration: 0.2, ease: 'easeInOut' },
+      opacity: { duration: 0.2, ease: "easeInOut" },
       backgroundColor: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
-      borderColor: { duration: 0.3, ease: [0.4, 0, 0.2, 1] }
-    }
+      borderColor: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+    },
   },
   tap: {
     opacity: 0.8,
     scale: 1,
     transition: {
       duration: 0.1,
-      ease: 'easeInOut'
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
 
 export default function Error({ error, reset }) {
@@ -73,15 +73,15 @@ export default function Error({ error, reset }) {
 
   // Log error if present
   if (error) {
-    console.error('Page error:', error);
+    console.error("Page error:", error);
   }
 
   const handleReset = () => {
     // Set navigation state to true to trigger transition
     set$isNavigating(true);
-    
+
     setTimeout(() => {
-      if (typeof reset === 'function') {
+      if (typeof reset === "function") {
         reset();
       } else {
         // Fallback: refresh the current page
@@ -92,7 +92,7 @@ export default function Error({ error, reset }) {
 
   const handleStay = () => {
     // Just hide the error modal without navigation
-    document.body.classList.remove('error-page');
+    document.body.classList.remove("error-page");
   };
 
   return (
@@ -101,7 +101,7 @@ export default function Error({ error, reset }) {
         <PageErrorContainer>
           <PageErrorTitle>Something went wrong!</PageErrorTitle>
           <ErrorButtonContainer>
-            <ErrorAcceptButton 
+            <ErrorAcceptButton
               onClick={handleReset}
               variants={acceptButtonVariants}
               initial="initial"
@@ -110,7 +110,7 @@ export default function Error({ error, reset }) {
             >
               Try Again
             </ErrorAcceptButton>
-            <ErrorDeclineButton 
+            <ErrorDeclineButton
               onClick={handleStay}
               variants={declineButtonVariants}
               initial="initial"
@@ -148,7 +148,7 @@ const PageErrorContainer = styled.div`
   width: 320px;
   min-width: 320px;
   text-align: left;
-  
+
   @media (max-width: 360px) {
     padding: 16px;
     width: 320px;
@@ -198,4 +198,4 @@ const ErrorDeclineButton = styled(motion.button)`
   width: 100%;
   text-align: center;
   transform: translateZ(0);
-`; 
+`;

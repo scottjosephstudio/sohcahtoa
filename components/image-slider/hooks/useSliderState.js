@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { TRANSITION_DURATION } from '../styles/animationVariants';
+import { useState, useEffect } from "react";
+import { TRANSITION_DURATION } from "../styles/animationVariants";
 
 /**
  * Custom hook for managing image slider state
@@ -31,10 +31,12 @@ export const useSliderState = (images) => {
     if (isTransitioning) return; // Prevent rapid clicking
     setIsTransitioning(true);
     setShowCaption(false);
-    
+
     // Change slide and show caption after transition
     setTimeout(() => {
-      setCurrentSlide(currentSlide === 0 ? images.length - 1 : currentSlide - 1);
+      setCurrentSlide(
+        currentSlide === 0 ? images.length - 1 : currentSlide - 1,
+      );
       setIsTransitioning(false);
       setShowCaption(true);
     }, TRANSITION_DURATION * 1500);
@@ -45,10 +47,12 @@ export const useSliderState = (images) => {
     if (isTransitioning) return; // Prevent rapid clicking
     setIsTransitioning(true);
     setShowCaption(false);
-    
+
     // Change slide and show caption after transition
     setTimeout(() => {
-      setCurrentSlide(currentSlide === images.length - 1 ? 0 : currentSlide + 1);
+      setCurrentSlide(
+        currentSlide === images.length - 1 ? 0 : currentSlide + 1,
+      );
       setIsTransitioning(false);
       setShowCaption(true);
     }, TRANSITION_DURATION * 1500);
@@ -61,6 +65,6 @@ export const useSliderState = (images) => {
     isMounted,
     hasMultipleImages,
     prevSlide,
-    nextSlide
+    nextSlide,
   };
-}; 
+};

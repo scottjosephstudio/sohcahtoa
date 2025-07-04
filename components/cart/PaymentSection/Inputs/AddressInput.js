@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { AnimatePresence } from 'framer-motion';
+import React from "react";
+import PropTypes from "prop-types";
+import { AnimatePresence } from "framer-motion";
 import {
   CountryPostcodeContainer,
   CountryContainer,
@@ -10,15 +10,15 @@ import {
   InputField,
   HintText,
   StripeErrorMessage,
-  inputContainerVariants
-} from '@/components/cart/PaymentSection/PaymentSectionStyles';
+  inputContainerVariants,
+} from "@/components/cart/PaymentSection/PaymentSectionStyles";
 
 export const AddressInputs = ({
   country,
   postcode,
   errors,
   onInputChange,
-  onInputBlur
+  onInputBlur,
 }) => (
   <CountryPostcodeContainer>
     <CountryContainer>
@@ -31,21 +31,21 @@ export const AddressInputs = ({
       >
         Country
       </Label>
-      <InputContainer 
+      <InputContainer
         $hasError={!!errors.country}
         variants={inputContainerVariants}
         initial="initial"
         whileHover="hover"
         custom={{ $hasError: !!errors.country }}
       >
-  <InputField
-    type="text"
-    value={country}
-    onChange={onInputChange('country')}
-    onBlur={onInputBlur('country')}
-    $hasError={!!errors.country}
-  />
-</InputContainer>
+        <InputField
+          type="text"
+          value={country}
+          onChange={onInputChange("country")}
+          onBlur={onInputBlur("country")}
+          $hasError={!!errors.country}
+        />
+      </InputContainer>
       <AnimatePresence>
         {errors.country && (
           <StripeErrorMessage
@@ -78,21 +78,21 @@ export const AddressInputs = ({
       >
         Postal Code
       </Label>
-      <InputContainer 
+      <InputContainer
         $hasError={!!errors.postcode}
         variants={inputContainerVariants}
         initial="initial"
         whileHover="hover"
         custom={{ $hasError: !!errors.postcode }}
       >
-  <InputField
-    type="text"
-    value={postcode}
-    onChange={onInputChange('postcode')}
-    onBlur={onInputBlur('postcode')}
-    $hasError={!!errors.postcode}
-  />
-</InputContainer>
+        <InputField
+          type="text"
+          value={postcode}
+          onChange={onInputChange("postcode")}
+          onBlur={onInputBlur("postcode")}
+          $hasError={!!errors.postcode}
+        />
+      </InputContainer>
       <AnimatePresence>
         {errors.postcode && (
           <StripeErrorMessage
@@ -114,10 +114,10 @@ AddressInputs.propTypes = {
   postcode: PropTypes.string.isRequired,
   errors: PropTypes.shape({
     country: PropTypes.string,
-    postcode: PropTypes.string
+    postcode: PropTypes.string,
   }).isRequired,
   onInputChange: PropTypes.func.isRequired,
-  onInputBlur: PropTypes.func.isRequired
+  onInputBlur: PropTypes.func.isRequired,
 };
 
 export default AddressInputs;

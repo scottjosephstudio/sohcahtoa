@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { loadStripe } from '@stripe/stripe-js';
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
-import { v4 as uuidv4 } from 'uuid'; // You'll need to install this package
+import React, { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
+import { motion } from "framer-motion";
+import styled from "styled-components";
+import { v4 as uuidv4 } from "uuid"; // You'll need to install this package
 
 // Page background container
 const PageContainer = styled.div`
@@ -17,7 +17,7 @@ const PageContainer = styled.div`
   padding: 24px;
   overflow-x: hidden;
   background-color: #f9f9f9;
-  
+
   &::before {
     content: "";
     position: fixed;
@@ -65,8 +65,6 @@ const SimpleLoginPanel = styled(motion.div)`
   &::-webkit-scrollbar {
     display: none;
   }
-
-
 `;
 
 const ModalTitleLogin = styled.div`
@@ -80,8 +78,6 @@ const ModalTitleLogin = styled.div`
   margin-bottom: 12px;
   display: block;
 `;
-
-
 
 const ContentWrapper = styled.div`
   display: flex;
@@ -135,15 +131,15 @@ const loginPanelVariants = {
     opacity: 0,
     scale: 0,
     transition: {
-      duration: 0.2
-    }
+      duration: 0.2,
+    },
   },
   visible: {
     opacity: 1,
     scale: 1,
     transition: {
       duration: 0.2,
-    }
+    },
   },
   exit: {
     opacity: 0,
@@ -151,17 +147,19 @@ const loginPanelVariants = {
     transition: {
       type: "tween",
       duration: 0.2,
-      ease: "easeInOut"
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+);
 
 // Main component wrapper that doesn't use searchParams directly
 export default function PaymentConfirmation() {
   const [isExiting, setIsExiting] = useState(false);
-  
+
   return (
     <PageContainer>
       <div className="fixed inset-0 flex items-center justify-center">
@@ -177,7 +175,11 @@ export default function PaymentConfirmation() {
             exit="exit"
           >
             <ModalTitleLogin>Payment Confirmation</ModalTitleLogin>
-            <Suspense fallback={<StatusMessage>Loading payment details...</StatusMessage>}>
+            <Suspense
+              fallback={
+                <StatusMessage>Loading payment details...</StatusMessage>
+              }
+            >
               <PaymentContent setIsExiting={setIsExiting} />
             </Suspense>
           </SimpleLoginPanel>
@@ -189,24 +191,24 @@ export default function PaymentConfirmation() {
 
 // Inner component that uses searchParams
 function PaymentContent({ setIsExiting }) {
-  const [status, setStatus] = useState('processing');
+  const [status, setStatus] = useState("processing");
   const [countdown, setCountdown] = useState(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  
-  const paymentIntent = searchParams.get('payment_intent');
-  const clientSecret = searchParams.get('payment_intent_client_secret');
-  const amount = searchParams.get('amount');
-  const id = searchParams.get('id');
+
+  const paymentIntent = searchParams.get("payment_intent");
+  const clientSecret = searchParams.get("payment_intent_client_secret");
+  const amount = searchParams.get("amount");
+  const id = searchParams.get("id");
   // Try to get security token from URL if it exists
-  const urlToken = searchParams.get('security_token');
+  const urlToken = searchParams.get("security_token");
 
   useEffect(() => {
     // Apply background style to body for consistent transitions
-    document.body.style.backgroundColor = '#f9f9f9';
-    
+    document.body.style.backgroundColor = "#f9f9f9";
+
     // Add a custom style tag for the SVG noise background
-    const styleTag = document.createElement('style');
+    const styleTag = document.createElement("style");
     styleTag.innerHTML = `
       body::before {
         content: "";
@@ -225,46 +227,48 @@ function PaymentContent({ setIsExiting }) {
     document.head.appendChild(styleTag);
 
     const handlePaymentSuccess = (paymentDetails) => {
-      localStorage.removeItem('cartState');
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('firstName');
-      localStorage.removeItem('lastName');
-      localStorage.removeItem('billingDetails');
-      localStorage.removeItem('hasProceedBeenClicked');
-      
+      localStorage.removeItem("cartState");
+      localStorage.removeItem("isAuthenticated");
+      localStorage.removeItem("userEmail");
+      localStorage.removeItem("firstName");
+      localStorage.removeItem("lastName");
+      localStorage.removeItem("billingDetails");
+      localStorage.removeItem("hasProceedBeenClicked");
+
       // Generate UUID for this transaction if not already in URL
       const token = urlToken || uuidv4();
-      
+
       // Store the token in sessionStorage for persistence during navigation
-      sessionStorage.setItem('payment_security_token', token);
-      
+      sessionStorage.setItem("payment_security_token", token);
+
       // If the token is not in the URL, update the URL with the token
       if (!urlToken) {
         // Create URL with all existing params plus the security token
         const newUrl = new URL(window.location.href);
-        newUrl.searchParams.set('security_token', token);
-        
+        newUrl.searchParams.set("security_token", token);
+
         // Update browser history without reloading the page
         window.history.replaceState(
           { ...window.history.state, securityToken: token },
-          '',
-          newUrl.toString()
+          "",
+          newUrl.toString(),
         );
       }
 
       // Start countdown instead of immediate redirect
       setCountdown(9);
-      
+
       const countdownInterval = setInterval(() => {
-        setCountdown(prev => {
+        setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(countdownInterval);
             // Start exit animation
             setIsExiting(true);
             // Redirect after animation completes (200ms based on loginPanelVariants)
             setTimeout(() => {
-              router.push(`/Typefaces?completed_payment=true&security_token=${token}`);
+              router.push(
+                `/Typefaces?completed_payment=true&security_token=${token}`,
+              );
             }, 300);
             return 0;
           }
@@ -283,15 +287,16 @@ function PaymentContent({ setIsExiting }) {
 
       const checkPaymentStatus = async () => {
         if (checkCount >= maxChecks) {
-          setStatus('failed');
-          setTimeout(() => router.push('/Typefaces'), 10000);
+          setStatus("failed");
+          setTimeout(() => router.push("/Typefaces"), 10000);
           return;
         }
 
         try {
           const stripe = await stripePromise;
-          const { paymentIntent: paymentDetails } = await stripe.retrievePaymentIntent(clientSecret);
-          
+          const { paymentIntent: paymentDetails } =
+            await stripe.retrievePaymentIntent(clientSecret);
+
           switch (paymentDetails.status) {
             case "succeeded":
               setStatus("succeeded");
@@ -304,24 +309,24 @@ function PaymentContent({ setIsExiting }) {
             case "requires_payment_method":
             default:
               setStatus("failed");
-              setTimeout(() => router.push('/Typefaces'), 10000);
+              setTimeout(() => router.push("/Typefaces"), 10000);
               break;
           }
         } catch (error) {
-          console.error('Error checking payment status:', error);
+          console.error("Error checking payment status:", error);
           checkCount++;
           if (checkCount < maxChecks) {
             setTimeout(checkPaymentStatus, 2000);
           } else {
             setStatus("failed");
-            setTimeout(() => router.push('/Typefaces'), 10000);
+            setTimeout(() => router.push("/Typefaces"), 10000);
           }
         }
       };
 
       checkPaymentStatus();
     }
-    
+
     // Cleanup function
     return () => {
       // Don't remove the style on unmount to maintain background during transition
@@ -331,13 +336,13 @@ function PaymentContent({ setIsExiting }) {
 
   const renderContent = () => {
     switch (status) {
-      case 'processing':
+      case "processing":
         return (
           <ContentWrapper>
             <StatusMessage>Processing Payment</StatusMessage>
           </ContentWrapper>
         );
-      case 'succeeded':
+      case "succeeded":
         return (
           <ContentWrapper>
             <StatusMessage>Payment Successful!</StatusMessage>
@@ -346,21 +351,26 @@ function PaymentContent({ setIsExiting }) {
                 <p>Amount: ${amount}.00</p>
               </OrderDetailsBox>
             )}
-            <StatusMessage>Your typeface(s) will be available in your account.</StatusMessage>
-            <StatusMessage>Please login to download from your account dashboard.</StatusMessage>
+            <StatusMessage>
+              Your typeface(s) will be available in your account.
+            </StatusMessage>
+            <StatusMessage>
+              Please login to download from your account dashboard.
+            </StatusMessage>
             {countdown !== null && countdown > 0 && (
               <CountdownMessage>
-                Redirecting in{' '}
-                <CountdownNumber>{countdown}</CountdownNumber>
-                {' '}seconds...
+                Redirecting in <CountdownNumber>{countdown}</CountdownNumber>{" "}
+                seconds...
               </CountdownMessage>
             )}
           </ContentWrapper>
         );
-      case 'failed':
+      case "failed":
         return (
           <ContentWrapper>
-            <StatusMessage style={{ color: '#EF4444' }}>Payment Failed. Redirecting...</StatusMessage>
+            <StatusMessage style={{ color: "#EF4444" }}>
+              Payment Failed. Redirecting...
+            </StatusMessage>
           </ContentWrapper>
         );
       default:

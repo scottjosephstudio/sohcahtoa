@@ -1,13 +1,13 @@
-import React from 'react';
-import { AnimatePresence } from 'framer-motion';
-import { 
-  CaptionContainer, 
-  AnimatedCaptionWrapper, 
-  SlideCaption, 
-  NumberIndicator 
-} from '../styles/SliderStyles';
-import { captionVariants } from '../styles/animationVariants';
-import { getImageCaption } from '../../../lib/projectUtils';
+import React from "react";
+import { AnimatePresence } from "framer-motion";
+import {
+  CaptionContainer,
+  AnimatedCaptionWrapper,
+  SlideCaption,
+  NumberIndicator,
+} from "../styles/SliderStyles";
+import { captionVariants } from "../styles/animationVariants";
+import { getImageCaption } from "../../../lib/projectUtils";
 
 /**
  * Component for displaying slider caption with animations
@@ -19,16 +19,19 @@ import { getImageCaption } from '../../../lib/projectUtils';
  * @param {number} props.currentSlide Current slide index
  * @param {boolean} props.hasMultipleImages Whether slider has multiple images
  */
-const SliderCaption = ({ 
-  captionHeight, 
-  isMounted, 
-  showCaption, 
-  image, 
-  currentSlide, 
-  hasMultipleImages 
+const SliderCaption = ({
+  captionHeight,
+  isMounted,
+  showCaption,
+  image,
+  currentSlide,
+  hasMultipleImages,
 }) => {
   const slideNumber = hasMultipleImages ? currentSlide + 1 : 1;
-  const caption = getImageCaption(image, hasMultipleImages ? `Image ${slideNumber}` : 'Image');
+  const caption = getImageCaption(
+    image,
+    hasMultipleImages ? `Image ${slideNumber}` : "Image",
+  );
 
   return (
     <CaptionContainer $height={captionHeight}>
@@ -42,12 +45,8 @@ const SliderCaption = ({
               exit="exit"
               variants={captionVariants}
             >
-              <SlideCaption>
-                {caption}
-              </SlideCaption>
-              <NumberIndicator>
-                {slideNumber}
-              </NumberIndicator>
+              <SlideCaption>{caption}</SlideCaption>
+              <NumberIndicator>{slideNumber}</NumberIndicator>
             </AnimatedCaptionWrapper>
           )}
         </AnimatePresence>
@@ -56,4 +55,4 @@ const SliderCaption = ({
   );
 };
 
-export default SliderCaption; 
+export default SliderCaption;

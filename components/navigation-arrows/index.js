@@ -1,1 +1,1 @@
-export { default } from './NavigationArrows'; 
+export { default } from "./NavigationArrows";

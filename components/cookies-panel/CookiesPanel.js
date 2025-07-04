@@ -1,13 +1,19 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useCookiesPanel } from './CookiesPanelProvider';
-import CookiesBanner from './components/CookiesBanner';
-import CookiesButtons from './components/CookiesButtons';
-import DebugButton from './components/DebugButton';
+import React, { useState, useEffect } from "react";
+import { useCookiesPanel } from "./CookiesPanelProvider";
+import CookiesBanner from "./components/CookiesBanner";
+import CookiesButtons from "./components/CookiesButtons";
+import DebugButton from "./components/DebugButton";
 
 export default function CookiesPanel({ testMode = false, showDebug = false }) {
-  const { showCookiesPanel, acceptCookies, declineCookies, resetCookies, isLoading } = useCookiesPanel();
+  const {
+    showCookiesPanel,
+    acceptCookies,
+    declineCookies,
+    resetCookies,
+    isLoading,
+  } = useCookiesPanel();
   const [visible, setVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -28,14 +34,14 @@ export default function CookiesPanel({ testMode = false, showDebug = false }) {
       }
     };
     const handleLinkClick = (e) => {
-      const link = e.target.closest('a') || e.target.closest('[href]');
+      const link = e.target.closest("a") || e.target.closest("[href]");
       if (link) {
         handleNavigation();
       }
     };
-    document.addEventListener('click', handleLinkClick, true);
+    document.addEventListener("click", handleLinkClick, true);
     return () => {
-      document.removeEventListener('click', handleLinkClick, true);
+      document.removeEventListener("click", handleLinkClick, true);
     };
   }, [visible, isExiting]);
 
@@ -64,9 +70,7 @@ export default function CookiesPanel({ testMode = false, showDebug = false }) {
       <CookiesBanner isExiting={isExiting}>
         <CookiesButtons onAccept={handleAccept} onDecline={handleDecline} />
       </CookiesBanner>
-      {(showDebug || testMode) && (
-        <DebugButton onClick={resetCookies} />
-      )}
+      {(showDebug || testMode) && <DebugButton onClick={resetCookies} />}
     </>
   );
 }

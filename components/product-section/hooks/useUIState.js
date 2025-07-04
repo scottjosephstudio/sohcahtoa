@@ -1,17 +1,19 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter as useAppRouter, usePathname } from 'next/navigation'; // App Router imports
+import { useState, useEffect, useCallback } from "react";
+import { useRouter as useAppRouter, usePathname } from "next/navigation"; // App Router imports
 
-export const useUIState = (props = {}) => {  // Make props optional
-  const { activeTab } = props;  // Destructure with default empty object
-  
+export const useUIState = (props = {}) => {
+  // Make props optional
+  const { activeTab } = props; // Destructure with default empty object
+
   // Use App Router hooks
   const appRouter = useAppRouter();
   const pathname = usePathname();
-  
+
   const [isNavigatingHome, setIsNavigatingHome] = useState(false);
-  const [hasInitialAnimationOccurred, setHasInitialAnimationOccurred] = useState(false);
+  const [hasInitialAnimationOccurred, setHasInitialAnimationOccurred] =
+    useState(false);
   const [windowWidth, setWindowWidth] = useState(0); // Initialize with 0 instead
   const [isClosing, setIsClosing] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -22,11 +24,11 @@ export const useUIState = (props = {}) => {  // Make props optional
 
   // Set window width on client side only
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       setWindowWidth(window.innerWidth);
       const handleResize = () => setWindowWidth(window.innerWidth);
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
     }
   }, []);
 
@@ -40,14 +42,15 @@ export const useUIState = (props = {}) => {  // Make props optional
   }, [hasInitialAnimationOccurred]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const handlePageTransition = (event) => {
       // Prevent double navigation
       if (isNavigating) return;
-      
-      const { isNavigatingToHome, isNavigatingToTypefaces, isNavigatingToID } = event.detail;
-      
+
+      const { isNavigatingToHome, isNavigatingToTypefaces, isNavigatingToID } =
+        event.detail;
+
       setIsNavigating(true); // Set navigation lock
       setIsFullCartOpen(false);
       setIsLoginModalOpen(false);
@@ -55,13 +58,13 @@ export const useUIState = (props = {}) => {  // Make props optional
 
       setTimeout(() => {
         if (isNavigatingToHome) {
-          appRouter.push('/');
+          appRouter.push("/");
         } else if (isNavigatingToTypefaces) {
-          appRouter.push('/Typefaces');
+          appRouter.push("/Typefaces");
         } else if (isNavigatingToID) {
-          appRouter.push('/ID');
+          appRouter.push("/ID");
         }
-        
+
         // Reset navigation lock after navigation
         setTimeout(() => {
           setIsNavigating(false);
@@ -74,44 +77,50 @@ export const useUIState = (props = {}) => {  // Make props optional
         setIsFullCartOpen(false);
         setIsNavigatingHome(true);
         setIsLoginModalOpen(false);
-        
+
         // Don't redirect to '/' - let the PaymentProcessor handle the redirect to payment-confirmation
       }
     };
 
-    window.addEventListener('pageTransitionStart', handlePageTransition);
-    window.addEventListener('startPaymentTransition', handlePaymentTransition);
+    window.addEventListener("pageTransitionStart", handlePageTransition);
+    window.addEventListener("startPaymentTransition", handlePaymentTransition);
 
     return () => {
-      window.removeEventListener('pageTransitionStart', handlePageTransition);
-      window.removeEventListener('startPaymentTransition', handlePaymentTransition);
+      window.removeEventListener("pageTransitionStart", handlePageTransition);
+      window.removeEventListener(
+        "startPaymentTransition",
+        handlePaymentTransition,
+      );
     };
   }, [appRouter]); // Changed from router to appRouter
 
-  const handleHomeClick = useCallback((e, href) => {
-    e.preventDefault();
-    
-    // First trigger the exit animation based on current tab
-    if (activeTab === 'glyphs') {
-      setIsGlyphsExiting(true);
-    } else if (activeTab === 'test') {
-      setIsTestExiting(true);
-    }
-    
-    // Then handle the navigation after a delay
-    setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        const event = new CustomEvent('pageTransitionStart', { 
-          detail: { 
-            isNavigatingToHome: href === '/',
-            isNavigatingToTypefaces: href === '/Typefaces'
-          } 
-        });
-        window.dispatchEvent(event);
+  const handleHomeClick = useCallback(
+    (e, href) => {
+      e.preventDefault();
+
+      // First trigger the exit animation based on current tab
+      if (activeTab === "glyphs") {
+        setIsGlyphsExiting(true);
+      } else if (activeTab === "test") {
+        setIsTestExiting(true);
       }
-      setIsNavigatingHome(true);
-    }, 300);
-  }, [activeTab]);
+
+      // Then handle the navigation after a delay
+      setTimeout(() => {
+        if (typeof window !== "undefined") {
+          const event = new CustomEvent("pageTransitionStart", {
+            detail: {
+              isNavigatingToHome: href === "/",
+              isNavigatingToTypefaces: href === "/Typefaces",
+            },
+          });
+          window.dispatchEvent(event);
+        }
+        setIsNavigatingHome(true);
+      }, 300);
+    },
+    [activeTab],
+  );
 
   const handleModalClick = (e) => {
     e.stopPropagation();
@@ -126,7 +135,7 @@ export const useUIState = (props = {}) => {  // Make props optional
   };
 
   const handleTabExit = (currentTab, newTab, setTab) => {
-    if (currentTab === 'test') {
+    if (currentTab === "test") {
       setIsTestExiting(true);
       setTimeout(() => {
         setTab(newTab.toLowerCase());
@@ -134,7 +143,7 @@ export const useUIState = (props = {}) => {  // Make props optional
           setIsTestExiting(false);
         }, 300);
       }, 200);
-    } else if (currentTab === 'glyphs') {
+    } else if (currentTab === "glyphs") {
       setIsGlyphsExiting(true);
       setTimeout(() => {
         setTab(newTab.toLowerCase());
@@ -146,7 +155,7 @@ export const useUIState = (props = {}) => {  // Make props optional
       setTab(newTab.toLowerCase());
     }
   };
- 
+
   return {
     state: {
       isNavigatingHome,
@@ -156,23 +165,23 @@ export const useUIState = (props = {}) => {  // Make props optional
       isFullCartOpen,
       isLoginModalOpen,
       isTestExiting,
-      isGlyphsExiting
+      isGlyphsExiting,
     },
     setters: {
       setIsNavigatingHome,
       setHasInitialAnimationOccurred,
-      setIsClosing, 
+      setIsClosing,
       setIsFullCartOpen,
       setIsLoginModalOpen,
       setIsTestExiting,
-      setIsGlyphsExiting
+      setIsGlyphsExiting,
     },
     handlers: {
       handleHomeClick,
       handleModalClick,
       handleModalClose,
-      handleTabExit
-    }
+      handleTabExit,
+    },
   };
 };
 

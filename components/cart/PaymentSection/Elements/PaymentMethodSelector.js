@@ -1,28 +1,27 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { 
-  PaymentMethodContainer, 
+import React from "react";
+import PropTypes from "prop-types";
+import {
+  PaymentMethodContainer,
   PaymentMethodButton,
-  paymentMethodButtonVariants
-} from '@/components/cart/PaymentSection/PaymentSectionStyles';
+  paymentMethodButtonVariants,
+} from "@/components/cart/PaymentSection/PaymentSectionStyles";
 
-export const PaymentMethodSelector = ({ 
-  selectedPaymentMethod, 
-  onPaymentMethodSelect, 
+export const PaymentMethodSelector = ({
+  selectedPaymentMethod,
+  onPaymentMethodSelect,
 }) => {
   return (
     <PaymentMethodContainer>
       <PaymentMethodButton
-        selected={selectedPaymentMethod === 'card'}
-        onClick={() => onPaymentMethodSelect('card')}
+        selected={selectedPaymentMethod === "card"}
+        onClick={() => onPaymentMethodSelect("card")}
         variants={paymentMethodButtonVariants}
         initial="initial"
         whileHover="hover"
-        custom={{ selected: selectedPaymentMethod === 'card' }}
+        custom={{ selected: selectedPaymentMethod === "card" }}
       >
         Debit/Credit Card
       </PaymentMethodButton>
-  
     </PaymentMethodContainer>
   );
 };
@@ -30,7 +29,7 @@ export const PaymentMethodSelector = ({
 PaymentMethodSelector.propTypes = {
   selectedPaymentMethod: PropTypes.string,
   onPaymentMethodSelect: PropTypes.func.isRequired,
-  isApplePayAvailable: PropTypes.bool.isRequired
+  isApplePayAvailable: PropTypes.bool.isRequired,
 };
 
 export default PaymentMethodSelector;

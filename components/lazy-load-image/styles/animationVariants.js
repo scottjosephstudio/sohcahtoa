@@ -5,8 +5,8 @@ export const containerVariants = {
     y: 0,
     transition: {
       duration: 0.4,
-      ease: 'easeOut'
-    }
+      ease: "easeOut",
+    },
   },
   visible: {
     opacity: 1,
@@ -14,37 +14,37 @@ export const containerVariants = {
     transition: {
       duration: 0.6,
       delay: 0.1,
-      ease: [0.25, 0.1, 0.25, 1] // Smooth cubic-bezier
-    }
-  }
+      ease: [0.25, 0.1, 0.25, 1], // Smooth cubic-bezier
+    },
+  },
 };
 
 // Motion variants for image transitions
 export const imageVariants = {
   hidden: {
     opacity: 0,
-    filter: 'blur(10px)',
+    filter: "blur(10px)",
     scale: 1,
   },
   loaded: {
     opacity: 1,
-    filter: 'blur(0px)',
+    filter: "blur(0px)",
     scale: 1,
     transition: {
       duration: 0.5,
       delay: 0.2,
-      ease: [0.25, 0.1, 0.25, 1]
-    }
+      ease: [0.25, 0.1, 0.25, 1],
+    },
   },
   sliding: {
     opacity: 0,
-    filter: 'blur(8px)',
+    filter: "blur(8px)",
     scale: 1,
     transition: {
       duration: 0.25,
-      ease: 'easeInOut'
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
 
 // Motion variants for placeholder transitions
@@ -53,15 +53,15 @@ export const placeholderVariants = {
     opacity: 1,
     transition: {
       duration: 0.4,
-      ease: 'easeOut'
-    }
+      ease: "easeOut",
+    },
   },
   hidden: {
     opacity: 0,
     transition: {
       duration: 0.4,
       delay: 0.1,
-      ease: 'easeInOut'
-    }
-  }
-}; 
+      ease: "easeInOut",
+    },
+  },
+};

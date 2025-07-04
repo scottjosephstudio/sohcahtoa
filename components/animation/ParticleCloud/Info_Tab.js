@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 export const Container = styled(motion.div)`
   position: fixed;
@@ -7,7 +7,9 @@ export const Container = styled(motion.div)`
   right: 20px;
   background-color: #e0e0e0;
   /* Remove the static border-radius and we'll handle it with animation */
-  box-shadow: 0 4px 6px 0px rgb(0 0 0 / 0.1), 0 4px 6px 0px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 4px 6px 0px rgb(0 0 0 / 0.1),
+    0 4px 6px 0px rgb(0 0 0 / 0.1);
   overflow: hidden;
   cursor: pointer;
   max-height: calc(100vh - 80px);
@@ -27,25 +29,27 @@ export const Content = styled(motion.div)`
   max-height: calc(100vh - 120px);
   display: flex;
   flex-direction: column;
-  min-height: ${props => props.$minHeight}px;
-  
-  ${props => !props.$isInitialRender && `
+  min-height: ${(props) => props.$minHeight}px;
+
+  ${(props) =>
+    !props.$isInitialRender &&
+    `
     padding: 20px;
   `}
-  
-  &::-webkit-scrollbar { 
+
+  &::-webkit-scrollbar {
     display: none;
   }
-  
+
   &::before,
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     right: 0;
     height: 15px;
     z-index: 11;
-    opacity: ${props => props.$isInitialRender ? 0 : 1};
+    opacity: ${(props) => (props.$isInitialRender ? 0 : 1)};
     transition: opacity 0.2s ease;
   }
 
@@ -81,7 +85,7 @@ export const MoreButton = styled(motion.div)`
 `;
 
 export const ContentBlock = styled(motion.div)`
-  opacity: ${props => props.$isInitialRender ? 0 : 1};
+  opacity: ${(props) => (props.$isInitialRender ? 0 : 1)};
   transition: opacity 0.2s ease;
 
   &.title {

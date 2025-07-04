@@ -1,12 +1,14 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 // Base tooltip
 const Tooltip = styled(motion.div)`
   position: absolute;
   top: -35px;
-  background-color: ${({ $isTypefacesPage }) => $isTypefacesPage ? 'rgb(16, 12, 8)' : 'white'};
-  color: ${({ $isTypefacesPage }) => $isTypefacesPage ? 'white' : 'rgb(16, 12, 8)'};
+  background-color: ${({ $isTypefacesPage }) =>
+    $isTypefacesPage ? "rgb(16, 12, 8)" : "white"};
+  color: ${({ $isTypefacesPage }) =>
+    $isTypefacesPage ? "white" : "rgb(16, 12, 8)"};
   padding: 10px 10px;
   border-radius: 8px;
   font-size: 12px;
@@ -18,4 +20,4 @@ const Tooltip = styled(motion.div)`
   mix-blend-mode: normal; /* Override parent's blend mode for tooltip */
 `;
 
-export default Tooltip; 
+export default Tooltip;

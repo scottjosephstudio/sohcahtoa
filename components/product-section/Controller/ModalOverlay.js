@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
+import React from "react";
+import { motion } from "framer-motion";
+import styled from "styled-components";
 
 const OverlayContainer = styled(motion.div)`
   position: fixed;
@@ -11,8 +11,8 @@ const OverlayContainer = styled(motion.div)`
   -moz-backdrop-filter: blur(6px);
   -ms-backdrop-filter: blur(6px);
   -o-backdrop-filter: blur(6px);
-  z-index: ${props => props.$zIndex || 60};
-  pointer-events: ${props => props.$pointerEvents || 'auto'};
+  z-index: ${(props) => props.$zIndex || 60};
+  pointer-events: ${(props) => props.$pointerEvents || "auto"};
 `;
 
 const overlayAnimationVariants = {
@@ -20,31 +20,31 @@ const overlayAnimationVariants = {
     opacity: 0,
     transition: {
       duration: 0.2,
-      ease: "easeInOut"
-    }
+      ease: "easeInOut",
+    },
   },
   visible: {
     opacity: 1,
     transition: {
       duration: 0.2,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     opacity: 0,
     transition: {
       duration: 0.2,
-      ease: "easeInOut"
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
 
-const ModalOverlay = ({ 
-  onClick, 
+const ModalOverlay = ({
+  onClick,
   zIndex = 60,
-  pointerEvents = 'auto',
+  pointerEvents = "auto",
   children,
-  ...props 
+  ...props
 }) => {
   return (
     <OverlayContainer

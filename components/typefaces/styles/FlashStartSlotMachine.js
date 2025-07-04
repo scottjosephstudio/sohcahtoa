@@ -1,5 +1,5 @@
 // FlashStartSlotMachineStyles.js
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes } from "styled-components";
 
 const gradient = keyframes`
   0% {
@@ -28,20 +28,20 @@ export const SlotMachinePage = styled.div`
   left: 0;
   bottom: 0;
   right: 0;
-  
+
   /* Desktop - full viewport regardless of width */
   @media (hover: hover) and (pointer: fine) {
     height: 100vh;
     bottom: 0;
     top: 0;
   }
-  
+
   /* Only apply mobile adjustments to actual touch devices */
   @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
     /* Use dvh for better mobile viewport handling */
     height: 100dvh;
     max-height: 100dvh;
-    
+
     /* iOS specific - use window height minus banner */
     @supports (-webkit-touch-callout: none) {
       height: 100dvh;
@@ -50,26 +50,26 @@ export const SlotMachinePage = styled.div`
       bottom: 0;
       top: 0;
     }
-    
+
     /* Ensure full coverage without gaps */
     bottom: 0;
     top: 0;
     height: 100dvh;
   }
-  
+
   /* Additional mobile viewport fixes - touch devices only */
   @media screen and (max-height: 600px) and (max-width: 768px) and (hover: none) and (pointer: coarse) {
     height: 100dvh;
     bottom: 0;
     top: 0;
   }
-  
+
   /* iOS orientation specific - touch devices only */
   @media screen and (max-width: 768px) and (orientation: portrait) and (hover: none) and (pointer: coarse) {
     height: 100dvh;
     bottom: 0;
   }
-  
+
   @media screen and (max-width: 768px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
     height: 100dvh;
     bottom: 0;
@@ -91,12 +91,12 @@ export const SlotMachineContainer = styled.div`
   height: 100%;
   width: 100%;
   background-color: #666666;
-  background-image: 
+  background-image:
     linear-gradient(135deg, rgba(255, 255, 255, 0.4) 40%, transparent 40%),
     linear-gradient(rgba(255, 255, 255, 0.4) 40%, transparent 40%);
   background-size: 6px 6px;
   overflow: hidden;
-  
+
   /* Desktop (including narrow desktop windows) - ensure full height coverage */
   @media (hover: hover) and (pointer: fine) {
     height: 100vh;
@@ -108,7 +108,7 @@ export const SlotMachineContainer = styled.div`
     right: 0;
     bottom: 0;
   }
-  
+
   /* Only adjust for actual touch devices */
   @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
     height: 100%;
@@ -119,7 +119,7 @@ export const SlotMachineContainer = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    
+
     /* Landscape mode specific adjustments for Safari */
     @media (orientation: landscape) {
       /* Force full coverage in landscape mode */
@@ -141,7 +141,6 @@ export const LetterContainer = styled.div`
   overflow: hidden;
 `;
 
-
 export const Letter = styled.div`
   font-size: 48vmin; /* Responsive font size */
   font-weight: bold;
@@ -154,18 +153,18 @@ export const Letter = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   /* Font normalization for precise mobile rendering */
-  font-family: 'Jant', sans-serif;
+  font-family: "Jant", sans-serif;
   font-weight: normal; /* Prevent font weight variations on mobile */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: geometricPrecision;
   -webkit-text-rendering: geometricPrecision;
-  font-feature-settings: 'kern' 1;
-  -webkit-font-feature-settings: 'kern' 1;
+  font-feature-settings: "kern" 1;
+  -webkit-font-feature-settings: "kern" 1;
   font-variant-ligatures: none; /* Prevent ligature rendering issues */
-  
+
   /* Mobile-specific font rendering fixes */
   @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
     -webkit-text-size-adjust: 100%;
@@ -174,7 +173,7 @@ export const Letter = styled.div`
     -webkit-transform: translateZ(0); /* Force hardware acceleration */
     transform: translateZ(0);
     will-change: contents; /* Optimize for content changes */
-    
+
     /* iOS specific font rendering */
     @supports (-webkit-touch-callout: none) {
       -webkit-font-smoothing: subpixel-antialiased;
@@ -203,18 +202,18 @@ export const LetterOutline = styled.div`
   background-image: linear-gradient(45deg, black, grey, black, grey);
   background-size: 400% 400%;
   animation: ${gradient} 12s ease infinite;
-  
+
   /* Font normalization for precise mobile rendering */
-  font-family: 'Jant', sans-serif;
+  font-family: "Jant", sans-serif;
   font-weight: normal; /* Prevent font weight variations on mobile */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: geometricPrecision;
   -webkit-text-rendering: geometricPrecision;
-  font-feature-settings: 'kern' 1;
-  -webkit-font-feature-settings: 'kern' 1;
+  font-feature-settings: "kern" 1;
+  -webkit-font-feature-settings: "kern" 1;
   font-variant-ligatures: none; /* Prevent ligature rendering issues */
-  
+
   /* Mobile-specific font rendering fixes */
   @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
     -webkit-text-size-adjust: 100%;
@@ -223,7 +222,7 @@ export const LetterOutline = styled.div`
     -webkit-transform: translateZ(0); /* Force hardware acceleration */
     transform: translateZ(0);
     will-change: contents; /* Optimize for content changes */
-    
+
     /* iOS specific font rendering */
     @supports (-webkit-touch-callout: none) {
       -webkit-font-smoothing: subpixel-antialiased;
@@ -245,18 +244,18 @@ export const LetterShadow = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   /* Font normalization for precise mobile rendering */
-  font-family: 'Jant', sans-serif;
+  font-family: "Jant", sans-serif;
   font-weight: normal; /* Prevent font weight variations on mobile */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: geometricPrecision;
   -webkit-text-rendering: geometricPrecision;
-  font-feature-settings: 'kern' 1;
-  -webkit-font-feature-settings: 'kern' 1;
+  font-feature-settings: "kern" 1;
+  -webkit-font-feature-settings: "kern" 1;
   font-variant-ligatures: none; /* Prevent ligature rendering issues */
-  
+
   /* Mobile-specific font rendering fixes */
   @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
     -webkit-text-size-adjust: 100%;
@@ -265,7 +264,7 @@ export const LetterShadow = styled.div`
     -webkit-transform: translateZ(0); /* Force hardware acceleration */
     transform: translateZ(0);
     will-change: contents; /* Optimize for content changes */
-    
+
     /* iOS specific font rendering */
     @supports (-webkit-touch-callout: none) {
       -webkit-font-smoothing: subpixel-antialiased;

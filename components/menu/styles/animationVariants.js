@@ -1,53 +1,53 @@
 // Motion variants for menu items
 export const menuItemVariants = {
   initial: {
-    color: 'rgb(16, 12, 8)',
-    opacity: 1
+    color: "rgb(16, 12, 8)",
+    opacity: 1,
   },
   hover: {
-    color: 'white',
+    color: "white",
     opacity: 1,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   tap: {
     opacity: 0.8,
-    transition: { duration: 0.1 }
-  }
+    transition: { duration: 0.1 },
+  },
 };
 
 // Motion variants for direct links
 export const directLinkVariants = {
   initial: {
-    color: 'rgb(16, 12, 8)',
-    opacity: 1
+    color: "rgb(16, 12, 8)",
+    opacity: 1,
   },
   hover: {
-    color: 'white',
+    color: "white",
     opacity: 0.9,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   tap: {
     opacity: 0.7,
-    transition: { duration: 0.1 }
-  }
+    transition: { duration: 0.1 },
+  },
 };
 
 // Motion variants for subscribe button
 export const buttonVariants = {
   initial: {
-    backgroundColor: 'transparent',
-    color: '#39ff14',
-    scale: 1
+    backgroundColor: "transparent",
+    color: "#39ff14",
+    scale: 1,
   },
   hover: {
-    backgroundColor: '#39ff14',
-    color: 'rgb(16, 12, 8)',
-    transition: { duration: 0.2 }
+    backgroundColor: "#39ff14",
+    color: "rgb(16, 12, 8)",
+    transition: { duration: 0.2 },
   },
   tap: {
     scale: 1,
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 // Backdrop variants
@@ -56,75 +56,75 @@ export const backdropVariants = {
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: "easeInOut"
-    }
+      ease: "easeInOut",
+    },
   },
   visible: {
     opacity: 1,
     transition: {
       duration: 0.3,
-      ease: "easeInOut"
-    }
+      ease: "easeInOut",
+    },
   },
   exit: {
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: "easeInOut"
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
 
 // Dropdown variants
 export const dropdownVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
-    scale: 0.80,
-    height: 'auto',
-    transition: { 
+    scale: 0.8,
+    height: "auto",
+    transition: {
       duration: 0.15,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
-  visible: { 
+  visible: {
     opacity: 1,
     scale: 1,
-    height: 'auto',
-    transition: { 
+    height: "auto",
+    transition: {
       duration: 0.2,
       ease: "easeOut",
       height: {
         duration: 0.3,
-        ease: "easeInOut"
-      }
-    }
+        ease: "easeInOut",
+      },
+    },
   },
-  exit: { 
+  exit: {
     opacity: 0,
-    scale: 0.80,
-    height: 'auto',
-    transition: { 
+    scale: 0.8,
+    height: "auto",
+    transition: {
       duration: 0.15,
-      ease: "easeInOut"
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
 
 // Content variants
 export const contentVariants = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
-    transition: { 
+    transition: {
       duration: 0.2,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
-  exit: { 
+  exit: {
     opacity: 0,
-    transition: { 
+    transition: {
       duration: 0.15,
-      ease: "easeIn"
-    }
-  }
-}; 
+      ease: "easeIn",
+    },
+  },
+};

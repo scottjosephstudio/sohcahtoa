@@ -1,65 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import TypefaceFooter from '../../product-footer/TypefaceFooter';
-import { FontTesterControls } from '../Typeface_Overview/Sections/Tester/FontTesterControls';
-import AddToCart from '../Elements/Cart/AddtoCart';
-import { SearchPanel } from '../Typeface_Overview/Sections/Glyphs/components/SearchPanel';
-import { getLetterSpacingConstraints, calculateDefaultFontSize } from '../Typeface_Overview/Sections/Tester/LetterSpacingUtils';
-import { 
-  FooterWrapper, 
-  ControlsContainer, 
-  SearchContainer, 
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import TypefaceFooter from "../../product-footer/TypefaceFooter";
+import { FontTesterControls } from "../Typeface_Overview/Sections/Tester/FontTesterControls";
+import AddToCart from "../Elements/Cart/AddtoCart";
+import { SearchPanel } from "../Typeface_Overview/Sections/Glyphs/components/SearchPanel";
+import {
+  getLetterSpacingConstraints,
+  calculateDefaultFontSize,
+} from "../Typeface_Overview/Sections/Tester/LetterSpacingUtils";
+import {
+  FooterWrapper,
+  ControlsContainer,
+  SearchContainer,
   CartButtonWrapper,
-  ToggleButton 
-} from './ResponsiveFooterStyles';
+  ToggleButton,
+} from "./ResponsiveFooterStyles";
 
 const toggleVariants = {
   initial: {
     y: 100,
-    opacity: 0
+    opacity: 0,
   },
   animate: {
     y: 0,
     opacity: 1,
     transition: {
       duration: 0.3,
-      ease: [0.6, -0.05, 0.01, 0.99]
-    }
+      ease: [0.6, -0.05, 0.01, 0.99],
+    },
   },
   exit: {
     y: 100,
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: [0.6, -0.05, 0.01, 0.99]
-    }
-  }
+      ease: [0.6, -0.05, 0.01, 0.99],
+    },
+  },
 };
 
 const contentVariants = {
   initial: {
     y: 0,
-    opacity: 1
+    opacity: 1,
   },
   exit: {
     y: 100,
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: [0.6, -0.05, 0.01, 0.99]
-    }
-  }
+      ease: [0.6, -0.05, 0.01, 0.99],
+    },
+  },
 };
 
 const useMediaQuery = (width) => {
-  const [matches, setMatches] = useState(typeof window !== 'undefined' ? window.innerWidth > width : true);
+  const [matches, setMatches] = useState(
+    typeof window !== "undefined" ? window.innerWidth > width : true,
+  );
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const handler = () => setMatches(window.innerWidth > width);
-      window.addEventListener('resize', handler);
+      window.addEventListener("resize", handler);
       handler();
-      return () => window.removeEventListener('resize', handler);
+      return () => window.removeEventListener("resize", handler);
     }
   }, [width]);
 
@@ -88,12 +93,14 @@ export const ResponsiveFooter = ({
   currentText,
   onSearch,
   font,
-  setIsNavigatingHome
+  setIsNavigatingHome,
 }) => {
   const isDesktop = useMediaQuery(768);
   const isMobile = !isDesktop;
   const [expanded, setExpanded] = useState(false);
-  const [showInitialAnimation, setShowInitialAnimation] = useState(!hasInitialAnimationOccurred);
+  const [showInitialAnimation, setShowInitialAnimation] = useState(
+    !hasInitialAnimationOccurred,
+  );
   const [baseSize, setBaseSize] = useState(null);
   const [scaleFactor, setScaleFactor] = useState(1);
   const [isControlsOpen, setIsControlsOpen] = useState(isDesktop);
@@ -124,18 +131,21 @@ export const ResponsiveFooter = ({
   const handleSliderChange = (key, value) => {
     if (key === "letterSpacing") {
       const constraints = getLetterSpacingConstraints(fontSettings.fontSize);
-      value = Math.max(constraints.min, Math.min(constraints.max, parseFloat(value)));
+      value = Math.max(
+        constraints.min,
+        Math.min(constraints.max, parseFloat(value)),
+      );
     }
-    
-    if (key === 'fontSize') {
+
+    if (key === "fontSize") {
       setBaseSize(parseFloat(value));
       setScaleFactor(1);
     }
-    
-    setFontSettings(prev => ({ 
-      ...prev, 
+
+    setFontSettings((prev) => ({
+      ...prev,
       [key]: parseFloat(value),
-      isManuallySet: key === 'fontSize' ? true : prev.isManuallySet
+      isManuallySet: key === "fontSize" ? true : prev.isManuallySet,
     }));
   };
 
@@ -143,66 +153,73 @@ export const ResponsiveFooter = ({
     const handleResize = () => {
       if (!fontSettings.isManuallySet) {
         const newFontSize = calculateDefaultFontSize(undefined, currentText);
-        setFontSettings(prev => ({
+        setFontSettings((prev) => ({
           ...prev,
-          fontSize: newFontSize
+          fontSize: newFontSize,
         }));
       } else if (baseSize) {
         const viewportWidth = window.innerWidth;
-        const newScaleFactor = Math.max(0.5, Math.min(1.5, viewportWidth / 1440));
+        const newScaleFactor = Math.max(
+          0.5,
+          Math.min(1.5, viewportWidth / 1440),
+        );
         setScaleFactor(newScaleFactor);
-        
-        setFontSettings(prev => ({
+
+        setFontSettings((prev) => ({
           ...prev,
-          fontSize: baseSize * newScaleFactor
+          fontSize: baseSize * newScaleFactor,
         }));
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [setFontSettings, currentText, fontSettings.isManuallySet, baseSize]);
 
   const resetSetting = (key) => {
-    if (key === 'fontSize') {
+    if (key === "fontSize") {
       setBaseSize(null);
       setScaleFactor(1);
-      setFontSettings(prev => ({ 
+      setFontSettings((prev) => ({
         ...prev,
         fontSize: calculateDefaultFontSize(undefined, currentText),
-        isManuallySet: false
+        isManuallySet: false,
       }));
     } else {
       const defaults = {
         lineHeight: 1,
-        letterSpacing: 0
+        letterSpacing: 0,
       };
-      setFontSettings(prev => ({ 
-        ...prev, 
-        [key]: defaults[key] 
+      setFontSettings((prev) => ({
+        ...prev,
+        [key]: defaults[key],
       }));
     }
   };
 
-  const letterSpacingConstraints = getLetterSpacingConstraints(fontSettings.fontSize);
-  const displayLetterSpacing = letterSpacingConstraints.convertActualToDisplay(fontSettings.letterSpacing);
+  const letterSpacingConstraints = getLetterSpacingConstraints(
+    fontSettings.fontSize,
+  );
+  const displayLetterSpacing = letterSpacingConstraints.convertActualToDisplay(
+    fontSettings.letterSpacing,
+  );
 
   return (
     <FooterWrapper>
       <TypefaceFooter
-  showInitialAnimation={showInitialAnimation}
-  hasInitialAnimationOccurred={hasInitialAnimationOccurred}
-  handleTypefaceNavigation={handleTypefaceNavigation}
-  homeLink={homeLink}
-  typefacesLink={typefacesLink}
-  isNavigatingHome={isNavigatingHome}
-  setIsNavigatingHome={setIsNavigatingHome}
-  onNavigate={handleNavigationStart}
-  activeTab={activeTab}  // Add this prop
-/>
+        showInitialAnimation={showInitialAnimation}
+        hasInitialAnimationOccurred={hasInitialAnimationOccurred}
+        handleTypefaceNavigation={handleTypefaceNavigation}
+        homeLink={homeLink}
+        typefacesLink={typefacesLink}
+        isNavigatingHome={isNavigatingHome}
+        setIsNavigatingHome={setIsNavigatingHome}
+        onNavigate={handleNavigationStart}
+        activeTab={activeTab} // Add this prop
+      />
 
       <AnimatePresence mode="wait">
-        {activeTab === 'test' && !isNavigatingHome && (
+        {activeTab === "test" && !isNavigatingHome && (
           <motion.div
             key="test-content"
             variants={contentVariants}
@@ -217,8 +234,8 @@ export const ResponsiveFooter = ({
                   animate="animate"
                   exit="exit"
                 >
-                  <ToggleButton 
-                    onClick={toggleControls} 
+                  <ToggleButton
+                    onClick={toggleControls}
                     $isOpen={isControlsOpen}
                     $isViewCart={isInCart}
                   >
@@ -230,10 +247,7 @@ export const ResponsiveFooter = ({
               )}
             </AnimatePresence>
 
-            <ControlsContainer 
-              $isViewCart={isInCart} 
-              $isOpen={isControlsOpen}
-            >
+            <ControlsContainer $isViewCart={isInCart} $isOpen={isControlsOpen}>
               <FontTesterControls
                 settings={fontSettings}
                 handleSliderChange={handleSliderChange}
@@ -249,7 +263,7 @@ export const ResponsiveFooter = ({
           </motion.div>
         )}
 
-        {activeTab === 'glyphs' && !isNavigatingHome && (
+        {activeTab === "glyphs" && !isNavigatingHome && (
           <motion.div
             key="glyphs-content"
             variants={contentVariants}

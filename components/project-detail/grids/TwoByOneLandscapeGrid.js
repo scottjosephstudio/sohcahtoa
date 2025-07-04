@@ -1,9 +1,9 @@
 "use client";
 
-import React from 'react';
-import styled from 'styled-components';
-import ProjectImage from '../ProjectImage';
-import { aspectRatios } from '../../../lib/projectUtils';
+import React from "react";
+import styled from "styled-components";
+import ProjectImage from "../ProjectImage";
+import { aspectRatios } from "../../../lib/projectUtils";
 
 const TwoByOneLandscapeGridContainer = styled.div`
   display: grid;
@@ -22,91 +22,91 @@ const TwoByOneLandscapeGridContainer = styled.div`
       grid-column: 1 / span 2;
       grid-row: 1;
     }
-    
+
     & > .image1 {
       grid-column: 1 / span 2;
       grid-row: 2;
     }
-    
+
     & > .image2 {
       grid-column: 1;
       grid-row: 3;
     }
-    
+
     & > .image3 {
       grid-column: 2;
       grid-row: 3;
     }
   }
-    
+
   @media (max-width: 1439px) and (min-width: 1024px) {
     grid-template-columns: repeat(3, 1fr);
-    
+
     & > .image1 {
       grid-column: 1 / span 2;
       grid-row: 1;
     }
-    
+
     & > .image2 {
       grid-column: 1;
       grid-row: 2;
     }
-    
+
     & > .image3 {
       grid-column: 2;
       grid-row: 2;
     }
-    
+
     & > .description {
       grid-column: 3;
       grid-row: 1 / span 2;
     }
   }
-  
+
   @media (max-width: 1023px) and (min-width: 601px) {
     grid-template-columns: repeat(2, 1fr);
     margin-bottom: 30px;
-  
+
     & > .description {
       grid-column: 1 / span 2;
       grid-row: 1;
     }
-    
+
     & > .image1 {
       grid-column: 1 / span 2;
       grid-row: 2;
     }
-    
+
     & > .image2 {
       grid-column: 1;
       grid-row: 3;
     }
-    
+
     & > .image3 {
       grid-column: 2;
       grid-row: 3;
     }
   }
-  
+
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
     margin-bottom: 6px;
-    
+
     & > .description {
       grid-column: 1;
       grid-row: 1;
     }
-     
+
     & > .image1 {
       grid-column: 1;
       grid-row: 2;
     }
-    
+
     & > .image2 {
       grid-column: 1;
       grid-row: 3;
     }
-    
+
     & > .image3 {
       grid-column: 1;
       grid-row: 4;
@@ -114,16 +114,16 @@ const TwoByOneLandscapeGridContainer = styled.div`
   }
 `;
 
-export default function TwoByOneLandscapeGrid({ 
-  descriptionSection, 
-  project, 
-  placeholders, 
-  isExiting 
+export default function TwoByOneLandscapeGrid({
+  descriptionSection,
+  project,
+  placeholders,
+  isExiting,
 }) {
   return (
     <TwoByOneLandscapeGridContainer>
       {descriptionSection}
-      
+
       <ProjectImage
         images={project.imageGroups?.position1}
         aspectRatio={aspectRatios.TwobyOneLandscape.image1}
@@ -133,7 +133,7 @@ export default function TwoByOneLandscapeGrid({
         isExiting={isExiting}
         className="image1"
       />
-      
+
       <ProjectImage
         images={project.imageGroups?.position2}
         aspectRatio={aspectRatios.TwobyOneLandscape.image2}
@@ -143,7 +143,7 @@ export default function TwoByOneLandscapeGrid({
         isExiting={isExiting}
         className="image2"
       />
-      
+
       <ProjectImage
         images={project.imageGroups?.position3}
         aspectRatio={aspectRatios.TwobyOneLandscape.image3}
@@ -155,4 +155,4 @@ export default function TwoByOneLandscapeGrid({
       />
     </TwoByOneLandscapeGridContainer>
   );
-} 
+}

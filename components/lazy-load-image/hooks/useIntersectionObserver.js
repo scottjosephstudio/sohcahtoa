@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export const useIntersectionObserver = (containerRef) => {
   const [isInView, setIsInView] = useState(false);
@@ -16,9 +16,9 @@ export const useIntersectionObserver = (containerRef) => {
       },
       {
         root: null,
-        rootMargin: '50px',
+        rootMargin: "50px",
         threshold: 0.1,
-      }
+      },
     );
 
     const currentRef = containerRef.current;
@@ -35,4 +35,4 @@ export const useIntersectionObserver = (containerRef) => {
   }, [containerRef]);
 
   return isInView;
-}; 
+};

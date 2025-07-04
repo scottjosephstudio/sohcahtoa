@@ -1,5 +1,5 @@
-import styled, { keyframes } from 'styled-components';
-import { motion } from 'framer-motion';
+import styled, { keyframes } from "styled-components";
+import { motion } from "framer-motion";
 
 // Cross-browser text decoration mixins
 const textDecorationMixin = `
@@ -71,7 +71,7 @@ export const PortalContainer = styled.div`
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 45;  // Below modals (60-65) but above tabs/content
+  z-index: 45; // Below modals (60-65) but above tabs/content
 `;
 
 export const typographyBase = `
@@ -89,25 +89,25 @@ export const UserDashboard = styled(motion.div)`
   width: 100%;
   max-width: 100%;
   height: 100vh;
-  background: #e0e0e0;  // Changed to match cart
+  background: #e0e0e0; // Changed to match cart
   z-index: 65;
   display: flex;
   flex-direction: column;
-  
+
   @media (max-width: 768px) {
     /* Use dynamic viewport units that account for browser UI */
     height: 100dvh; /* Dynamic viewport height - adjusts for address bar */
     width: 100dvw; /* Dynamic viewport width */
     min-height: 100svh; /* Small viewport height - minimum space */
     max-height: 100lvh; /* Large viewport height - maximum space */
-    
+
     /* Prevent both Chrome and Safari from adjusting text size */
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
-  
+
   /* Safari-specific fixes for all screen sizes */
   @supports (-webkit-touch-callout: none) {
     @media (max-width: 768px) {
@@ -127,28 +127,30 @@ export const DashboardContent = styled.div`
   position: relative;
   height: 100%;
   overflow-y: auto;
-  background: #e0e0e0;  // Changed to match cart
-  
+  background: #e0e0e0; // Changed to match cart
+
   &::-webkit-scrollbar {
     display: none;
   }
-  
+
   @media (max-width: 768px) {
     /* Use dynamic height that accounts for browser UI */
     height: 100%;
-    max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    max-height: calc(
+      100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+    );
     overflow-y: scroll; /* Force scroll in Chrome */
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     /* Ensure proper touch handling in Chrome */
     touch-action: pan-y;
-    
+
     /* Prevent Chrome from adjusting text size */
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    
+
     /* Force all child elements to maintain specified font sizes */
     * {
       -webkit-text-size-adjust: 100% !important;
@@ -157,7 +159,7 @@ export const DashboardContent = styled.div`
       text-size-adjust: 100% !important;
     }
   }
-  
+
   /* Safari-specific text rendering fixes */
   @supports (-webkit-touch-callout: none) {
     @media (max-width: 768px) {
@@ -165,8 +167,10 @@ export const DashboardContent = styled.div`
       -webkit-overflow-scrolling: touch;
       /* Account for Safari UI elements */
       height: -webkit-fill-available;
-      max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-      
+      max-height: calc(
+        100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+      );
+
       /* Safari text rendering consistency */
       * {
         -webkit-text-size-adjust: 100% !important;
@@ -210,18 +214,16 @@ export const DashboardGrid = styled(motion.div)`
   gap: 20px;
   margin: 0 auto;
   margin-top: -26px;
-    margin-bottom: -24px;
+  margin-bottom: -24px;
 
-   @media (min-width: 1200px) {
+  @media (min-width: 1200px) {
     grid-template-columns: 2fr 1fr;
   }
-  
+
   @media (max-width: 768px) {
     width: 100%;
     grid-template-columns: 1fr;
-
   }
-
 `;
 
 export const FormRow = styled.div`
@@ -229,11 +231,11 @@ export const FormRow = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 24px;
   width: 100%;
-  margin-bottom: ${props => props.isLast ? '0' : '24px'};
-  
+  margin-bottom: ${(props) => (props.isLast ? "0" : "24px")};
+
   @media (max-width: 1200px) {
     grid-template-columns: 1fr;
-    margin-bottom: ${props => props.isLast ? '0' : '16px'};
+    margin-bottom: ${(props) => (props.isLast ? "0" : "16px")};
   }
 `;
 
@@ -254,8 +256,6 @@ export const ModalTitleUserDashboard = styled.span`
   margin: 0;
   text-align: center;
   max-width: 80%; // Prevents text from getting too close to buttons
-
-
 `;
 
 export const CloseButton = styled(motion.button)`
@@ -269,7 +269,9 @@ export const CloseButton = styled(motion.button)`
   cursor: pointer;
   color: rgb(16, 12, 8);
   padding: 8px;
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
   transform: rotate(45deg);
   z-index: 1000;
 `;
@@ -291,7 +293,7 @@ export const LogoutButton = styled.button`
   position: relative;
 
   &:hover {
-    text-shadow: 
+    text-shadow:
       -1px -1px 0 #e0e0e0,
       1px -1px 0 #e0e0e0,
       -1px 1px 0 #e0e0e0,
@@ -327,7 +329,7 @@ export const Section = styled(motion.div)`
 export const UserInfoSection = styled(motion.div)`
   display: flex;
   flex-direction: column;
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
   padding: 24px;
   border-radius: 10px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -341,16 +343,16 @@ export const ListItem = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 12px 0;
-  
+
   &:not(:last-child) {
-  margin-top: 24px;
+    margin-top: 24px;
     border-top: 2px solid rgb(16, 12, 8);
-    border-bottom: 0px solid rgb(16, 12, 8); 
+    border-bottom: 0px solid rgb(16, 12, 8);
   }
 `;
 
 export const PriceText = styled.span`
-  color: rgb(16, 12, 8)
+  color: rgb(16, 12, 8);
 `;
 
 export const DownloadButton = styled(motion.button)`
@@ -366,16 +368,17 @@ export const StyledHR = styled.hr`
   border: none;
   border-top: 2px solid rgb(16, 12, 8);
   margin: 0px 0;
-    margin-bottom: 9px; /* Add margin-bottom here */
+  margin-bottom: 9px; /* Add margin-bottom here */
 `;
 
 export const InputDashboard = styled(motion.input)`
   width: 100%;
   padding: 10px 12px 8px 12px;
   border-radius: 10px;
-  color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
+  color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
   background-color: white;
-  border: 2px solid ${props => props.$hasError ? '#FF0000' : 'rgb(16, 12, 8)'};
+  border: 2px solid
+    ${(props) => (props.$hasError ? "#FF0000" : "rgb(16, 12, 8)")};
   outline: none;
   cursor: pointer;
   font-family: Jant;
@@ -384,11 +387,11 @@ export const InputDashboard = styled(motion.input)`
   letter-spacing: 0.8px;
 
   &::placeholder {
-    color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
+    color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
   }
 
   &:focus {
-    color: ${props => props.$hasError ? '#FF0000' : 'rgb(16, 12, 8)'};
+    color: ${(props) => (props.$hasError ? "#FF0000" : "rgb(16, 12, 8)")};
   }
 
   &:disabled {
@@ -405,27 +408,33 @@ export const InputDashboard = styled(motion.input)`
 
   &:not(:disabled) {
     &:focus {
-      border-color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
+      border-color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
     }
   }
 
   /* Autofill styles */
   &:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
-    -webkit-text-fill-color: ${props => props.$hasError ? '#FF0000' : '#006efe'} !important;
-    border-color: ${props => props.$hasError ? '#FF0000' : 'rgb(16, 12, 8)'} !important;
+    -webkit-text-fill-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "#006efe"} !important;
+    border-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "rgb(16, 12, 8)"} !important;
   }
 
   &:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
-    -webkit-text-fill-color: ${props => props.$hasError ? '#FF0000' : 'rgb(16, 12, 8)'} !important;
-    border-color: ${props => props.$hasError ? '#FF0000' : '#006efe'} !important;
+    -webkit-text-fill-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "rgb(16, 12, 8)"} !important;
+    border-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "#006efe"} !important;
   }
 
   &:-webkit-autofill:hover {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
-    -webkit-text-fill-color: ${props => props.$hasError ? '#FF0000' : '#006efe'} !important;
-    border-color: ${props => props.$hasError ? '#FF0000' : '#006efe'} !important;
+    -webkit-text-fill-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "#006efe"} !important;
+    border-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "#006efe"} !important;
   }
 `;
 
@@ -449,7 +458,6 @@ export const SectionTitleBilling = styled.span`
   }
 `;
 
-
 export const AddressSection = styled.div`
   margin-top: 0px;
   position: relative;
@@ -468,9 +476,9 @@ export const AddressSection = styled.div`
 `;
 
 export const NewsletterSection = styled.div`
-font-size: 20px;
-line-height: 24px;
-letter-spacing: 0.6px;
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: 0.6px;
   margin-top: -30px;
   margin-bottom: -6px;
   display: flex;
@@ -517,12 +525,12 @@ export const Checkbox = styled(motion.input)`
 
   &:disabled {
     opacity: 1;
-      cursor: normal;
+    cursor: normal;
     background-color: rgb(16, 12, 8);
     pointer-events: all !important;
 
     &:hover {
-       cursor: normal;
+      cursor: normal;
       background-color: rgb(16, 12, 8);
     }
 
@@ -541,8 +549,8 @@ export const SaveButton = styled(motion.button)`
   border: 2px solid rgb(16, 12, 8);
   color: #f9f9f9;
   border-radius: 10px;
-  cursor: ${props => props.disabled ? 'default' : "pointer"};
-  opacity: ${props => props.disabled ? 0.7 : 1};
+  cursor: ${(props) => (props.disabled ? "default" : "pointer")};
+  opacity: ${(props) => (props.disabled ? 0.7 : 1)};
   margin-top: 24px; /* Add margin-top to create space */
 `;
 
@@ -554,8 +562,8 @@ export const dashboardVariants = {
     transition: {
       opacity: { duration: 0.2 },
       scale: { duration: 0.2 },
-      when: "afterChildren"
-    }
+      when: "afterChildren",
+    },
   },
   visible: {
     opacity: 1,
@@ -565,35 +573,35 @@ export const dashboardVariants = {
       scale: { duration: 0.3, ease: "easeOut" },
       when: "beforeChildren",
       staggerChildren: 0.1,
-      delayChildren: 0.1
-    }
-  }
+      delayChildren: 0.1,
+    },
+  },
 };
 
 export const contentVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
     y: 20,
     transition: {
-      duration: 0.2
-    }
+      duration: 0.2,
+    },
   },
-  visible: { 
+  visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     opacity: 0,
     y: -20,
     transition: {
       duration: 0.2,
-      ease: "easeInOut"
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
 
 export const formContentVariants = {
@@ -602,8 +610,8 @@ export const formContentVariants = {
     scale: 1,
     transition: {
       duration: 0.2,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     opacity: 0,
@@ -611,9 +619,9 @@ export const formContentVariants = {
     transition: {
       type: "tween",
       duration: 0.2,
-      ease: "easeInOut"
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
 
 export const headerElementsVariants = {
@@ -621,8 +629,8 @@ export const headerElementsVariants = {
     opacity: 0,
     y: -20,
     transition: {
-      duration: 0.2
-    }
+      duration: 0.2,
+    },
   },
   visible: {
     opacity: 1,
@@ -630,35 +638,34 @@ export const headerElementsVariants = {
     transition: {
       delay: 0.3,
       duration: 0.3,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     opacity: 0,
     y: -10,
     transition: {
       duration: 0.2,
-      ease: "easeInOut"
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
-
 
 export const loginPanelVariants = {
   hidden: {
     opacity: 0,
     scale: 0,
     transition: {
-      duration: 0.2
-    }
+      duration: 0.2,
+    },
   },
   visible: {
     opacity: 1,
     scale: 1,
     transition: {
       duration: 0.2,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     opacity: 0,
@@ -666,11 +673,10 @@ export const loginPanelVariants = {
     transition: {
       type: "tween", // Changed to tween for smoother exit
       duration: 0.2,
-      ease: "easeInOut"
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
-
 
 // Cart Components
 export const CartContainer = styled(motion.div)`
@@ -715,18 +721,20 @@ export const CartDetails = styled(motion.div)`
   min-width: 278px;
   z-index: 50;
   transform-origin: var(--transform-origin);
-  transition: left 0.2s ease, top 0.3s ease;
+  transition:
+    left 0.2s ease,
+    top 0.3s ease;
 
   // CSS custom properties for dynamic values
   --transform-origin: top right;
   --right: 48px;
   --top: calc(100%);
-  
+
   right: var(--right);
   top: var(--top);
-  
+
   @media (min-width: 1024px) {
-    --right: 50px;  
+    --right: 50px;
     --top: 0;
   }
 
@@ -734,7 +742,9 @@ export const CartDetails = styled(motion.div)`
     --transform-origin: top right;
     --right: 0;
     --top: calc(100% + 16px);
-    transition: right 0.2s ease, bottom 0.3s ease;
+    transition:
+      right 0.2s ease,
+      bottom 0.3s ease;
   }
 
   @media (max-width: 600px) {
@@ -745,7 +755,7 @@ export const CartDetails = styled(motion.div)`
 export const CartContent = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 24px;  // Exact 12px gap between columns
+  gap: 24px; // Exact 12px gap between columns
 `;
 
 export const TextColumn = styled.div`
@@ -779,10 +789,10 @@ export const RemoveButton = styled(motion.button)`
   letter-spacing: 0.8px;
   text-align: left;
   width: fit-content;
-  font-family: 'Jant', sans-serif;
+  font-family: "Jant", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
+
   span:hover {
     text-decoration: underline;
     text-decoration-thickness: 2px;
@@ -810,26 +820,26 @@ export const MobileRemoveButton = styled(motion.button)`
 
 // Animation variants for consistent behavior
 export const mobileButtonVariants = {
-  hidden: { 
+  hidden: {
     scale: 0,
-    opacity: 0
+    opacity: 0,
   },
-  visible: { 
+  visible: {
     scale: 1,
     opacity: 1,
     transition: {
-      type: 'spring',
+      type: "spring",
       duration: 0.2,
-      bounce: 0.2
-    }
+      bounce: 0.2,
+    },
   },
-  exit: { 
+  exit: {
     scale: 0,
     opacity: 0,
     transition: {
-      duration: 0.2
-    }
-  }
+      duration: 0.2,
+    },
+  },
 };
 
 export const GoToCartButton = styled(motion.button)`
@@ -845,8 +855,6 @@ export const GoToCartButton = styled(motion.button)`
   letter-spacing: 0.8px;
 `;
 
-
-
 // Login Components
 export const LoginContainer = styled(motion.div)`
   position: fixed;
@@ -857,8 +865,8 @@ export const LoginContainer = styled(motion.div)`
   z-index: 0;
 
   @media (max-width: 768px) {
-    left: ${props => props.$isTypefaces ? '50%' : '20px'};
-    transform: ${props => props.$isTypefaces ? 'translateX(-50%)' : 'none'};
+    left: ${(props) => (props.$isTypefaces ? "50%" : "20px")};
+    transform: ${(props) => (props.$isTypefaces ? "translateX(-50%)" : "none")};
   }
 `;
 
@@ -910,12 +918,12 @@ export const LoginModalOverlay = styled(motion.div)`
   cursor: pointer;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  pointer-events: auto !important;  /* Force this to be always active */
-  
+  pointer-events: auto !important; /* Force this to be always active */
+
   /* Prevent mobile layout shifts and scrolling issues */
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  
+
   /* Ensure fixed positioning on mobile */
   @media (max-width: 768px) {
     position: fixed;
@@ -982,7 +990,7 @@ export const LoginSubmitButton = styled.button`
   ${fontNormalization}
   ${typographyBase}
   width: 100%;
-   padding: 10px 12px 8px 12px;
+  padding: 10px 12px 8px 12px;
   border: 2px solid #006efe;
   color: #f9f9f9;
   background-color: #006efe;
@@ -992,15 +1000,13 @@ export const LoginSubmitButton = styled.button`
   margin-bottom: 0px;
   transition: background-color 0.2s;
   position: relative;
-  
+
   &:hover {
     background-color: rgb(16, 12, 8);
     border: 2px solid #006efe;
     color: #f9f9f9;
     cursor: pointer;
   }
-
-
 `;
 
 export const ResetPasswordLink = styled(motion.button)`
@@ -1016,7 +1022,7 @@ export const ResetPasswordLink = styled(motion.button)`
   width: 100%;
   text-align: center;
   ${textDecorationNone}
-  
+
   span:hover {
     text-decoration: underline;
     text-decoration-thickness: 2px;
@@ -1066,16 +1072,22 @@ export const SuccessMessage = styled(motion.div)`
   animation-fill-mode: forwards; /* Ensure the animation stays in the final state */
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0px;
     left: 0px;
     right: 0px;
     bottom: 0px;
     border-radius: 10px;
-    background: linear-gradient(45deg, 
-      #a0a0a0, #ffffff, #707070, 
-      #ffffff, #a0a0a0, #ffffff);
+    background: linear-gradient(
+      45deg,
+      #a0a0a0,
+      #ffffff,
+      #707070,
+      #ffffff,
+      #a0a0a0,
+      #ffffff
+    );
     background-size: 300%;
     z-index: -1;
     animation: ${glowing} 3s linear infinite;
@@ -1175,37 +1187,39 @@ export const DashboardLabel = styled.label`
   }
 `;
 
-
 export const Input = styled.input`
   ${typographyBase}
   width: 100%;
   padding: 10px 12px 8px 12px;
   border-radius: 10px;
   margin-bottom: 0px;
-  color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
+  color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
   background-color: #f9f9f9;
-  border: 2px solid ${props => props.$hasError ? '#FF0000' : '#f9f9f9;'};
+  border: 2px solid ${(props) => (props.$hasError ? "#FF0000" : "#f9f9f9;")};
   outline: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
   position: relative;
-  z-index: ${props => props.$hasError ? '502' : '1'};
+  z-index: ${(props) => (props.$hasError ? "502" : "1")};
 
   @media (min-width: 1420px) {
     ${typographyBase}
   }
 
   &::placeholder {
-    color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
+    color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
     transition: color 0.2s ease;
   }
 
   &:hover {
     color: #f9f9f9;
     background-color: rgb(16, 12, 8);
-    border: 2px solid ${props => props.$hasError ? '#FF0000' : '#006efe'};
+    border: 2px solid ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
     cursor: pointer;
   }
 
@@ -1213,17 +1227,19 @@ export const Input = styled.input`
     color: #f9f9f9;
   }
 
-  
   &:-webkit-autofill {
-    font-family: 'Jant';
+    font-family: "Jant";
   }
 
   &:-webkit-autofill,
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus {
-    -webkit-text-fill-color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
+    -webkit-text-fill-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "#006efe"};
     -webkit-box-shadow: 0 0 0px 1000px #f9f9f9 inset;
-    transition: background-color 0s 600000s, color 0.2s ease;
+    transition:
+      background-color 0s 600000s,
+      color 0.2s ease;
   }
 
   &:-webkit-autofill:hover {
@@ -1232,8 +1248,8 @@ export const Input = styled.input`
   }
 
   &:focus {
-    color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
-    border: 2px solid ${props => props.$hasError ? '#FF0000' : '#006efe'};
+    color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
+    border: 2px solid ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
   }
 `;
 
@@ -1250,15 +1266,15 @@ export const TogglePasswordButton = styled(motion.button)`
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: ${props => props.disabled ? 'rgba(0, 110, 254, 0.7)' : '#006efe'};
-  cursor: ${props => props.disabled ? "default" : "pointer"};
+  color: ${(props) => (props.disabled ? "rgba(0, 110, 254, 0.7)" : "#006efe")};
+  cursor: ${(props) => (props.disabled ? "default" : "pointer")};
   font-size: 20px;
   letter-spacing: 0.8px;
   line-height: 24px;
   padding: 0;
   z-index: 501;
-  pointer-events: ${props => props.disabled ? 'all' : 'auto'};
-  opacity: ${props => props.disabled ? 0.7 : 1};
+  pointer-events: ${(props) => (props.disabled ? "all" : "auto")};
+  opacity: ${(props) => (props.disabled ? 0.7 : 1)};
 
   &:disabled {
     &:hover {
@@ -1270,10 +1286,9 @@ export const TogglePasswordButton = styled(motion.button)`
 
 // Add to Cart Components
 export const AddToCartContainer = styled(motion.div)`
-
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-    z-index: 45;
+  z-index: 45;
 `;
 
 export const AddToCartButton = styled(motion.button)`
@@ -1286,14 +1301,16 @@ export const AddToCartButton = styled(motion.button)`
   color: #f9f9f9;
   border: 2px solid rgb(16, 12, 8);
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-  
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+
   /* Ensure consistent height regardless of content */
   min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   /* Target the span that wraps the content */
   span {
     display: flex;
@@ -1302,25 +1319,25 @@ export const AddToCartButton = styled(motion.button)`
     height: 100%;
     width: 100%;
   }
-  
+
   /* Icon sizing - different scales for different icons */
   svg {
     flex-shrink: 0;
     display: block;
   }
-  
+
   /* Plus icon - needs to be smaller to fit properly */
   svg#a {
     width: 22px;
     height: 18px;
   }
-  
+
   /* Eye icon - can be larger */
   svg:not(#a) {
     width: 28px;
     height: 22px;
   }
-  
+
   @media (min-width: 1420px) {
     ${typographyBase}
   }
@@ -1335,234 +1352,230 @@ export const AddToCartButton = styled(motion.button)`
 // Animation Variants
 export const cartCountVariants = {
   hidden: { scale: 0, opacity: 0 },
-  visible: { 
-    scale: 1, 
+  visible: {
+    scale: 1,
     opacity: 1,
-    transition: { type: 'spring', duration: 0.2, bounce: 0.2 }
+    transition: { type: "spring", duration: 0.2, bounce: 0.2 },
   },
-  exit: { 
-    scale: 0, 
+  exit: {
+    scale: 0,
     opacity: 0,
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const cartDetailsVariants = {
-  hidden: { 
+  hidden: {
     scale: 0,
     opacity: 0,
     x: -20,
-    transition: {duration: 0.2}
+    transition: { duration: 0.2 },
   },
-  visible: { 
+  visible: {
     scale: 1,
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.2
-    }
+      duration: 0.2,
+    },
   },
-  exit: { 
+  exit: {
     scale: 0,
     opacity: 0,
     x: -20,
     transition: {
-      duration: 0.2
-    }
-  }
+      duration: 0.2,
+    },
+  },
 };
 
 export const buttonVariants = {
-  hover: { 
+  hover: {
     y: 0,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
-  tap: { 
+  tap: {
     y: 0,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   initial: {
-    y: 0
-  }
+    y: 0,
+  },
 };
 
 export const hoverButtonVariants = {
   initial: {
     backgroundColor: "rgb(16, 12, 8)",
     borderColor: "rgb(16, 12, 8)",
-    color: "#f9f9f9"
+    color: "#f9f9f9",
   },
   hover: {
     backgroundColor: "#006efe",
-    borderColor: "#006efe", 
+    borderColor: "#006efe",
     color: "#f9f9f9",
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   tap: {
     backgroundColor: "#006efe",
     borderColor: "#006efe",
     color: "#f9f9f9",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const removeButtonVariants = {
   initial: {
-    color: "rgb(16, 12, 8)"
+    color: "rgb(16, 12, 8)",
   },
   hover: {
     color: "rgb(16, 12, 8)",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const loginButtonVariants = {
   initial: {
-    color: "rgb(16, 12, 8)"
+    color: "rgb(16, 12, 8)",
   },
   hover: {
     color: "rgb(16, 12, 8)",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const mobileRemoveButtonVariants = {
   initial: {
-    color: "rgb(16, 12, 8)"
+    color: "rgb(16, 12, 8)",
   },
   hover: {
     color: "#006efe",
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   tap: {
     color: "#006efe",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const downloadButtonVariants = {
   initial: {
     color: "#006efe",
-    textDecoration: "none"
+    textDecoration: "none",
   },
   hover: {
     color: "#006efe",
     textDecoration: "underline",
     textDecorationThickness: "2px",
     textUnderlineOffset: "3px",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const checkboxVariants = {
   initial: {
-    backgroundColor: '#ccc'
+    backgroundColor: "#ccc",
   },
   hover: {
-    backgroundColor: '#ccc',
-    transition: { duration: 0.2 }
+    backgroundColor: "#ccc",
+    transition: { duration: 0.2 },
   },
   checked: {
-    backgroundColor: '#006efe',
-    transition: { duration: 0.2 }
-  }
+    backgroundColor: "#006efe",
+    transition: { duration: 0.2 },
+  },
 };
 
 export const dashboardCheckboxVariants = {
   initial: (props) => ({
-    backgroundColor: props.isEditMode ? 'rgba(255, 255, 255, 0.5)' : '#006efe',
-    borderColor: props.isEditMode ? 'rgb(169, 169, 169)' : '#006efe',
-    opacity: props.isEditMode ? 1 : 0.5,
-    scale: 1
-  }),
-  hover: (props) => ({
-    backgroundColor: props.isEditMode ? 'rgb(16, 12, 8)' : '#006efe',
-    borderColor: props.isEditMode ? 'rgb(16, 12, 8)' : '#006efe',
-    opacity: props.isEditMode ? 1 : 0.5,
-    scale: props.isEditMode ? 1.05 : 1,
-    transition: { duration: 0.2 }
-  }),
-  checked: (props) => ({
-    backgroundColor: '#006efe',
-    borderColor: '#006efe',
+    backgroundColor: props.isEditMode ? "rgba(255, 255, 255, 0.5)" : "#006efe",
+    borderColor: props.isEditMode ? "rgb(169, 169, 169)" : "#006efe",
     opacity: props.isEditMode ? 1 : 0.5,
     scale: 1,
-    transition: { duration: 0.2 }
   }),
-  checkedHover: (props) => ({
-    backgroundColor: props.isEditMode ? '#0056cc' : '#006efe',
-    borderColor: props.isEditMode ? '#0056cc' : '#006efe',
+  hover: (props) => ({
+    backgroundColor: props.isEditMode ? "rgb(16, 12, 8)" : "#006efe",
+    borderColor: props.isEditMode ? "rgb(16, 12, 8)" : "#006efe",
     opacity: props.isEditMode ? 1 : 0.5,
     scale: props.isEditMode ? 1.05 : 1,
-    transition: { duration: 0.2 }
-  })
+    transition: { duration: 0.2 },
+  }),
+  checked: (props) => ({
+    backgroundColor: "#006efe",
+    borderColor: "#006efe",
+    opacity: props.isEditMode ? 1 : 0.5,
+    scale: 1,
+    transition: { duration: 0.2 },
+  }),
+  checkedHover: (props) => ({
+    backgroundColor: props.isEditMode ? "#0056cc" : "#006efe",
+    borderColor: props.isEditMode ? "#0056cc" : "#006efe",
+    opacity: props.isEditMode ? 1 : 0.5,
+    scale: props.isEditMode ? 1.05 : 1,
+    transition: { duration: 0.2 },
+  }),
 };
 
 export const inputVariants = {
   initial: {
-    borderColor: "rgb(16, 12, 8)"
+    borderColor: "rgb(16, 12, 8)",
   },
   hover: {
     borderColor: "#006efe",
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   focus: {
     borderColor: "#006efe",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const togglePasswordVariants = {
   initial: {
-    color: "#006efe"
+    color: "#006efe",
   },
   hover: {
     color: "rgb(16, 12, 8)",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const saveButtonVariants = {
   initial: {
     backgroundColor: "rgb(16, 12, 8)",
-    borderColor: "rgb(16, 12, 8)"
+    borderColor: "rgb(16, 12, 8)",
   },
   hover: {
     backgroundColor: "#006efe",
     borderColor: "#006efe",
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   disabled: {
     backgroundColor: "rgb(16, 12, 8)",
     borderColor: "rgb(16, 12, 8)",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const cartCountHoverVariants = {
   initial: {
     backgroundColor: "rgb(16, 12, 8)",
-    color: "#f9f9f9"
+    color: "#f9f9f9",
   },
   hover: {
     backgroundColor: "#006efe",
     color: "#f9f9f9",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const svgIconVariants = {
   initial: (props) => ({
-    fill: props.$isTypefacePath ? 'rgb(16, 12, 8)' : '#39ff14',
-    color: props.$isTypefacePath ? 'rgb(16, 12, 8)' : '#39ff14'
+    fill: props.$isTypefacePath ? "rgb(16, 12, 8)" : "#39ff14",
+    color: props.$isTypefacePath ? "rgb(16, 12, 8)" : "#39ff14",
   }),
   hover: (props) => ({
-    fill: props.$isTypefacePath ? '#006efe' : 'rgb(169, 169, 169)',
-    color: props.$isTypefacePath ? '#006efe' : 'rgb(169, 169, 169)',
-    transition: { duration: 0.2 }
-  })
+    fill: props.$isTypefacePath ? "#006efe" : "rgb(169, 169, 169)",
+    color: props.$isTypefacePath ? "#006efe" : "rgb(169, 169, 169)",
+    transition: { duration: 0.2 },
+  }),
 };
-
-
-
-

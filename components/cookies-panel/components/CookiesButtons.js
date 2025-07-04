@@ -1,10 +1,16 @@
-import React from 'react';
-import { ButtonContainer, AcceptButton, DeclineButton, acceptButtonVariants, declineButtonVariants } from '../styles';
+import React from "react";
+import {
+  ButtonContainer,
+  AcceptButton,
+  DeclineButton,
+  acceptButtonVariants,
+  declineButtonVariants,
+} from "../styles";
 
 export default function CookiesButtons({ onAccept, onDecline }) {
   return (
     <ButtonContainer>
-      <AcceptButton 
+      <AcceptButton
         onClick={onAccept}
         variants={acceptButtonVariants}
         initial="initial"
@@ -13,7 +19,7 @@ export default function CookiesButtons({ onAccept, onDecline }) {
       >
         Accept All
       </AcceptButton>
-      <DeclineButton 
+      <DeclineButton
         onClick={onDecline}
         variants={declineButtonVariants}
         initial="initial"
@@ -24,4 +30,4 @@ export default function CookiesButtons({ onAccept, onDecline }) {
       </DeclineButton>
     </ButtonContainer>
   );
-} 
+}

@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 export const HamburgerContainer = styled.div`
   position: fixed;
@@ -7,14 +7,16 @@ export const HamburgerContainer = styled.div`
   left: 20px;
   z-index: 1000;
   display: none;
-  -webkit-mix-blend-mode: ${({ $isOnTypefaces }) => $isOnTypefaces ? 'normal' : 'difference'};
-  mix-blend-mode: ${({ $isOnTypefaces }) => $isOnTypefaces ? 'normal' : 'difference'};
+  -webkit-mix-blend-mode: ${({ $isOnTypefaces }) =>
+    $isOnTypefaces ? "normal" : "difference"};
+  mix-blend-mode: ${({ $isOnTypefaces }) =>
+    $isOnTypefaces ? "normal" : "difference"};
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   will-change: transform;
-  
+
   @media (max-width: 768px) {
     display: block;
   }
@@ -55,4 +57,4 @@ export const SvgIcon = styled(motion.svg)`
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   will-change: transform;
-`; 
+`;

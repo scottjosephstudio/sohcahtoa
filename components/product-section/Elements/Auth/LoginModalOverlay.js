@@ -1,8 +1,8 @@
 // LoginModalOverlay.jsx
-import React from 'react';
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
-import { LoginModalOverlay as StyledOverlay } from '../../Controller/ProductPage_Styles';
+import React from "react";
+import { motion } from "framer-motion";
+import styled from "styled-components";
+import { LoginModalOverlay as StyledOverlay } from "../../Controller/ProductPage_Styles";
 
 // Force pointer-events to always be active
 const ClickableOverlay = styled(StyledOverlay)`

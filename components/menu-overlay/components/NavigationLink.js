@@ -1,6 +1,6 @@
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
 // Custom Link component with motion variants instead of CSS hover
 const NavigationLink = ({ href, label, underline = false, onClick = null }) => {
@@ -9,24 +9,24 @@ const NavigationLink = ({ href, label, underline = false, onClick = null }) => {
 
   if (isCurrentPage) {
     return (
-      <span 
-        style={{ 
-          color: 'white', 
-          cursor: 'default',
-          fontSize: '20px',
-          lineHeight: '24px',
-          letterSpacing: '0.6px',
-          textDecoration: 'underline',
-          textDecorationColor: '#39ff14',
-          textDecorationThickness: '2px',
-          textUnderlineOffset: '3px',
-          transition: 'color 0.3s ease',
-          whiteSpace: 'pre-line',
-          WebkitTextSizeAdjust: '100%',
-          MozTextSizeAdjust: '100%',
-          msTextSizeAdjust: '100%',
-          textSizeAdjust: '100%',
-          WebkitTapHighlightColor: 'transparent'
+      <span
+        style={{
+          color: "white",
+          cursor: "default",
+          fontSize: "20px",
+          lineHeight: "24px",
+          letterSpacing: "0.6px",
+          textDecoration: "underline",
+          textDecorationColor: "#39ff14",
+          textDecorationThickness: "2px",
+          textUnderlineOffset: "3px",
+          transition: "color 0.3s ease",
+          whiteSpace: "pre-line",
+          WebkitTextSizeAdjust: "100%",
+          MozTextSizeAdjust: "100%",
+          msTextSizeAdjust: "100%",
+          textSizeAdjust: "100%",
+          WebkitTapHighlightColor: "transparent",
         }}
       >
         {label}
@@ -41,43 +41,43 @@ const NavigationLink = ({ href, label, underline = false, onClick = null }) => {
       whileTap="hover"
       variants={{
         initial: {
-          color: 'white',
-          textDecorationLine: underline ? 'underline' : 'none',
-          textDecorationColor: '#39ff14',
-          textDecorationThickness: '2px',
-          textUnderlineOffset: '3px'
+          color: "white",
+          textDecorationLine: underline ? "underline" : "none",
+          textDecorationColor: "#39ff14",
+          textDecorationThickness: "2px",
+          textUnderlineOffset: "3px",
         },
         hover: {
-          color: 'white',
-          textDecorationLine: 'underline',
-          textDecorationColor: '#39ff14',
-          textDecorationThickness: '2px',
-          textUnderlineOffset: '3px',
-          transition: { duration: 0.2 }
-        }
+          color: "white",
+          textDecorationLine: "underline",
+          textDecorationColor: "#39ff14",
+          textDecorationThickness: "2px",
+          textUnderlineOffset: "3px",
+          transition: { duration: 0.2 },
+        },
       }}
       style={{
-        fontSize: '20px',
-        lineHeight: '24px',
-        letterSpacing: '0.6px',
-        whiteSpace: 'pre-line',
-        WebkitTextSizeAdjust: '100%',
-        MozTextSizeAdjust: '100%',
-        msTextSizeAdjust: '100%',
-        textSizeAdjust: '100%',
-        WebkitTapHighlightColor: 'transparent',
-        touchAction: 'manipulation'
+        fontSize: "20px",
+        lineHeight: "24px",
+        letterSpacing: "0.6px",
+        whiteSpace: "pre-line",
+        WebkitTextSizeAdjust: "100%",
+        MozTextSizeAdjust: "100%",
+        msTextSizeAdjust: "100%",
+        textSizeAdjust: "100%",
+        WebkitTapHighlightColor: "transparent",
+        touchAction: "manipulation",
       }}
     >
-      <Link 
-        href={href} 
+      <Link
+        href={href}
         onClick={onClick}
-        style={{ 
-          color: 'inherit',
-          textDecoration: 'inherit',
-          textDecorationColor: 'inherit',
-          textDecorationThickness: 'inherit',
-          textUnderlineOffset: 'inherit'
+        style={{
+          color: "inherit",
+          textDecoration: "inherit",
+          textDecorationColor: "inherit",
+          textDecorationThickness: "inherit",
+          textUnderlineOffset: "inherit",
         }}
       >
         {label}
@@ -86,4 +86,4 @@ const NavigationLink = ({ href, label, underline = false, onClick = null }) => {
   );
 };
 
-export default NavigationLink; 
+export default NavigationLink;

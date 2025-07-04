@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 const Tooltip = styled(motion.div)`
   position: absolute;
@@ -7,14 +7,14 @@ const Tooltip = styled(motion.div)`
   left: 54%;
   transform: translateX(-50%);
   background-color: ${({ $isTypefacesPage, $isIDPath }) => {
-    if ($isIDPath) return '#006efe';
-    if ($isTypefacesPage) return 'rgb(16, 12, 8)';
-    return 'white';
+    if ($isIDPath) return "#006efe";
+    if ($isTypefacesPage) return "rgb(16, 12, 8)";
+    return "white";
   }};
   color: ${({ $isTypefacesPage, $isIDPath }) => {
-    if ($isIDPath) return 'white';
-    if ($isTypefacesPage) return 'white';
-    return 'rgb(16, 12, 8)';
+    if ($isIDPath) return "white";
+    if ($isTypefacesPage) return "white";
+    return "rgb(16, 12, 8)";
   }};
   padding: 10px 10px;
   border-radius: 8px;
@@ -27,4 +27,4 @@ const Tooltip = styled(motion.div)`
   mix-blend-mode: normal; /* Override parent's blend mode for tooltip */
 `;
 
-export default Tooltip; 
+export default Tooltip;

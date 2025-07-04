@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { 
-  CardNumberElement, 
-  CardExpiryElement, 
-  CardCvcElement 
-} from '@stripe/react-stripe-js';
-import { AnimatePresence } from 'framer-motion';
+import React from "react";
+import PropTypes from "prop-types";
+import {
+  CardNumberElement,
+  CardExpiryElement,
+  CardCvcElement,
+} from "@stripe/react-stripe-js";
+import { AnimatePresence } from "framer-motion";
 import {
   InputContainer,
   CustomPlaceholder,
@@ -14,19 +14,17 @@ import {
   CardNumberContainer,
   ExpiryAndCVVContainer,
   baseStyles,
-  inputContainerVariants
-} from '@/components/cart/PaymentSection/PaymentSectionStyles';
+  inputContainerVariants,
+} from "@/components/cart/PaymentSection/PaymentSectionStyles";
 
-export const CardNumberInput = ({ 
-  placeholderVisible, 
-  onElementChange, 
-  error 
+export const CardNumberInput = ({
+  placeholderVisible,
+  onElementChange,
+  error,
 }) => (
   <CardNumberContainer>
-    <Label name="cardNumber">
-      Card Number
-    </Label>
-    <InputContainer 
+    <Label name="cardNumber">Card Number</Label>
+    <InputContainer
       $hasError={!!error}
       variants={inputContainerVariants}
       initial="initial"
@@ -35,7 +33,7 @@ export const CardNumberInput = ({
     >
       <div className="custom-placeholder-wrapper">
         {placeholderVisible && (
-          <CustomPlaceholder 
+          <CustomPlaceholder
             $visible={placeholderVisible}
             className="placeholder"
           >
@@ -43,42 +41,36 @@ export const CardNumberInput = ({
           </CustomPlaceholder>
         )}
         <CardNumberElement
-          options={{ 
+          options={{
             style: {
               ...baseStyles,
               invalid: {
-                color: '#FF0000',
-                iconColor: '#FF0000'
-              }
+                color: "#FF0000",
+                iconColor: "#FF0000",
+              },
             },
-            placeholder: ''
+            placeholder: "",
           }}
           onChange={onElementChange}
         />
       </div>
     </InputContainer>
     <AnimatePresence>
-      {error && (
-        <StripeErrorMessage>
-          {error}
-        </StripeErrorMessage>
-      )}
+      {error && <StripeErrorMessage>{error}</StripeErrorMessage>}
     </AnimatePresence>
   </CardNumberContainer>
 );
 
-export const CardExpiryAndCVCInputs = ({ 
-  placeholderStates, 
-  onElementChange, 
-  errors 
+export const CardExpiryAndCVCInputs = ({
+  placeholderStates,
+  onElementChange,
+  errors,
 }) => (
   <ExpiryAndCVVContainer>
     {/* Expiry Input */}
     <div style={{ flex: 1 }}>
-      <Label name="expiry">
-        Expiry
-      </Label>
-      <InputContainer 
+      <Label name="expiry">Expiry</Label>
+      <InputContainer
         $hasError={!!errors.cardExpiry}
         variants={inputContainerVariants}
         initial="initial"
@@ -87,7 +79,7 @@ export const CardExpiryAndCVCInputs = ({
       >
         <div className="custom-placeholder-wrapper">
           {placeholderStates.cardExpiry && (
-            <CustomPlaceholder 
+            <CustomPlaceholder
               $visible={placeholderStates.cardExpiry}
               className="placeholder"
             >
@@ -95,17 +87,17 @@ export const CardExpiryAndCVCInputs = ({
             </CustomPlaceholder>
           )}
           <CardExpiryElement
-            options={{ 
+            options={{
               style: {
                 ...baseStyles,
                 invalid: {
-                  color: '#FF0000',
-                  iconColor: '#FF0000'
-                }
+                  color: "#FF0000",
+                  iconColor: "#FF0000",
+                },
               },
-              placeholder: ''
+              placeholder: "",
             }}
-            onChange={(event) => onElementChange('cardExpiry', event)}
+            onChange={(event) => onElementChange("cardExpiry", event)}
           />
         </div>
       </InputContainer>
@@ -125,10 +117,8 @@ export const CardExpiryAndCVCInputs = ({
 
     {/* CVC Input */}
     <div style={{ flex: 1 }}>
-      <Label name="cvc">
-        CVC
-      </Label>
-      <InputContainer 
+      <Label name="cvc">CVC</Label>
+      <InputContainer
         $hasError={!!errors.cardCvc}
         variants={inputContainerVariants}
         initial="initial"
@@ -137,7 +127,7 @@ export const CardExpiryAndCVCInputs = ({
       >
         <div className="custom-placeholder-wrapper">
           {placeholderStates.cardCvc && (
-            <CustomPlaceholder 
+            <CustomPlaceholder
               $visible={placeholderStates.cardCvc}
               className="placeholder"
             >
@@ -145,17 +135,17 @@ export const CardExpiryAndCVCInputs = ({
             </CustomPlaceholder>
           )}
           <CardCvcElement
-            options={{ 
+            options={{
               style: {
                 ...baseStyles,
                 invalid: {
-                  color: '#FF0000',
-                  iconColor: '#FF0000'
-                }
+                  color: "#FF0000",
+                  iconColor: "#FF0000",
+                },
               },
-              placeholder: ''
+              placeholder: "",
             }}
-            onChange={(event) => onElementChange('cardCvc', event)}
+            onChange={(event) => onElementChange("cardCvc", event)}
           />
         </div>
       </InputContainer>
@@ -178,13 +168,13 @@ export const CardExpiryAndCVCInputs = ({
 CardExpiryAndCVCInputs.propTypes = {
   placeholderStates: PropTypes.shape({
     cardExpiry: PropTypes.bool.isRequired,
-    cardCvc: PropTypes.bool.isRequired
+    cardCvc: PropTypes.bool.isRequired,
   }).isRequired,
   onElementChange: PropTypes.func.isRequired,
   errors: PropTypes.shape({
     cardExpiry: PropTypes.string,
-    cardCvc: PropTypes.string
-  }).isRequired
+    cardCvc: PropTypes.string,
+  }).isRequired,
 };
 
 export default { CardNumberInput, CardExpiryAndCVCInputs };

@@ -1,5 +1,5 @@
-import styled, { keyframes } from 'styled-components';
-import { motion } from 'framer-motion';
+import styled, { keyframes } from "styled-components";
+import { motion } from "framer-motion";
 
 // Animations
 export const slideIn = keyframes`
@@ -36,7 +36,8 @@ export const CookiesContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
   max-width: 380px;
-  animation: ${props => props.$isExiting ? slideOut : slideIn} 0.5s ease forwards;
+  animation: ${(props) => (props.$isExiting ? slideOut : slideIn)} 0.5s ease
+    forwards;
   transform: translateZ(0);
   backface-visibility: hidden;
   will-change: transform, opacity;
@@ -116,38 +117,38 @@ export const DebugButton = styled.button`
 // Motion variants for button interactions
 export const acceptButtonVariants = {
   initial: {
-    backgroundColor: '#39ff14',
-    color: 'rgb(16, 12, 8)',
+    backgroundColor: "#39ff14",
+    color: "rgb(16, 12, 8)",
     scale: 1,
   },
   hover: {
-    backgroundColor: 'white',
-    color: 'rgb(16, 12, 8)',
+    backgroundColor: "white",
+    color: "rgb(16, 12, 8)",
     scale: 1,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   tap: {
     scale: 1,
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const declineButtonVariants = {
   initial: {
-    backgroundColor: 'transparent',
-    borderColor: 'white',
-    color: 'white',
+    backgroundColor: "transparent",
+    borderColor: "white",
+    color: "white",
     scale: 1,
   },
   hover: {
-    backgroundColor: 'white',
-    borderColor: 'white',
-    color: 'rgb(16, 12, 8)',
+    backgroundColor: "white",
+    borderColor: "white",
+    color: "rgb(16, 12, 8)",
     scale: 1,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   tap: {
     scale: 1,
-    transition: { duration: 0.2 }
-  }
-}; 
+    transition: { duration: 0.2 },
+  },
+};

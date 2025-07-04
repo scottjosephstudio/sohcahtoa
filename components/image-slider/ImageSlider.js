@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect } from 'react';
-import { SliderContainer } from './styles/SliderStyles';
-import SliderImage from './components/SliderImage';
-import SliderCaption from './components/SliderCaption';
-import SliderControls from './components/SliderControls';
-import { useSliderState } from './hooks/useSliderState';
-import { useCaptionHeight } from './hooks/useCaptionHeight';
-import { getAspectRatioPercentage } from './utils/aspectRatioUtils';
-import { getImageSrc } from '../../lib/projectUtils';
+import React, { useEffect } from "react";
+import { SliderContainer } from "./styles/SliderStyles";
+import SliderImage from "./components/SliderImage";
+import SliderCaption from "./components/SliderCaption";
+import SliderControls from "./components/SliderControls";
+import { useSliderState } from "./hooks/useSliderState";
+import { useCaptionHeight } from "./hooks/useCaptionHeight";
+import { getAspectRatioPercentage } from "./utils/aspectRatioUtils";
+import { getImageSrc } from "../../lib/projectUtils";
 
 /**
  * Preload all images in the slider for smooth transitions
@@ -16,13 +16,13 @@ import { getImageSrc } from '../../lib/projectUtils';
  */
 const preloadSliderImages = (images) => {
   if (!images || images.length === 0) return;
-  
+
   images.forEach((image) => {
     const img = new Image();
     img.src = getImageSrc(image);
     // Preload but don't block rendering
-    img.loading = 'eager';
-    img.decoding = 'async';
+    img.loading = "eager";
+    img.decoding = "async";
   });
 };
 
@@ -53,7 +53,7 @@ const ImageSlider = ({ images, aspectRatio, placeholders, title }) => {
     isMounted,
     hasMultipleImages,
     prevSlide,
-    nextSlide
+    nextSlide,
   } = useSliderState(images);
 
   const captionHeight = useCaptionHeight(images, isMounted);
@@ -74,7 +74,7 @@ const ImageSlider = ({ images, aspectRatio, placeholders, title }) => {
             title={title}
           />
         </SliderContainer>
-        
+
         <SliderCaption
           captionHeight={captionHeight}
           isMounted={isMounted}
@@ -98,14 +98,14 @@ const ImageSlider = ({ images, aspectRatio, placeholders, title }) => {
           currentSlide={currentSlide}
           title={title}
         />
-        
+
         <SliderControls
           hasMultipleImages={hasMultipleImages}
           onPrevSlide={prevSlide}
           onNextSlide={nextSlide}
         />
       </SliderContainer>
-      
+
       <SliderCaption
         captionHeight={captionHeight}
         isMounted={isMounted}

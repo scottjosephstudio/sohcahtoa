@@ -1,15 +1,21 @@
-'use client';
+"use client";
 
-import React, { useRef, useMemo, useEffect, useState, useCallback } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, Plane } from '@react-three/drei';
-import * as THREE from 'three';
+import React, {
+  useRef,
+  useMemo,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { OrbitControls, PerspectiveCamera, Plane } from "@react-three/drei";
+import * as THREE from "three";
 
 // Custom shader material for the mottled background
 const NoiseShaderMaterial = {
   uniforms: {
     uTime: { value: 0 },
-    uColor: { value: new THREE.Color('#f9f9f9') },
+    uColor: { value: new THREE.Color("#f9f9f9") },
   },
   vertexShader: `
     varying vec2 vUv;
@@ -72,30 +78,28 @@ const NoiseShaderMaterial = {
       
       gl_FragColor = vec4(mix(color, vec3(0.0), noiseColor), 1.0);
     }
-  `
+  `,
 };
 
 function MottledBackground() {
   const materialRef = useRef();
   const { size } = useThree();
-  
+
   // Calculate the scale to cover the entire viewport
   const scale = useMemo(() => {
     const aspectRatio = size.width / size.height;
-    return aspectRatio > 1 
-      ? [aspectRatio * 2, 2, 1] 
-      : [2, 2 / aspectRatio, 1];
+    return aspectRatio > 1 ? [aspectRatio * 2, 2, 1] : [2, 2 / aspectRatio, 1];
   }, [size]);
-  
+
   useFrame((state) => {
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value = state.clock.getElapsedTime();
     }
   });
-  
+
   return (
     <Plane args={[1, 1]} scale={scale} position={[0, 0, -50]}>
-      <shaderMaterial 
+      <shaderMaterial
         ref={materialRef}
         args={[NoiseShaderMaterial]}
         transparent={true}
@@ -111,15 +115,17 @@ function ParticleCloud() {
   const count = 45000;
   const radiusRef = useRef(25);
   const { size, camera, gl } = useThree();
-  
+
   // Add state to track animation state and make particles initially invisible
   const [isAnimationStarted, setIsAnimationStarted] = useState(false);
-  
+
   // Add state to track iOS detection
-  const [isIOS] = useState(/iPhone|iPad|iPod/.test(
-    typeof navigator !== 'undefined' ? navigator.userAgent : ''
-  ));
-  
+  const [isIOS] = useState(
+    /iPhone|iPad|iPod/.test(
+      typeof navigator !== "undefined" ? navigator.userAgent : "",
+    ),
+  );
+
   // Ensure the cloud is centered in the camera's view
   useEffect(() => {
     if (camera && meshRef.current) {
@@ -127,13 +133,13 @@ function ParticleCloud() {
       meshRef.current.position.set(0, 0, 0);
     }
   }, [camera]);
-  
+
   useEffect(() => {
     const handleResize = () => {
       // Calculate base dimensions
       const width = window.innerWidth;
       const height = window.innerHeight;
-      
+
       // Progressive width scaling with interpolation
       let widthDivisor;
       if (width <= 1200) {
@@ -144,30 +150,30 @@ function ParticleCloud() {
       } else {
         widthDivisor = 45; // Maximum size for very large screens
       }
-      
+
       // Calculate radius based on both width and height
       const widthBasedRadius = width / widthDivisor;
       const heightBasedRadius = height / 45; // Keep conservative height scaling
-      
+
       // Use the smaller of the two to ensure the cloud stays contained
       const newRadius = Math.min(widthBasedRadius, heightBasedRadius);
-      
+
       if (newRadius !== radiusRef.current) {
         radiusRef.current = newRadius;
         updateParticlePositions();
       }
-      
+
       // Ensure camera is looking at center
       if (camera) {
         camera.lookAt(0, 0, 0);
         camera.updateProjectionMatrix();
       }
     };
-    
+
     handleResize();
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, [size, camera]);
 
@@ -176,50 +182,53 @@ function ParticleCloud() {
       return;
     }
     const positions = meshRef.current.geometry.attributes.position.array;
-    
+
     for (let i = 0; i < count * 3; i += 3) {
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.random() * Math.PI;
       const r = Math.random() * radiusRef.current;
-      
+
       positions[i] = r * Math.sin(phi) * Math.cos(theta);
       positions[i + 1] = r * Math.sin(phi) * Math.sin(theta);
       positions[i + 2] = r * Math.cos(phi);
     }
     meshRef.current.geometry.attributes.position.needsUpdate = true;
   };
-  
+
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
-  
+
   for (let i = 0; i < count * 3; i += 3) {
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.random() * Math.PI;
     const r = Math.random() * 25;
-    
+
     positions[i] = r * Math.sin(phi) * Math.cos(theta);
     positions[i + 1] = r * Math.sin(phi) * Math.sin(theta);
     positions[i + 2] = r * Math.cos(phi);
-    
+
     // Use more vibrant colors to stand out against white
-    colors[i] = Math.random() * 0.7 + 0.3;     // Red channel
+    colors[i] = Math.random() * 0.7 + 0.3; // Red channel
     colors[i + 1] = Math.random() * 0.7 + 0.3; // Green channel
     colors[i + 2] = Math.random() * 0.7 + 0.3; // Blue channel
   }
 
   const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-  
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(positions, 3),
+  );
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+
   const material = useMemo(() => {
     const mat = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
         uOpacity: { value: 0.0 }, // Start completely invisible
-        uScale: { value: 0.0 },   // Start with zero scale
-        uRadius: { value: 20 }
+        uScale: { value: 0.0 }, // Start with zero scale
+        uRadius: { value: 20 },
       },
-              vertexShader: `
+      vertexShader: `
         uniform float uTime;
         uniform float uScale;
         uniform float uRadius;
@@ -259,7 +268,7 @@ function ParticleCloud() {
       vertexColors: true,
       transparent: true,
       blending: THREE.NormalBlending,
-      depthWrite: false
+      depthWrite: false,
     });
     materialRef.current = mat;
     return mat;
@@ -272,35 +281,35 @@ function ParticleCloud() {
     // Small delay to ensure everything is initialized
     const delayTimer = setTimeout(() => {
       setIsAnimationStarted(true);
-    }, 50);  // 50ms delay should be enough
-    
+    }, 50); // 50ms delay should be enough
+
     return () => clearTimeout(delayTimer);
   }, []);
 
   // Start the fade-in animation only after delay
   useEffect(() => {
     if (!isAnimationStarted) return;
-    
+
     const duration = 500;
     const startTime = Date.now();
     let frameId;
-    
+
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      
+
       if (materialRef.current) {
         materialRef.current.uniforms.uOpacity.value = progress;
         materialRef.current.uniforms.uScale.value = progress;
         materialRef.current.uniforms.uRadius.value = radiusRef.current;
       }
-      
+
       if (progress < 1) {
         frameId = requestAnimationFrame(animate);
       } else {
       }
     };
-    
+
     frameId = requestAnimationFrame(animate);
     return () => {
       cancelAnimationFrame(frameId);
@@ -312,16 +321,16 @@ function ParticleCloud() {
     const handleParticleFade = (event) => {
       const { duration } = event.detail;
       const startTime = Date.now();
-      
+
       const animate = () => {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        
+
         if (materialRef.current) {
           materialRef.current.uniforms.uScale.value = 1 - progress;
           materialRef.current.uniforms.uOpacity.value = 1 - progress;
         }
-        
+
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
@@ -330,42 +339,48 @@ function ParticleCloud() {
       requestAnimationFrame(animate);
     };
 
-    window.addEventListener('particleFadeOut', handleParticleFade);
+    window.addEventListener("particleFadeOut", handleParticleFade);
     return () => {
-      window.removeEventListener('particleFadeOut', handleParticleFade);
+      window.removeEventListener("particleFadeOut", handleParticleFade);
     };
   }, []);
 
   // Handle non-modal link clicks
   useEffect(() => {
     const handleClick = (e) => {
-      const link = e.target.tagName === 'A' ? e.target : e.target.closest('a');
-      
+      const link = e.target.tagName === "A" ? e.target : e.target.closest("a");
+
       if (link) {
-        const hasExcludedClass = link.classList.contains('nav-container') || 
-                                link.closest('.nav-container') !== null;
-        const isTypefaceLink = link.href && link.href.includes('/Typefaces');
-        const isParticleCloudLink = link.href && link.href.includes('/Particle_Cloud');
-        const isModalLink = link.closest('.modal-content') !== null;
-        
+        const hasExcludedClass =
+          link.classList.contains("nav-container") ||
+          link.closest(".nav-container") !== null;
+        const isTypefaceLink = link.href && link.href.includes("/Typefaces");
+        const isParticleCloudLink =
+          link.href && link.href.includes("/Particle_Cloud");
+        const isModalLink = link.closest(".modal-content") !== null;
+
         // Fix: Declare isParticlesLink variable
-        const isParticlesLink = link.href && link.href.includes('/particles');
+        const isParticlesLink = link.href && link.href.includes("/particles");
 
         // Only handle clicks that aren't from the modal or nav container
-        if ((!hasExcludedClass || isTypefaceLink) && !isParticlesLink && 
-            !isParticleCloudLink && !isModalLink) {
+        if (
+          (!hasExcludedClass || isTypefaceLink) &&
+          !isParticlesLink &&
+          !isParticleCloudLink &&
+          !isModalLink
+        ) {
           const duration = 250;
           const startTime = Date.now();
-          
+
           const animate = () => {
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
+
             if (materialRef.current) {
               materialRef.current.uniforms.uScale.value = 1 - progress;
               materialRef.current.uniforms.uOpacity.value = 1 - progress;
             }
-            
+
             if (progress < 1) {
               requestAnimationFrame(animate);
             } else {
@@ -375,10 +390,10 @@ function ParticleCloud() {
         }
       }
     };
-  
-    document.addEventListener('click', handleClick, true);
+
+    document.addEventListener("click", handleClick, true);
     return () => {
-      document.removeEventListener('click', handleClick, true);
+      document.removeEventListener("click", handleClick, true);
     };
   }, []);
 
@@ -387,7 +402,7 @@ function ParticleCloud() {
       materialRef.current.uniforms.uTime.value = state.clock.getElapsedTime();
       materialRef.current.uniforms.uRadius.value = radiusRef.current;
     }
-    
+
     if (meshRef.current) {
       const time = state.clock.elapsedTime * 0.8;
       meshRef.current.rotation.x = time * 0.4;
@@ -395,18 +410,18 @@ function ParticleCloud() {
 
       // Keep it centered at origin - critical for iOS
       meshRef.current.position.set(0, 0, 0);
-      
+
       // For iOS: apply more aggressive centering
       if (isIOS) {
         // Force world matrix update
         meshRef.current.updateMatrixWorld();
-        
+
         // Ensure mesh is centered in camera view
         if (camera) {
           // Calculate center in world space
           const worldPosition = new THREE.Vector3();
           worldPosition.setFromMatrixPosition(meshRef.current.matrixWorld);
-          
+
           // If mesh has drifted from center, recenter it
           if (worldPosition.length() > 0.001) {
             meshRef.current.position.set(0, 0, 0);
@@ -418,7 +433,7 @@ function ParticleCloud() {
       const colors = meshRef.current.geometry.attributes.color.array;
       for (let i = 0; i < count * 3; i += 3) {
         // Make the colors more vibrant with higher saturation
-        colors[i] = Math.sin(time + i) * 0.5 + 0.5;     // Red
+        colors[i] = Math.sin(time + i) * 0.5 + 0.5; // Red
         colors[i + 1] = Math.sin(time + i + 2) * 0.5 + 0.5; // Green
         colors[i + 2] = Math.sin(time + i + 4) * 0.5 + 0.5; // Blue
       }
@@ -427,7 +442,12 @@ function ParticleCloud() {
   });
 
   return (
-    <points ref={meshRef} geometry={geometry} material={material} position={[0, 0, 0]} />
+    <points
+      ref={meshRef}
+      geometry={geometry}
+      material={material}
+      position={[0, 0, 0]}
+    />
   );
 }
 
@@ -436,23 +456,23 @@ function ResponsiveCamera() {
   const cameraRef = useRef();
   // Calculate distance based on viewport dimensions
   const cameraDistance = Math.max(100, Math.min(size.width, size.height) / 10);
-  
+
   // Handle iOS-specific sizing issues
   useEffect(() => {
     const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-    
+
     // Function to position camera and update
     const updateCamera = () => {
       if (cameraRef.current) {
         // Place camera directly in front of center point
         cameraRef.current.position.set(0, 0, cameraDistance);
-        
+
         // Ensure camera is looking directly at center point
         cameraRef.current.lookAt(new THREE.Vector3(0, 0, 0));
-        
+
         // Update projection matrix to apply changes
         cameraRef.current.updateProjectionMatrix();
-        
+
         // For iOS, we may need additional adjustment
         if (isIOS) {
           // Force projection matrix update again
@@ -461,38 +481,38 @@ function ResponsiveCamera() {
         }
       }
     };
-    
+
     // Initial update
     updateCamera();
-    
+
     // For iOS, apply updates on a delay as well
     if (isIOS) {
       const timers = [
         setTimeout(updateCamera, 100),
         setTimeout(updateCamera, 300),
-        setTimeout(updateCamera, 500)
+        setTimeout(updateCamera, 500),
       ];
-      
-      return () => timers.forEach(timer => clearTimeout(timer));
+
+      return () => timers.forEach((timer) => clearTimeout(timer));
     }
   }, [size, cameraDistance]);
-  
+
   // Continuous camera management
   useFrame(() => {
     if (cameraRef.current) {
       // Ensure camera position is maintained
       cameraRef.current.position.set(0, 0, cameraDistance);
-      
+
       // Continuously ensure camera is looking at center
       cameraRef.current.lookAt(0, 0, 0);
     }
   });
-  
+
   return (
-    <PerspectiveCamera 
+    <PerspectiveCamera
       ref={cameraRef}
-      makeDefault 
-      position={[0, 0, cameraDistance]} 
+      makeDefault
+      position={[0, 0, cameraDistance]}
       fov={50}
       // Explicitly set aspect ratio from size
       aspect={size.width / size.height}
@@ -506,73 +526,73 @@ function ResponsiveCamera() {
 export default function Component() {
   const containerRef = useRef(null);
   const [viewportHeight, setViewportHeight] = useState(0);
-  
+
   // Function to update viewport height - fixes iOS issues
   const updateViewportHeight = useCallback(() => {
     // Get real viewport height - critical for iOS
     const vh = window.innerHeight;
     setViewportHeight(vh);
-    
+
     // Update CSS variable for viewport height - useful for iOS
-    document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
-    
+    document.documentElement.style.setProperty("--vh", `${vh * 0.01}px`);
+
     // Force canvas to recenter
     if (containerRef.current) {
-      const canvases = containerRef.current.querySelectorAll('canvas');
-      canvases.forEach(canvas => {
+      const canvases = containerRef.current.querySelectorAll("canvas");
+      canvases.forEach((canvas) => {
         // Apply vertical centering directly to canvas
         canvas.style.height = `${vh}px`;
       });
     }
   }, []);
-  
+
   useEffect(() => {
     // Initial setup
     updateViewportHeight();
-    
+
     // Add event listeners for various scenarios that may change viewport dimensions
-    window.addEventListener('resize', updateViewportHeight);
-    window.addEventListener('orientationchange', updateViewportHeight);
-    
+    window.addEventListener("resize", updateViewportHeight);
+    window.addEventListener("orientationchange", updateViewportHeight);
+
     // iOS Safari specific - handle when keyboard appears/disappears or user scrolls
-    window.addEventListener('scroll', updateViewportHeight);
-    
+    window.addEventListener("scroll", updateViewportHeight);
+
     // Additional iOS viewport fix
     if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
       // For iOS: handle visibility changes (like when app switches)
-      document.addEventListener('visibilitychange', updateViewportHeight);
-      
+      document.addEventListener("visibilitychange", updateViewportHeight);
+
       // Force update on page load and after small delay (iOS sometimes needs this)
       setTimeout(updateViewportHeight, 100);
       setTimeout(updateViewportHeight, 500);
     }
-    
+
     return () => {
-      window.removeEventListener('resize', updateViewportHeight);
-      window.removeEventListener('orientationchange', updateViewportHeight);
-      window.removeEventListener('scroll', updateViewportHeight);
-      document.removeEventListener('visibilitychange', updateViewportHeight);
+      window.removeEventListener("resize", updateViewportHeight);
+      window.removeEventListener("orientationchange", updateViewportHeight);
+      window.removeEventListener("scroll", updateViewportHeight);
+      document.removeEventListener("visibilitychange", updateViewportHeight);
     };
   }, [updateViewportHeight]);
 
   return (
-    <div 
+    <div
       ref={containerRef}
       style={{
-        position: 'fixed',
+        position: "fixed",
         top: 0,
         left: 0,
-        width: '100%',
+        width: "100%",
         // Use calculated height for iOS compatibility
-        height: viewportHeight ? `${viewportHeight}px` : '100vh',
-        background: 'none',
+        height: viewportHeight ? `${viewportHeight}px` : "100vh",
+        background: "none",
         zIndex: 10,
-        overflow: 'hidden',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        overflow: "hidden",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         // Prevent iOS bouncing/scrolling
-        touchAction: 'none'
+        touchAction: "none",
       }}
     >
       <Canvas
@@ -580,22 +600,22 @@ export default function Component() {
           fov: 50,
           position: [0, 0, 100],
           near: 0.1,
-          far: 1000
+          far: 1000,
         }}
         style={{
-          width: '100%',
-          height: '100%',
-          position: 'absolute',
-          left: '0',
-          top: '0',
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+          left: "0",
+          top: "0",
           // Additional styles for iOS
-          transformOrigin: 'center center',
-          transform: 'translate3d(0,0,0)'
+          transformOrigin: "center center",
+          transform: "translate3d(0,0,0)",
         }}
-        gl={{ 
+        gl={{
           antialias: true,
-          alpha: true, 
-          powerPreference: 'high-performance'
+          alpha: true,
+          powerPreference: "high-performance",
         }}
         // Canvas resize observer helps with dimension changes
         resize={{ scroll: false, debounce: { scroll: 50, resize: 50 } }}

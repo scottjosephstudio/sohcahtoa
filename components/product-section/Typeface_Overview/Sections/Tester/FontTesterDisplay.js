@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Container, TextContainer, EditableText } from './StyledComponents';
+import React, { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Container, TextContainer, EditableText } from "./StyledComponents";
 
 export const FontTesterDisplay = ({
   textRef,
@@ -16,17 +16,17 @@ export const FontTesterDisplay = ({
   currentLetterSpacing,
   currentLineHeight,
   currentFontSize,
-  isReady
+  isReady,
 }) => {
   const handleInput = (e) => {
     const content = e.currentTarget.textContent || "";
-    
+
     // Save cursor position
     const selection = window.getSelection();
     const cursorPos = selection.anchorOffset;
-    
+
     setText(content);
-    
+
     // Restore cursor position after React re-renders (only if element is focused)
     requestAnimationFrame(() => {
       if (textRef.current && document.activeElement === textRef.current) {
@@ -51,7 +51,12 @@ export const FontTesterDisplay = ({
 
   // Ensure empty field stays focused with blinking cursor
   useEffect(() => {
-    if (!isTyping && text.trim() === "" && textRef.current && document.activeElement === textRef.current) {
+    if (
+      !isTyping &&
+      text.trim() === "" &&
+      textRef.current &&
+      document.activeElement === textRef.current
+    ) {
       // Position cursor at the beginning of empty field (only if already focused)
       const range = document.createRange();
       const selection = window.getSelection();
@@ -72,29 +77,29 @@ export const FontTesterDisplay = ({
             opacity: 0,
             transition: {
               duration: 0.2,
-              ease: [0.25, 0.1, 0.25, 1]
-            }
+              ease: [0.25, 0.1, 0.25, 1],
+            },
           }}
         >
           <Container>
             <TextContainer>
-            <EditableText
-  ref={textRef}
-  contentEditable="true"
-  spellCheck="false"
-  onFocus={() => setIsTyping(false)}
+              <EditableText
+                ref={textRef}
+                contentEditable="true"
+                spellCheck="false"
+                onFocus={() => setIsTyping(false)}
                 onInput={handleInput}
                 onBlur={handleInput}
-  $isTyping={isTyping}
-  style={{
-    fontSize: `${settings?.fontSize}px`,
-    lineHeight: settings?.lineHeight,
-    letterSpacing: `${settings?.letterSpacing}px`,
-    opacity: isReady ? 1 : 0
-  }}
+                $isTyping={isTyping}
+                style={{
+                  fontSize: `${settings?.fontSize}px`,
+                  lineHeight: settings?.lineHeight,
+                  letterSpacing: `${settings?.letterSpacing}px`,
+                  opacity: isReady ? 1 : 0,
+                }}
                 suppressContentEditableWarning={true}
               >
-                {text || '\u00A0'}
+                {text || "\u00A0"}
               </EditableText>
             </TextContainer>
           </Container>

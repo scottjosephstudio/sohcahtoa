@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { ScrollButtonContainer } from './styles/StyledComponents';
-import { useScrollVisibility } from './hooks/useScrollVisibility';
-import { ScrollIcon } from './components/ScrollIcon';
-import { scrollToTop } from './utils/scrollUtils';
+import React from "react";
+import { ScrollButtonContainer } from "./styles/StyledComponents";
+import { useScrollVisibility } from "./hooks/useScrollVisibility";
+import { ScrollIcon } from "./components/ScrollIcon";
+import { scrollToTop } from "./utils/scrollUtils";
 
 const ScrollToTopButton = () => {
   const { isVisible, isFading } = useScrollVisibility();
@@ -12,9 +12,9 @@ const ScrollToTopButton = () => {
   return (
     <>
       {isVisible && (
-        <ScrollButtonContainer 
+        <ScrollButtonContainer
           onClick={scrollToTop}
-          className={`scroll-to-top ${isFading ? 'fade-out' : ''}`}
+          className={`scroll-to-top ${isFading ? "fade-out" : ""}`}
           aria-label="Scroll to top"
           whileHover="hover"
           initial="initial"
@@ -26,4 +26,4 @@ const ScrollToTopButton = () => {
   );
 };
 
-export default ScrollToTopButton; 
+export default ScrollToTopButton;

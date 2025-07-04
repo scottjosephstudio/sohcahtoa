@@ -1,7 +1,7 @@
 // src/components/cart/styles.js
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { PaymentElement } from '@stripe/react-stripe-js';
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import { PaymentElement } from "@stripe/react-stripe-js";
 
 // Independent Base Components
 export const CartPanelContainer = styled(motion.div)`
@@ -24,7 +24,7 @@ export const CartPanelContainer = styled(motion.div)`
     line-height: 24px;
     letter-spacing: 0.8px;
   }
-  
+
   @media (max-width: 768px) {
     /* Use dynamic viewport units that account for browser UI */
     height: 100dvh; /* Dynamic viewport height - adjusts for address bar */
@@ -34,13 +34,13 @@ export const CartPanelContainer = styled(motion.div)`
     /* Account for safe areas (notches, home indicators) */
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
-    
+
     /* Prevent both Chrome and Safari from adjusting text size */
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    
+
     /* Force all child elements to maintain specified font sizes */
     * {
       -webkit-text-size-adjust: 100% !important;
@@ -49,7 +49,7 @@ export const CartPanelContainer = styled(motion.div)`
       text-size-adjust: 100% !important;
     }
   }
-  
+
   /* Safari-specific fixes */
   @supports (-webkit-touch-callout: none) {
     @media (max-width: 768px) {
@@ -60,7 +60,7 @@ export const CartPanelContainer = styled(motion.div)`
       /* Safari viewport handling */
       height: 100dvh;
       min-height: -webkit-fill-available;
-      
+
       /* Safari text rendering consistency */
       * {
         -webkit-text-size-adjust: 100% !important;
@@ -83,13 +83,12 @@ export const CartOverlay = styled(motion.div)`
   z-index: 40;
   cursor: pointer;
 
-
   @media (min-width: 1420px) {
     letter-spacing: 0.8px;
   }
 `;
 
-export const CartContent = styled.div.attrs(props => {
+export const CartContent = styled.div.attrs((props) => {
   // Create a new props object without $hasSelections to avoid passing it to DOM
   const { $hasSelections, ...domProps } = props;
   return domProps;
@@ -117,27 +116,28 @@ export const CartContent = styled.div.attrs(props => {
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 24px;
-    padding-bottom: ${props => props.$hasSelections ? '100px' : '0px'};
+    padding-bottom: ${(props) => (props.$hasSelections ? "100px" : "0px")};
   }
-  
+
   /* Ensure padding is maintained at very narrow widths */
   @media (max-width: 375px) {
     padding-left: 20px;
     padding-right: 20px;
   }
-
-
 `;
 
 export const StyleSelectionContainer = styled(motion.div)`
   @media (max-width: 768px) {
-    ${props => {
+    ${(props) => {
       const baseStyle = `margin-bottom: 0px;`;
-      
+
       if (props.isLicenceOpen && props.isContinueClicked) {
         return `margin-bottom: 0;`;
       }
-      if (!props.isContinueClicked && (props.selectedPackage || props.hasCustomLicenses)) {
+      if (
+        !props.isContinueClicked &&
+        (props.selectedPackage || props.hasCustomLicenses)
+      ) {
         return `margin-bottom: 0;`;
       }
       if (props.isLicenceOpen) {
@@ -146,7 +146,7 @@ export const StyleSelectionContainer = styled(motion.div)`
       if (!props.isContinueClicked && props.hasItems) {
         return `margin-bottom: -24px;`;
       }
-      
+
       return baseStyle;
     }}
   }
@@ -157,8 +157,8 @@ export const StepContainer = styled(motion.div)`
   background-color: #f9f9f9;
   border-radius: 10px;
   opacity: ${(props) => (props.disabled ? 0.5 : 1)};
-  pointer-events: ${(props) => (props.disabled ? 'none' : 'auto')};
-  margin-top: ${props => props.isLicenceOpen ? '24px' : '0'};
+  pointer-events: ${(props) => (props.disabled ? "none" : "auto")};
+  margin-top: ${(props) => (props.isLicenceOpen ? "24px" : "0")};
   margin-bottom: 24px;
   letter-spacing: 0.8px;
   overflow: hidden;
@@ -170,15 +170,15 @@ export const StepContainer = styled(motion.div)`
   }
 
   @media (max-width: 768px) {
-    margin-top: ${props => props.isLicenceOpen ? '24px' : '0'};
-    margin-bottom: ${props => {
+    margin-top: ${(props) => (props.isLicenceOpen ? "24px" : "0")};
+    margin-bottom: ${(props) => {
       if (props.isStylesForm) {
-        return props.hasSelections ? '0' : '0px';
+        return props.hasSelections ? "0" : "0px";
       }
       if (props.isUsageForm || props.isPaymentForm || props.isRegistration) {
-        return '0';
+        return "0";
       }
-      return '0px';
+      return "0px";
     }};
   }
 `;
@@ -217,10 +217,10 @@ export const OptionTitle = styled.div`
   }
 
   span {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 2px;
-  font-weight: normal;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 2px;
+    font-weight: normal;
   }
 `;
 
@@ -242,7 +242,8 @@ export const OptionDetail = styled.div`
 `;
 
 export const OptionCard = styled(motion.div)`
-  border: 2px solid ${props => props.selected ? '#006efe' : 'rgb(16, 12, 8)'};
+  border: 2px solid
+    ${(props) => (props.selected ? "#006efe" : "rgb(16, 12, 8)")};
   border-radius: 10px;
   padding: 20px;
   cursor: pointer;
@@ -271,12 +272,16 @@ export const OptionHeader = styled.h3`
     letter-spacing: 0.8px;
   }
 
-  ${props => props.$isFormHeader && `
+  ${(props) =>
+    props.$isFormHeader &&
+    `
     margin: 12px 0 36px 0;
   `}
 
   /* Billing Address section specific styling */
-  ${props => props.$isBillingHeader && `
+  ${(props) =>
+    props.$isBillingHeader &&
+    `
     @media (max-width: 1200px) {
       margin-top: 24px;
     }
@@ -292,7 +297,9 @@ export const CloseButton = styled(motion.button)`
   cursor: pointer;
   color: rgb(16, 12, 8);
   padding: 8px;
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
   transform: rotate(45deg);
   z-index: 1000;
   letter-spacing: 0.8px;
@@ -337,7 +344,7 @@ export const CartProgressContainer = styled(motion.div)`
 export const CartPill = styled(motion.div)`
   background: #006efe;
   color: white;
-  padding-top: 8px; 
+  padding-top: 8px;
   padding-bottom: 2px;
   padding-left: 16px;
   padding-right: 16px;
@@ -350,7 +357,6 @@ export const CartPill = styled(motion.div)`
     letter-spacing: 0.8px;
   }
 `;
-
 
 export const CartText = styled.span`
   display: inline-block;
@@ -386,8 +392,8 @@ export const StageNumber = styled(motion.span)`
   height: 34px;
   border-radius: 10px;
   background: #006efe;
-  color: ${props => props.active ? 'white' : '#e0e0e0'};
-  cursor: ${props => props.clickable ? "pointer" : "default"};
+  color: ${(props) => (props.active ? "white" : "#e0e0e0")};
+  cursor: ${(props) => (props.clickable ? "pointer" : "default")};
   user-select: none;
   font-size: 20px;
   line-height: 24px;
@@ -420,9 +426,9 @@ export const FormGroup = styled.div`
   [data-resetting="true"] & + & {
     display: none;
   }
-  
-  ${props => {
-    if (props.fieldName === 'firstName') {
+
+  ${(props) => {
+    if (props.fieldName === "firstName") {
       return `
       margin-top: 16px;
         @media (max-width: 1200px) {
@@ -430,7 +436,7 @@ export const FormGroup = styled.div`
         }
       `;
     }
-    if (props.fieldName === 'surname') {
+    if (props.fieldName === "surname") {
       return `
       margin-top: 16px;
         @media (max-width: 1200px) {
@@ -438,14 +444,14 @@ export const FormGroup = styled.div`
         }
       `;
     }
-    if (props.fieldName === 'email') {
+    if (props.fieldName === "email") {
       return `
         @media (max-width: 1200px) {
           margin-top: 8px;
         }
       `;
     }
-    if (props.fieldName === 'street') {
+    if (props.fieldName === "street") {
       return `
       margin-top: 16px;
         @media (max-width: 1200px) {
@@ -453,7 +459,7 @@ export const FormGroup = styled.div`
         }
       `;
     }
-    if (props.fieldName === 'city') {
+    if (props.fieldName === "city") {
       return `
       margin-top: 16px;
       @media (max-width: 1200px) {
@@ -461,41 +467,41 @@ export const FormGroup = styled.div`
         }
       `;
     }
-    if (props.fieldName === 'postcode') {
+    if (props.fieldName === "postcode") {
       return `
         @media (max-width: 1200px) {
           margin-top: 8px;
         }
       `;
     }
-    if (props.fieldName === 'contactEmail') {
+    if (props.fieldName === "contactEmail") {
       return `
         @media (max-width: 1200px) {
           margin-top: 8px;
         }
       `;
     }
-    return '';
+    return "";
   }}
 `;
 
 export const FormRow = styled.div`
   display: grid;
   gap: 24px;
-  margin-bottom: ${props => props.isLast ? '0' : '24px'};
+  margin-bottom: ${(props) => (props.isLast ? "0" : "24px")};
   letter-spacing: 0.8px;
 
   @media (min-width: 1420px) {
     letter-spacing: 0.8px;
   }
-  
+
   @media (min-width: 1200px) {
     grid-template-columns: 1fr 1fr;
   }
-  
+
   @media (max-width: 1199px) {
     grid-template-columns: 1fr;
-    margin-bottom: ${props => props.isLast ? '0' : '16px'};
+    margin-bottom: ${(props) => (props.isLast ? "0" : "16px")};
   }
 `;
 
@@ -555,9 +561,11 @@ export const FormInput = styled.input`
   width: 100%;
   padding: 10px 12px 8px 12px;
   border-radius: 10px;
-  color: ${props => props.$hasError ? '#FF0000' : '#006efe'};  // Default blue color
+  color: ${(props) =>
+    props.$hasError ? "#FF0000" : "#006efe"}; // Default blue color
   background-color: white;
-  border: 2px solid ${props => props.$hasError ? '#FF0000' : 'rgb(16, 12, 8)'};
+  border: 2px solid
+    ${(props) => (props.$hasError ? "#FF0000" : "rgb(16, 12, 8)")};
   outline: none;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -567,11 +575,14 @@ export const FormInput = styled.input`
   letter-spacing: 0.8px;
 
   &::placeholder {
-    color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
+    color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
   }
 
   &:focus {
-    color: ${props => props.$hasError ? '#FF0000' : 'rgb(16, 12, 8)'};  // Near black when typing/focused
+    color: ${(props) =>
+      props.$hasError
+        ? "#FF0000"
+        : "rgb(16, 12, 8)"}; // Near black when typing/focused
   }
 
   &:disabled {
@@ -588,37 +599,43 @@ export const FormInput = styled.input`
 
   &:not(:disabled) {
     &:hover {
-      border-color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
+      border-color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
     }
 
     &:focus {
-      border-color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
+      border-color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
     }
   }
 
   /* Autofill styles */
   &:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
-    -webkit-text-fill-color: ${props => props.$hasError ? '#FF0000' : '#006efe'} !important;
-    border-color: ${props => props.$hasError ? '#FF0000' : 'rgb(16, 12, 8)'} !important;
+    -webkit-text-fill-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "#006efe"} !important;
+    border-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "rgb(16, 12, 8)"} !important;
   }
 
   &:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
-    -webkit-text-fill-color: ${props => props.$hasError ? '#FF0000' : 'rgb(16, 12, 8)'} !important;
-    border-color: ${props => props.$hasError ? '#FF0000' : '#006efe'} !important;
+    -webkit-text-fill-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "rgb(16, 12, 8)"} !important;
+    border-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "#006efe"} !important;
   }
 
   &:-webkit-autofill:hover {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
-    -webkit-text-fill-color: ${props => props.$hasError ? '#FF0000' : '#006efe'} !important;
-    border-color: ${props => props.$hasError ? '#FF0000' : '#006efe'} !important;
+    -webkit-text-fill-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "#006efe"} !important;
+    border-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "#006efe"} !important;
   }
 `;
 
 export const PlaceholderText = styled.div`
   margin-top: 0px;
-  margin-bottom: ${props => props.$hasStyle ? '-24px' : '-3px'};
+  margin-bottom: ${(props) => (props.$hasStyle ? "-24px" : "-3px")};
   font-size: 20px;
   line-height: 24px;
   letter-spacing: 0.8px;
@@ -629,7 +646,7 @@ export const PlaceholderText = styled.div`
   }
 
   @media (max-width: 768px) {
-    margin-bottom: ${props => props.$hasStyle ? '0px' : '-3px'};
+    margin-bottom: ${(props) => (props.$hasStyle ? "0px" : "-3px")};
   }
 `;
 
@@ -640,7 +657,7 @@ export const Button = styled(motion.button)`
   border: 2px solid rgb(16, 12, 8);
   color: white;
   border-radius: 10px;
-cursor: pointer;
+  cursor: pointer;
   font-size: 20px;
   line-height: 24px;
   letter-spacing: 0.8px;
@@ -651,7 +668,7 @@ cursor: pointer;
 
   &:disabled {
     opacity: 1;
-cursor: default;
+    cursor: default;
     background-color: #ccc;
     border: 2px solid #ccc;
     pointer-events: all !important;
@@ -666,7 +683,7 @@ export const RegisterButton = styled(motion.button)`
   border: 2px solid rgb(16, 12, 8);
   color: white;
   border-radius: 10px;
-cursor: pointer;
+  cursor: pointer;
   font-size: 20px;
   line-height: 24px;
   letter-spacing: 0.8px;
@@ -681,7 +698,7 @@ cursor: pointer;
 
   &:disabled {
     opacity: 1;
-cursor: default;
+    cursor: default;
     background-color: #ccc;
     border: 2px solid #ccc;
     pointer-events: all !important;
@@ -714,7 +731,7 @@ export const RadioLabel = styled(motion.label)`
   display: flex;
   align-items: center;
   gap: 12px;
-cursor: pointer;
+  cursor: pointer;
   font-size: 20px;
   line-height: 24px;
   letter-spacing: 0.8px;
@@ -729,7 +746,7 @@ cursor: pointer;
 `;
 
 export const RadioInput = styled(motion.input)`
-cursor: pointer;
+  cursor: pointer;
   appearance: none;
   width: 24px;
   height: 24px;
@@ -760,11 +777,11 @@ export const PackageGrid = styled.div`
   @media (max-width: 1199px) {
     grid-template-columns: 1fr;
   }
-  
+
   /* Custom license specific layout */
   &[data-custom-license] {
     grid-template-columns: 1fr 1fr;
-    
+
     @media (max-width: 1199px) {
       grid-template-columns: 1fr;
     }
@@ -773,7 +790,8 @@ export const PackageGrid = styled.div`
 
 export const PackageCard = styled(motion.div)`
   padding: 20px;
-  border: 2px solid ${(props) => (props.selected ? '#006efe' : 'rgb(16, 12, 8)')};
+  border: 2px solid
+    ${(props) => (props.selected ? "#006efe" : "rgb(16, 12, 8)")};
   border-radius: 10px;
   cursor: pointer;
   letter-spacing: 0.8px;
@@ -799,9 +817,9 @@ export const PackageTitle = styled.h4`
   }
 
   span {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 2px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 2px;
   }
 `;
 
@@ -810,7 +828,7 @@ export const StyledPaymentElement = styled(PaymentElement)`
     border: 2px solid rgb(16, 12, 8) !important;
     border-radius: 10px !important;
     color: #006efe !important;
-    font-family: 'Jant', sans-serif !important;
+    font-family: "Jant", sans-serif !important;
     font-size: 20px !important;
     line-height: 24px !important;
     letter-spacing: 0.6px !important;
@@ -879,19 +897,19 @@ export const SummarySection = styled(motion.div)`
 
   @media (max-width: 768px) {
     margin-top: 0;
-    margin-bottom: ${props => props.$showTotal ? '0' : '24px'};
+    margin-bottom: ${(props) => (props.$showTotal ? "0" : "24px")};
   }
 `;
 
 export const SummaryItem = styled(motion.div)`
-  margin-bottom: ${props => props.isLastWithAddLink ? '0' : '24px'};
+  margin-bottom: ${(props) => (props.isLastWithAddLink ? "0" : "24px")};
   letter-spacing: 0.8px;
 
   @media (min-width: 1420px) {
     letter-spacing: 0.8px;
   }
 
-   ${LicenseDetailContainer}:last-child {
+  ${LicenseDetailContainer}:last-child {
     margin-bottom: 0;
   }
 
@@ -951,7 +969,7 @@ export const CustomLicenseSection = styled(motion.div)`
   @media (min-width: 1420px) {
     letter-spacing: 0.8px;
   }
-  
+
   @media (max-width: 375px) {
     gap: 24px;
   }
@@ -988,11 +1006,8 @@ export const AdditionalLicensingSection = styled.div`
   }
 
   @media (max-width: 768px) {
-
     margin-bottom: 0px;
   }
-    
-
 `;
 
 export const LicenseTypeHeader = styled.h4`
@@ -1030,18 +1045,19 @@ export const PaymentMethodContainer = styled.div`
 export const PaymentMethodButton = styled(motion.button)`
   flex: 1;
   padding: 10px 12px 8px 12px;
-  border: 2px solid ${props => props.selected ? '#006efe' : 'rgb(16, 12, 8)'};
+  border: 2px solid
+    ${(props) => (props.selected ? "#006efe" : "rgb(16, 12, 8)")};
   background: none;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-cursor: pointer;
+  cursor: pointer;
   font-size: 20px;
   line-height: 24px;
   letter-spacing: 0.8px;
-  margin-bottom: ${props => props.selected ? '6px' : '-12px'};
+  margin-bottom: ${(props) => (props.selected ? "6px" : "-12px")};
 
   @media (min-width: 1420px) {
     letter-spacing: 0.8px;
@@ -1132,7 +1148,7 @@ export const TogglePasswordButton = styled(motion.button)`
 `;
 
 export const FormDivider = styled.div`
-  margin-top: ${props => props.hasFixedTotal ? '32px' : '32px'};
+  margin-top: ${(props) => (props.hasFixedTotal ? "32px" : "32px")};
   padding-top: 24px;
   border-top: 2px solid rgb(16, 12, 8);
   letter-spacing: 0.8px;
@@ -1146,7 +1162,7 @@ export const LoginHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: ${props => props.isExpanded ? '24px' : '12px'};
+  padding-bottom: ${(props) => (props.isExpanded ? "24px" : "12px")};
   transition: padding-bottom 0.2s ease;
   letter-spacing: 0.8px;
 
@@ -1169,7 +1185,7 @@ export const LoginSectionHeader = styled.h3`
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 2px;
-    font-weight: normal;
+  font-weight: normal;
   color: rgb(16, 12, 8);
   margin: 0;
   display: inline;
@@ -1185,7 +1201,7 @@ export const LoginToggleButton = styled(motion.button)`
   line-height: 24px;
   letter-spacing: 0.8px;
   border: none;
-  color: rgb(16, 12, 8); 
+  color: rgb(16, 12, 8);
   text-decoration: none;
   font-weight: normal;
   cursor: pointer;
@@ -1211,7 +1227,7 @@ export const LoginFormContainer = styled(motion.div)`
   @media (min-width: 1420px) {
     letter-spacing: 0.8px;
   }
-  
+
   @media (min-width: 1200px) {
     position: relative;
     grid-column: span 2;
@@ -1242,7 +1258,7 @@ export const ResetPasswordLink = styled(motion.button)`
   font-size: 20px;
   line-height: 24px;
   letter-spacing: 0.8px;
-  color: rgb(16, 12, 8); 
+  color: rgb(16, 12, 8);
   text-decoration: none;
   font-weight: normal;
   padding: 0;
@@ -1277,7 +1293,7 @@ export const LoginPasswordLabel = styled(FormLabel)`
 
 export const EulaContainer = styled.div`
   margin-top: -12px;
-  margin-bottom: ${props => props.$hasSelections ? '18px' : '18px'};
+  margin-bottom: ${(props) => (props.$hasSelections ? "18px" : "18px")};
   display: flex;
   align-items: flex-start;
   letter-spacing: 0.8px;
@@ -1313,9 +1329,9 @@ export const EulaLabel = styled.label`
   font-size: 20px;
   line-height: 24px;
   letter-spacing: 0.8px;
-  cursor: ${props => !props.$selectedUsage ? "default" : "pointer"};
+  cursor: ${(props) => (!props.$selectedUsage ? "default" : "pointer")};
   padding-top: 2px;
-  color: ${props => !props.$selectedUsage ? '#999' : 'rgb(16, 12, 8)'};
+  color: ${(props) => (!props.$selectedUsage ? "#999" : "rgb(16, 12, 8)")};
 
   @media (min-width: 1420px) {
     letter-spacing: 0.8px;
@@ -1323,14 +1339,15 @@ export const EulaLabel = styled.label`
 `;
 
 export const EulaLink = styled.a`
-  color: ${props => !props.$selectedUsage ? '#999' : 'rgb(16, 12, 8)'} !important;
+  color: ${(props) =>
+    !props.$selectedUsage ? "#999" : "rgb(16, 12, 8)"} !important;
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 2px;
   font-weight: normal;
-  cursor: ${props => !props.$selectedUsage ? "default" : "pointer"};
+  cursor: ${(props) => (!props.$selectedUsage ? "default" : "pointer")};
   transition: all 0.2s ease;
-  pointer-events: ${props => !props.$selectedUsage ? 'none' : 'auto'};
+  pointer-events: ${(props) => (!props.$selectedUsage ? "none" : "auto")};
   // Override global link styles
   background-image: none;
   padding-bottom: 0;
@@ -1340,7 +1357,8 @@ export const EulaLink = styled.a`
   background-position: 0 0;
 
   &:hover {
-    color: ${props => !props.$selectedUsage ? '#999' : '#006efe'} !important;
+    color: ${(props) =>
+      !props.$selectedUsage ? "#999" : "#006efe"} !important;
     text-decoration: underline;
     text-underline-offset: 3px;
     text-decoration-thickness: 2px;
@@ -1381,15 +1399,15 @@ cursor: pointer;
 `;
 
 export const ContentSpacer = styled.div`
-  height: ${props => {
-    if (!props.$selectedUsage) return '18px';
-    return props.$selectedUsage === 'personal' ? '162px' : '256px';
+  height: ${(props) => {
+    if (!props.$selectedUsage) return "18px";
+    return props.$selectedUsage === "personal" ? "162px" : "256px";
   }};
 
   @media (max-width: 1200px) {
-    height: ${props => {
-      if (!props.$selectedUsage) return '18px';
-      return props.$selectedUsage === 'personal' ? '256px' : '432px';
+    height: ${(props) => {
+      if (!props.$selectedUsage) return "18px";
+      return props.$selectedUsage === "personal" ? "256px" : "432px";
     }};
   }
 `;
@@ -1418,10 +1436,9 @@ export const SummaryHeader = styled.div`
 
 export const SummaryContentContainer = styled.div`
   @media (min-width: 769px) {
-    margin-bottom: ${props => props.$showTotal ? '0' : '24px'};
+    margin-bottom: ${(props) => (props.$showTotal ? "0" : "24px")};
   }
 `;
-
 
 export const StyleDetail = styled(motion.div)`
   display: flex;
@@ -1480,7 +1497,7 @@ export const MobileTotalSection = styled(motion.div)`
   right: 0;
   background: white;
   padding: 16px;
-  border-top: 1px solid #E5E7EB;
+  border-top: 1px solid #e5e7eb;
   z-index: 50;
   display: flex;
   flex-direction: column;
@@ -1555,7 +1572,7 @@ export const CustomizeButton = styled(motion.button)`
   border: 2px solid rgb(16, 12, 8);
   color: white;
   border-radius: 10px;
-cursor: pointer;
+  cursor: pointer;
   font-size: 20px;
   line-height: 24px;
   letter-spacing: 0.8px;
@@ -1578,7 +1595,7 @@ export const UsageText = styled.span`
   top: 2px;
   font-size: 20px;
   line-height: 24px;
-   letter-spacing: 0.6px
+  letter-spacing: 0.6px;
 `;
 
 export const RemoveLink = styled.button`
@@ -1586,7 +1603,7 @@ export const RemoveLink = styled.button`
   border: none;
   color: rgb(16, 12, 8);
   cursor: pointer;
-  font-family: 'Jant', sans-serif;
+  font-family: "Jant", sans-serif;
   font-size: 16px;
   line-height: 20px;
   letter-spacing: 0.8px;
@@ -1613,8 +1630,8 @@ export const AddLicenseLink = styled(motion.span)`
   color: rgb(16, 12, 8);
   font-size: 20px;
   line-height: 24px;
-   letter-spacing: 0.8px;
-cursor: pointer;
+  letter-spacing: 0.8px;
+  cursor: pointer;
   margin-top: 24px;
   background: none;
   border: none;
@@ -1623,24 +1640,23 @@ cursor: pointer;
 
 // Animation Variants
 export const overlayVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
-  visible: { 
+  visible: {
     opacity: 1,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
-
-export  const childVariants = {
+export const childVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
@@ -1657,8 +1673,8 @@ export const cartPanelVariants = {
     transition: {
       opacity: { duration: 0.2 },
       scale: { duration: 0.2 },
-      when: "afterChildren"
-    }
+      when: "afterChildren",
+    },
   },
   visible: {
     opacity: 1,
@@ -1668,36 +1684,36 @@ export const cartPanelVariants = {
       scale: { duration: 0.3, ease: "easeOut" },
       when: "beforeChildren",
       staggerChildren: 0.1,
-      delayChildren: 0.1
-    }
-  }
+      delayChildren: 0.1,
+    },
+  },
 };
 
 // Content section variants
 export const contentVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
     y: 20,
     transition: {
-      duration: 0.2
-    }
+      duration: 0.2,
+    },
   },
-  visible: { 
+  visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     opacity: 0,
     y: -20,
     transition: {
       duration: 0.2,
-      ease: "easeInOut"
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
 
 // Stage transition variants
@@ -1709,8 +1725,8 @@ export const stageTransitionVariants = {
       duration: 0.3,
       ease: "easeOut",
       when: "beforeChildren",
-      staggerChildren: 0.1
-    }
+      staggerChildren: 0.1,
+    },
   },
   exit: {
     opacity: 0,
@@ -1720,9 +1736,9 @@ export const stageTransitionVariants = {
       ease: "easeIn",
       when: "afterChildren",
       staggerChildren: 0.05,
-      staggerDirection: -1
-    }
-  }
+      staggerDirection: -1,
+    },
+  },
 };
 
 // Form elements variants
@@ -1731,53 +1747,52 @@ export const formElementVariants = {
     opacity: 0,
     y: 15,
     transition: {
-      duration: 0.2
-    }
+      duration: 0.2,
+    },
   },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     opacity: 0,
     y: -15,
     transition: {
       duration: 0.2,
-      ease: "easeIn"
-    }
-  }
+      ease: "easeIn",
+    },
+  },
 };
 
-export  const summaryContentVariants = {
+export const summaryContentVariants = {
   hidden: {
     opacity: 0,
   },
   visible: {
     opacity: 1,
     transition: {
-      duration: 0.2
-    }
+      duration: 0.2,
+    },
   },
   exit: {
     opacity: 0,
     transition: {
-      duration: 0.2
-    }
-  }
+      duration: 0.2,
+    },
+  },
 };
-
 
 export const headerElementsVariants = {
   hidden: {
     opacity: 0,
     y: -20,
     transition: {
-      duration: 0.1
-    }
+      duration: 0.1,
+    },
   },
   visible: {
     opacity: 1,
@@ -1785,16 +1800,16 @@ export const headerElementsVariants = {
     transition: {
       delay: 0.3, // Match the dashboard delay
       duration: 0.4,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     opacity: 0,
     y: -10,
     transition: {
-      duration: 0.2
-    }
-  }
+      duration: 0.2,
+    },
+  },
 };
 
 // Stage 1 specific wrapper to ensure proper padding behavior
@@ -1807,15 +1822,17 @@ export const Stage1Container = styled.div`
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  
+
   /* Ensure content respects viewport boundaries */
   @media (max-width: 768px) {
     /* Match CartContent padding constraints */
     padding-left: 0;
     padding-right: 0;
-    max-width: calc(100vw - 40px); /* Account for CartContent's 20px left + 20px right */
+    max-width: calc(
+      100vw - 40px
+    ); /* Account for CartContent's 20px left + 20px right */
   }
-  
+
   @media (max-width: 375px) {
     /* Extra constraint for very narrow widths */
     max-width: calc(100vw - 40px);
@@ -1826,221 +1843,225 @@ export const Stage1Container = styled.div`
 // Motion Variants
 export const optionCardVariants = {
   initial: {
-    borderColor: 'rgb(16, 12, 8)'
+    borderColor: "rgb(16, 12, 8)",
   },
   hover: {
-    borderColor: '#006efe',
-    transition: { duration: 0.2 }
+    borderColor: "#006efe",
+    transition: { duration: 0.2 },
   },
   selected: {
-    borderColor: '#006efe'
-  }
+    borderColor: "#006efe",
+  },
 };
 
 export const stageNumberVariants = {
   initial: {
-    backgroundColor: '#006efe'
+    backgroundColor: "#006efe",
   },
   hover: (props) => ({
-    backgroundColor: props.clickable ? 'rgb(16, 12, 8)' : props.active ? 'rgb(16, 12, 8)' : 'rgb(16, 12, 8)',
-    transition: { duration: 0.2 }
-  })
+    backgroundColor: props.clickable
+      ? "rgb(16, 12, 8)"
+      : props.active
+        ? "rgb(16, 12, 8)"
+        : "rgb(16, 12, 8)",
+    transition: { duration: 0.2 },
+  }),
 };
 
 export const buttonVariants = {
   initial: {
-    backgroundColor: 'rgb(16, 12, 8)',
-    borderColor: 'rgb(16, 12, 8)',
-    color: 'white',
-    opacity: 1
+    backgroundColor: "rgb(16, 12, 8)",
+    borderColor: "rgb(16, 12, 8)",
+    color: "white",
+    opacity: 1,
   },
   disabled: {
-    backgroundColor: 'rgb(16, 12, 8)',
-    borderColor: 'rgb(16, 12, 8)',
-    color: 'white',
+    backgroundColor: "rgb(16, 12, 8)",
+    borderColor: "rgb(16, 12, 8)",
+    color: "white",
     opacity: 0.5,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   enabled: {
-    backgroundColor: 'rgb(16, 12, 8)',
-    borderColor: 'rgb(16, 12, 8)',
-    color: 'white',
+    backgroundColor: "rgb(16, 12, 8)",
+    borderColor: "rgb(16, 12, 8)",
+    color: "white",
     opacity: 1,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   hover: {
-    backgroundColor: '#006efe',
-    borderColor: '#006efe',
-    color: 'white',
+    backgroundColor: "#006efe",
+    borderColor: "#006efe",
+    color: "white",
     opacity: 1,
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const radioInputVariants = {
   initial: {
-    backgroundColor: 'rgb(16, 12, 8, 0.5)',
+    backgroundColor: "rgb(16, 12, 8, 0.5)",
     opacity: 1,
-    scale: 1
+    scale: 1,
   },
   hover: {
-    backgroundColor: 'rgb(16, 12, 8)',
+    backgroundColor: "rgb(16, 12, 8)",
     scale: 1,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   checked: {
-    backgroundColor: '#006efe',
+    backgroundColor: "#006efe",
     scale: 1,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   checkedHover: {
-    backgroundColor: '#006efe',
+    backgroundColor: "#006efe",
     scale: 1,
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const packageCardVariants = {
   initial: {
-    borderColor: 'rgb(16, 12, 8)'
+    borderColor: "rgb(16, 12, 8)",
   },
   hover: {
-    borderColor: '#006efe',
-    transition: { duration: 0.2 }
+    borderColor: "#006efe",
+    transition: { duration: 0.2 },
   },
   selected: {
-    borderColor: '#006efe'
-  }
+    borderColor: "#006efe",
+  },
 };
 
 export const paymentMethodButtonVariants = {
   initial: {
-    borderColor: 'rgb(16, 12, 8)'
+    borderColor: "rgb(16, 12, 8)",
   },
   hover: {
-    borderColor: '#006efe',
-    transition: { duration: 0.2 }
+    borderColor: "#006efe",
+    transition: { duration: 0.2 },
   },
   selected: {
-    borderColor: '#006efe'
-  }
+    borderColor: "#006efe",
+  },
 };
 
 export const togglePasswordVariants = {
   initial: {
-    textDecoration: 'none'
+    textDecoration: "none",
   },
   hover: {
-    textDecoration: 'underline',
-    textUnderlineOffset: '3px',
-    textDecorationThickness: '2px',
-    transition: { duration: 0.2 }
-  }
+    textDecoration: "underline",
+    textUnderlineOffset: "3px",
+    textDecorationThickness: "2px",
+    transition: { duration: 0.2 },
+  },
 };
 
 export const loginToggleVariants = {
   initial: {
-    color: 'rgb(16, 12, 8)'
+    color: "rgb(16, 12, 8)",
   },
   hover: {
-    color: '#006efe',
-    transition: { duration: 0.2 }
-  }
+    color: "#006efe",
+    transition: { duration: 0.2 },
+  },
 };
 
 export const customizeButtonVariants = {
   initial: {
-    backgroundColor: 'transparent',
-    borderColor: 'rgb(16, 12, 8)',
-    color: 'rgb(16, 12, 8)'
+    backgroundColor: "transparent",
+    borderColor: "rgb(16, 12, 8)",
+    color: "rgb(16, 12, 8)",
   },
   hover: {
-    backgroundColor: '#006efe',
-    borderColor: '#006efe',
-    color: 'white',
-    transition: { duration: 0.2 }
-  }
+    backgroundColor: "#006efe",
+    borderColor: "#006efe",
+    color: "white",
+    transition: { duration: 0.2 },
+  },
 };
 
 export const addLicenseLinkVariants = {
   initial: {
-    color: 'rgb(16, 12, 8)'
+    color: "rgb(16, 12, 8)",
   },
   hover: {
-    color: '#006efe',
-    transition: { duration: 0.2 }
-  }
+    color: "#006efe",
+    transition: { duration: 0.2 },
+  },
 };
 
 export const resetPasswordLinkVariants = {
   initial: {
-    color: 'rgb(16, 12, 8)'
+    color: "rgb(16, 12, 8)",
   },
   hover: {
-    color: '#006efe',
-    transition: { duration: 0.2 }
-  }
+    color: "#006efe",
+    transition: { duration: 0.2 },
+  },
 };
 
 export const radioLabelVariants = {
   initial: {
-    color: 'rgb(16, 12, 8)'
+    color: "rgb(16, 12, 8)",
   },
   hover: {
-    color: 'rgb(16, 12, 8)',
-    transition: { duration: 0.2 }
-  }
+    color: "rgb(16, 12, 8)",
+    transition: { duration: 0.2 },
+  },
 };
 
 export const eulaCheckboxVariants = {
   initial: {
-    backgroundColor: 'rgb(16, 12, 8, 0.5)',
+    backgroundColor: "rgb(16, 12, 8, 0.5)",
     opacity: 1,
-    scale: 1
+    scale: 1,
   },
   hover: {
-    backgroundColor: 'rgb(16, 12, 8)',
+    backgroundColor: "rgb(16, 12, 8)",
     scale: 1,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   checked: {
-    backgroundColor: '#006efe',
+    backgroundColor: "#006efe",
     scale: 1,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   checkedHover: {
-    backgroundColor: '#006efe',
+    backgroundColor: "#006efe",
     scale: 1,
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const dashboardCheckboxVariants = {
   initial: (props) => ({
-    backgroundColor: props.isEditMode ? 'rgba(255, 255, 255, 0.5)' : '#006efe',
-    borderColor: props.isEditMode ? 'rgb(169, 169, 169)' : '#006efe',
-    opacity: props.isEditMode ? 1 : 0.5,
-    scale: 1
-  }),
-  hover: (props) => ({
-    backgroundColor: props.isEditMode ? 'rgb(16, 12, 8)' : '#006efe',
-    borderColor: props.isEditMode ? 'rgb(16, 12, 8)' : '#006efe',
-    opacity: props.isEditMode ? 1 : 0.5,
-    scale: props.isEditMode ? 1 : 1,
-    transition: { duration: 0.2 }
-  }),
-  checked: (props) => ({
-    backgroundColor: '#006efe',
-    borderColor: '#006efe',
+    backgroundColor: props.isEditMode ? "rgba(255, 255, 255, 0.5)" : "#006efe",
+    borderColor: props.isEditMode ? "rgb(169, 169, 169)" : "#006efe",
     opacity: props.isEditMode ? 1 : 0.5,
     scale: 1,
-    transition: { duration: 0.2 }
   }),
-  checkedHover: (props) => ({
-    backgroundColor: props.isEditMode ? '#0056cc' : '#006efe',
-    borderColor: props.isEditMode ? '#0056cc' : '#006efe',
+  hover: (props) => ({
+    backgroundColor: props.isEditMode ? "rgb(16, 12, 8)" : "#006efe",
+    borderColor: props.isEditMode ? "rgb(16, 12, 8)" : "#006efe",
     opacity: props.isEditMode ? 1 : 0.5,
     scale: props.isEditMode ? 1 : 1,
-    transition: { duration: 0.2 }
-  })
+    transition: { duration: 0.2 },
+  }),
+  checked: (props) => ({
+    backgroundColor: "#006efe",
+    borderColor: "#006efe",
+    opacity: props.isEditMode ? 1 : 0.5,
+    scale: 1,
+    transition: { duration: 0.2 },
+  }),
+  checkedHover: (props) => ({
+    backgroundColor: props.isEditMode ? "#0056cc" : "#006efe",
+    borderColor: props.isEditMode ? "#0056cc" : "#006efe",
+    opacity: props.isEditMode ? 1 : 0.5,
+    scale: props.isEditMode ? 1 : 1,
+    transition: { duration: 0.2 },
+  }),
 };

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   SlotMachinePage,
   SlotMachineContainer,
@@ -8,31 +8,26 @@ import {
   Letter,
   LetterOutline,
   LetterShadow,
-  SlotMachineCursor
-} from '../css/FlashStartSlotMachine';
-import useSlotMachine from '../../../../hooks/TypefaceSlotMachine/useSlotMachine';
+  SlotMachineCursor,
+} from "../css/FlashStartSlotMachine";
+import useSlotMachine from "../../../../hooks/TypefaceSlotMachine/useSlotMachine";
 
 export default function SlotMachine() {
-  const { currentLetter, slotMachineRef, letterRef, isLoaded } = useSlotMachine();
+  const { currentLetter, slotMachineRef, letterRef, isLoaded } =
+    useSlotMachine();
 
   return (
     <SlotMachineCursor>
       <SlotMachinePage
         ref={slotMachineRef}
         className="slot-machine-page"
-        style={{ visibility: isLoaded ? 'visible' : 'hidden' }}
+        style={{ visibility: isLoaded ? "visible" : "hidden" }}
       >
         <SlotMachineContainer className="slot-machine-container no-blur">
           <LetterContainer className="letter-container">
-            <Letter ref={letterRef}>
-              {currentLetter}
-            </Letter>
-            <LetterOutline ref={letterRef}>
-              {currentLetter}
-            </LetterOutline>
-            <LetterShadow ref={letterRef}>
-              {currentLetter}
-            </LetterShadow>
+            <Letter ref={letterRef}>{currentLetter}</Letter>
+            <LetterOutline ref={letterRef}>{currentLetter}</LetterOutline>
+            <LetterShadow ref={letterRef}>{currentLetter}</LetterShadow>
           </LetterContainer>
         </SlotMachineContainer>
       </SlotMachinePage>

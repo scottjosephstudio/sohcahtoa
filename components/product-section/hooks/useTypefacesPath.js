@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { usePathname } from 'next/navigation';
+import { usePathname } from "next/navigation";
 
 /**
  * Custom hook to detect if we're on the Typefaces path
@@ -8,5 +8,5 @@ import { usePathname } from 'next/navigation';
  */
 export function useTypefacesPath() {
   const pathname = usePathname();
-  return pathname === '/Typefaces';
+  return pathname === "/Typefaces";
 }

@@ -1,5 +1,5 @@
-import styled from 'styled-components'
-import { motion } from 'framer-motion'
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 export const TypefaceOverviewContainer = styled(motion.div)`
   width: 100%;
@@ -13,7 +13,7 @@ export const TypefaceOverviewContainer = styled(motion.div)`
   align-items: center;
   z-index: 0;
   background-color: #f9f9f9;
-  
+
   &::before {
     content: "";
     position: absolute;
@@ -26,8 +26,12 @@ export const TypefaceOverviewContainer = styled(motion.div)`
     mix-blend-mode: multiply;
     z-index: -1;
     pointer-events: none;
-    -webkit-transition: opacity 0.05s, -webkit-transform 0.05s;
-    transition: opacity 0.05s, transform 0.05s;
+    -webkit-transition:
+      opacity 0.05s,
+      -webkit-transform 0.05s;
+    transition:
+      opacity 0.05s,
+      transform 0.05s;
   }
 `;
 
@@ -66,7 +70,7 @@ export const TypefaceTab = styled(motion.button)`
   cursor: pointer;
   position: relative;
   z-index: 4;
-  color: ${props => props.$isActive ? '#000' : '#333'};
+  color: ${(props) => (props.$isActive ? "#000" : "#333")};
   text-align: center;
   white-space: nowrap;
   min-width: max-content;
@@ -93,7 +97,8 @@ export const TypefaceTab = styled(motion.button)`
   }
 
   @media (max-width: 600px) {
-    background: ${props => props.$isActive ? '#fff' : 'rgba(145, 145, 145, 0.4)'};
+    background: ${(props) =>
+      props.$isActive ? "#fff" : "rgba(145, 145, 145, 0.4)"};
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border-radius: 9999px;
@@ -104,9 +109,9 @@ export const TypefaceTab = styled(motion.button)`
 // Motion variants for TypefaceTab
 export const typefaceTabVariants = {
   hover: (props) => ({
-    color: props.$isActive ? '#000' : '#fff',
-    transition: { duration: 0.2 }
-  })
+    color: props.$isActive ? "#000" : "#fff",
+    transition: { duration: 0.2 },
+  }),
 };
 
 export const TypefaceSlider = styled(motion.div)`

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import styled from 'styled-components';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { useNavigation } from '../../context/NavigationContext';
-import useSpinnerAnimation from './hooks/useSpinnerAnimation';
+import React, { useState, useCallback, useEffect } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import styled from "styled-components";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useNavigation } from "../../context/NavigationContext";
+import useSpinnerAnimation from "./hooks/useSpinnerAnimation";
 
 // Styled components for the Spinner
 const ShapeContainerType = styled(motion.div)`
@@ -40,7 +40,7 @@ const Coin = styled(motion.div)`
   transition: all 0.2s ease;
   position: relative;
   animation: spin 1s linear infinite;
-  
+
   @keyframes spin {
     0% {
       transform: rotateY(0deg) scale(1);
@@ -76,7 +76,7 @@ const StyledLink = styled(motion.div)`
   align-items: center;
   justify-content: center;
   position: relative;
-  
+
   /* Mobile-specific adjustments for better touch targets */
   @media (max-width: 768px) {
     padding: 16px;
@@ -89,8 +89,8 @@ const Tooltip = styled(motion.span)`
   bottom: -20px; /* Adjusted to account for the negative margin */
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgb(16, 12, 8); 
-  color: white; 
+  background-color: rgb(16, 12, 8);
+  color: white;
   padding: 10px 10px;
   border-radius: 8px;
   font-size: 12px;
@@ -100,7 +100,7 @@ const Tooltip = styled(motion.span)`
   visibility: hidden;
   text-align: center;
   pointer-events: none;
-  
+
   /* Mobile devices only - adjust positioning to prevent off-screen tooltip */
   @media (max-width: 768px) {
     bottom: -24px; /* Adjusted for mobile: balanced spacing for smaller coin */
@@ -115,41 +115,41 @@ const Tooltip = styled(motion.span)`
 // Motion variants for StyledLink hover effects
 const linkVariants = {
   initial: {
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   hover: {
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 const imageVariants = {
   initial: {
-    filter: "invert(0)"
+    filter: "invert(0)",
   },
   hover: {
     filter: "invert(1)",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 const tooltipVariants = {
   initial: {
     opacity: 0,
-    visibility: "hidden"
+    visibility: "hidden",
   },
   hover: {
     opacity: 1,
     visibility: "visible",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 const Spinner = () => {
-  const [animationState, setAnimationState] = useState('visible');
+  const [animationState, setAnimationState] = useState("visible");
   const { handleSpinnerClick } = useSpinnerAnimation();
   const pathname = usePathname();
   const { $isNavigating, previousPath } = useNavigation();
-  
+
   const containerVariants = {
     hidden: { opacity: 0, scale: 0 },
     visible: {
@@ -159,7 +159,7 @@ const Spinner = () => {
     },
     exit: { opacity: 0, scale: 0, transition: { duration: 0.5 } },
   };
-  
+
   const coinVariants = {
     hidden: { opacity: 0, scale: 0 },
     visible: {
@@ -169,34 +169,37 @@ const Spinner = () => {
     },
     exit: { opacity: 0, scale: 0, transition: { duration: 0.2 } },
   };
-  
+
   // Using useCallback to memoize the handler and prevent recreation on renders
-  const handleClick = useCallback((e) => {
-    // First set the animation state to exit
-    setAnimationState('exit');
-    
-    // Call any additional click handler if provided
-    if (handleSpinnerClick) {
-      handleSpinnerClick(e);
-    }
-    
-    // The actual navigation is handled by the Link component
-    // This just handles the animation before navigation
-  }, [handleSpinnerClick]);
-  
+  const handleClick = useCallback(
+    (e) => {
+      // First set the animation state to exit
+      setAnimationState("exit");
+
+      // Call any additional click handler if provided
+      if (handleSpinnerClick) {
+        handleSpinnerClick(e);
+      }
+
+      // The actual navigation is handled by the Link component
+      // This just handles the animation before navigation
+    },
+    [handleSpinnerClick],
+  );
+
   // Listen for home icon click to trigger exit animation
   useEffect(() => {
     const handleSpinnerExit = () => {
-      setAnimationState('exit');
+      setAnimationState("exit");
     };
-    
-    document.addEventListener('spinnerExit', handleSpinnerExit);
-    
+
+    document.addEventListener("spinnerExit", handleSpinnerExit);
+
     return () => {
-      document.removeEventListener('spinnerExit', handleSpinnerExit);
+      document.removeEventListener("spinnerExit", handleSpinnerExit);
     };
   }, []);
-  
+
   return (
     <ShapeContainerType
       className="spinner-container"
@@ -213,32 +216,29 @@ const Spinner = () => {
           initial="initial"
           whileHover="hover"
         >
-          <Coin
-            variants={coinVariants}
-            animate={animationState}
-          >
+          <Coin variants={coinVariants} animate={animationState}>
             <motion.div
               initial={{ filter: "invert(0)" }}
-              whileHover={{ filter: "invert(1)", transition: { duration: 0.2 } }}
+              whileHover={{
+                filter: "invert(1)",
+                transition: { duration: 0.2 },
+              }}
             >
-              <Image 
-                src="/assets/animations/Render.svg" 
-                alt="Coin animation" 
-                width={120} 
+              <Image
+                src="/assets/animations/Render.svg"
+                alt="Coin animation"
+                width={120}
                 height={120}
                 priority
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'contain'
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
                 }}
               />
             </motion.div>
           </Coin>
-          <Tooltip 
-            className="tooltip"
-            variants={tooltipVariants}
-          >
+          <Tooltip className="tooltip" variants={tooltipVariants}>
             Keep In The Loop
           </Tooltip>
         </StyledLink>

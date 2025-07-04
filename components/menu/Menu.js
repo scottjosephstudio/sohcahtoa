@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import menuData from '../../data/menuData';
-import { useNavigation } from '../../context/NavigationContext';
+import { useState, useRef, useEffect, useCallback } from "react";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import menuData from "../../data/menuData";
+import { useNavigation } from "../../context/NavigationContext";
 
 // Import components
-import NavigationLink from './components/NavigationLink';
-import FooterLinks from './components/FooterLinks';
-import ContactNewsletter from './components/ContactNewsletter';
+import NavigationLink from "./components/NavigationLink";
+import FooterLinks from "./components/FooterLinks";
+import ContactNewsletter from "./components/ContactNewsletter";
 
 // Import styles
 import {
@@ -31,8 +31,8 @@ import {
   ProjectList,
   ProjectItem,
   Backdrop,
-  StaggeredContent
-} from './styles/MenuStyles';
+  StaggeredContent,
+} from "./styles/MenuStyles";
 
 // Import animation variants
 import {
@@ -40,22 +40,22 @@ import {
   directLinkVariants,
   backdropVariants,
   dropdownVariants,
-  contentVariants
-} from './styles/animationVariants';
+  contentVariants,
+} from "./styles/animationVariants";
 
 // Import hooks and utilities
-import { usePortal, useMenuOverlay } from './hooks/useMenuState';
-import { getSafeUrl } from './utils/urlUtils';
+import { usePortal, useMenuOverlay } from "./hooks/useMenuState";
+import { getSafeUrl } from "./utils/urlUtils";
 
 export default function Menu() {
   const pathname = usePathname();
   const { previousPath, $isNavigating } = useNavigation();
-  
+
   // Completely hide menu from /ID path - no rendering at all
-  if (pathname === '/ID') {
+  if (pathname === "/ID") {
     return null;
   }
-  
+
   // Move ALL useState calls before any conditional returns
   const [isHovering, setIsHovering] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -70,22 +70,22 @@ export default function Menu() {
 
   // Handle menu fade animations for /Typefaces ↔ /ID navigation
   const [shouldFadeIn, setShouldFadeIn] = useState(false);
-  
+
   useEffect(() => {
     // Since /ID is handled by early return, this only handles fade-in logic
     setShouldShowMenu(true);
     // Set fade in effect only when coming from /ID
-    setShouldFadeIn(previousPath === '/ID');
+    setShouldFadeIn(previousPath === "/ID");
   }, [pathname, previousPath]);
 
   // Mock the portal context for now
   const { isModalOpen, isTypefacesPath } = usePortal();
   const { openDropdown, setOpenDropdown } = useMenuOverlay();
-  
+
   // Use useCallback for all functions used in useEffect dependencies
   const handleDropdownClose = useCallback(() => {
     setOpenDropdown(null);
-    
+
     // Keep expanded state if still hovering the menu
     if (!isHovering) {
       setTimeout(() => {
@@ -96,33 +96,33 @@ export default function Menu() {
 
   // Animation variants for framer-motion
   const fadeIn = {
-    hidden: { 
+    hidden: {
       opacity: 0,
-      transform: "translateZ(0)"
+      transform: "translateZ(0)",
     },
-    visible: { 
+    visible: {
       opacity: 1,
       transform: "translateZ(0)",
-      transition: { 
+      transition: {
         duration: 0.2,
-        ease: "easeOut"
-      }
+        ease: "easeOut",
+      },
     },
-    exit: { 
+    exit: {
       opacity: 0,
       transform: "translateZ(0)",
-      transition: { 
+      transition: {
         duration: 0.15,
-        ease: "easeIn"
-      }
-    }
+        ease: "easeIn",
+      },
+    },
   };
 
   const createMenuItems = () => [
     {
-      id: 'projects',
-      label: 'Projects',
-      href: '/projects',
+      id: "projects",
+      label: "Projects",
+      href: "/projects",
       hasDropdown: true,
       content: () => (
         <motion.div
@@ -133,19 +133,22 @@ export default function Menu() {
         >
           <DropdownContent className="DropdownContent">
             {menuData.sections.map((section, sectionIndex) => (
-              <StaggeredContent key={section.title} $delay={0.1 + (sectionIndex * 0.15)}>
+              <StaggeredContent
+                key={section.title}
+                $delay={0.1 + sectionIndex * 0.15}
+              >
                 <div>
                   <SectionTitle>{section.title}</SectionTitle>
                   <ProjectList>
                     {section.items.map((item) => {
-                      const baseProjectId = item.link.split('/').pop();
+                      const baseProjectId = item.link.split("/").pop();
                       const safeProjectId = getSafeUrl(baseProjectId);
-                      
+
                       return (
                         <ProjectItem key={item.name}>
-                          <NavigationLink 
-                            href={`/Projects/${safeProjectId}`} 
-                            label={item.name} 
+                          <NavigationLink
+                            href={`/Projects/${safeProjectId}`}
+                            label={item.name}
                           />
                         </ProjectItem>
                       );
@@ -156,15 +159,15 @@ export default function Menu() {
             ))}
           </DropdownContent>
         </motion.div>
-      )
+      ),
     },
     {
-      id: 'about',
-      label: 'About',
-      href: '/about',
+      id: "about",
+      label: "About",
+      href: "/about",
       hasDropdown: true,
       content: () => {
-        const paragraphs = menuData.about.content.split('\n\n');
+        const paragraphs = menuData.about.content.split("\n\n");
         return (
           <motion.div
             variants={fadeIn}
@@ -177,17 +180,19 @@ export default function Menu() {
                 <SectionTitle>About</SectionTitle>
               </StaggeredContent>
               {paragraphs.map((paragraph, index) => (
-                <StaggeredContent key={index} $delay={0.15 + (index * 0.05)}>
+                <StaggeredContent key={index} $delay={0.15 + index * 0.05}>
                   <p>{paragraph}</p>
                 </StaggeredContent>
               ))}
-              <StaggeredContent $delay={0.2 + (paragraphs.length * 0.05)}>
+              <StaggeredContent $delay={0.2 + paragraphs.length * 0.05}>
                 <ClientsTitle>Selected Clients</ClientsTitle>
               </StaggeredContent>
               <ClientsGrid>
                 {menuData.selectedClients.map((client, index) => (
                   <div key={client.name}>
-                    <StaggeredContent $delay={0.25 + (paragraphs.length * 0.05) + (index * 0.05)}>
+                    <StaggeredContent
+                      $delay={0.25 + paragraphs.length * 0.05 + index * 0.05}
+                    >
                       <ClientInfo>
                         —&ensp;
                         {client.name}
@@ -201,12 +206,12 @@ export default function Menu() {
             </DropdownContent>
           </motion.div>
         );
-      }
+      },
     },
     {
-      id: 'contact',
-      label: 'Contact',
-      href: '/contact',
+      id: "contact",
+      label: "Contact",
+      href: "/contact",
       hasDropdown: true,
       content: () => (
         <motion.div
@@ -225,7 +230,7 @@ export default function Menu() {
                 <p>{menuData.contact.address.studio}</p>
                 <p>{menuData.contact.address.city}</p>
                 <p>{menuData.contact.address.postcode}</p>
-                <p style={{ marginTop: '12px' }}>{menuData.contact.email}</p>
+                <p style={{ marginTop: "12px" }}>{menuData.contact.email}</p>
                 <p>{menuData.contact.phone}</p>
               </div>
             </StaggeredContent>
@@ -237,25 +242,26 @@ export default function Menu() {
             </StaggeredContent>
           </DropdownContent>
         </motion.div>
-      )
+      ),
     },
     {
-      id: 'Typefaces',
-      label: 'Typefaces',
-      href: '/Typefaces',
-      hasDropdown: false
-    }
+      id: "Typefaces",
+      label: "Typefaces",
+      href: "/Typefaces",
+      hasDropdown: false,
+    },
   ];
-  
+
   // Initialize menu items
   const menuItems = createMenuItems();
 
   // Scroll event listener for expanded menu animation
   useEffect(() => {
     const handleScroll = () => {
-      const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      const currentScroll =
+        window.pageYOffset || document.documentElement.scrollTop;
       const scrollDiff = currentScroll - lastScrollPosition.current;
-      
+
       // Only trigger if the menu is expanded but no dropdown is open
       if (isExpanded && !openDropdown) {
         if (scrollDiff > 0 && currentScroll > 50) {
@@ -266,12 +272,12 @@ export default function Menu() {
           setIsScrolledOut(false);
         }
       }
-      
+
       lastScrollPosition.current = currentScroll;
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [isExpanded, openDropdown]);
 
   // Add window resize handler
@@ -288,7 +294,7 @@ export default function Menu() {
           setIsFullyExpanded(false);
           setIsHovering(false);
         }
-        
+
         // Clear any locks immediately
         setLockDropdown(false);
         setIsSubmitting(false);
@@ -296,10 +302,10 @@ export default function Menu() {
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    
+    window.addEventListener("resize", handleResize);
+
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, [isExpanded, openDropdown, isHovering, handleDropdownClose]);
 
@@ -318,38 +324,42 @@ export default function Menu() {
   useEffect(() => {
     if (openDropdown) {
       // Apply body lock when dropdown opens
-      document.body.classList.add('dropdown-open');
+      document.body.classList.add("dropdown-open");
       // Ensure body stays locked by directly applying inline style
-      document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = '0px'; // Compensate for scrollbar width
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = "0px"; // Compensate for scrollbar width
     } else {
       // Remove all locking when dropdown closes
-      document.body.classList.remove('dropdown-open');
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
+      document.body.classList.remove("dropdown-open");
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
     }
-    
+
     // Cleanup function to ensure locks are removed when component unmounts
     return () => {
-      document.body.classList.remove('dropdown-open');
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
+      document.body.classList.remove("dropdown-open");
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
     };
   }, [openDropdown]);
-  
+
   // Also add this useEffect to reset body lock when route changes
   useEffect(() => {
     // Reset body lock and dropdown state when pathname changes (page navigation)
     setOpenDropdown(null);
-    document.body.classList.remove('dropdown-open');
-    document.body.style.overflow = '';
-    document.body.style.paddingRight = '';
+    document.body.classList.remove("dropdown-open");
+    document.body.style.overflow = "";
+    document.body.style.paddingRight = "";
   }, [pathname, setOpenDropdown]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target) &&
-          dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
         if (openDropdown) {
           handleDropdownClose();
         }
@@ -362,13 +372,13 @@ export default function Menu() {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openDropdown, isHovering, handleDropdownClose]);
 
   useEffect(() => {
     const handleEsc = (event) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         if (openDropdown) {
           handleDropdownClose();
         }
@@ -381,8 +391,8 @@ export default function Menu() {
       }
     };
 
-    document.addEventListener('keydown', handleEsc);
-    return () => document.removeEventListener('keydown', handleEsc);
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
   }, [openDropdown, isHovering, handleDropdownClose]);
 
   const handleMouseEnter = () => {
@@ -421,8 +431,8 @@ export default function Menu() {
       return null;
     } else {
       return (
-        <DirectLink 
-          key={item.id} 
+        <DirectLink
+          key={item.id}
           href={item.href}
           variants={directLinkVariants}
           initial="initial"
@@ -448,207 +458,220 @@ export default function Menu() {
           />
         )}
       </AnimatePresence>
-      
+
       <AnimatePresence>
         {shouldShowMenu && (
-          <MenuContainer 
+          <MenuContainer
             key="menu-container"
-            style={{ 
-        zIndex: isModalOpen && isTypefacesPath ? 40 : 100 
+            style={{
+              zIndex: isModalOpen && isTypefacesPath ? 40 : 100,
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{
               duration: 0.3,
-              ease: "easeInOut"
+              ease: "easeInOut",
             }}
           >
-        <MenuPill 
-          ref={menuRef}
-          className="menu-pill"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          $isExpanded={isExpanded}
-          animate={{
-            opacity: shouldShowMenu ? 1 : 0,
-            y: isScrolledOut ? -100 : 0,
-          }}
-          initial={{
-            opacity: shouldFadeIn ? 0 : 1,
-            y: 0
-          }}
-          transition={{
-            opacity: shouldFadeIn ? { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] } : { duration: 0.15 },
-            y: { duration: 0.15 },
-          }}
-          onAnimationComplete={() => {
-            if (isExpanded) {
-              setIsFullyExpanded(true);
-            } else {
-              setIsFullyExpanded(false);
-            }
-          }}
-        >
-          <AnimatePresence mode="wait">
-            {!isExpanded ? (
-              <MenuItemCollapsed 
-                key="menu-label"
-                initial={{ opacity: 0 }}
-                animate={{ 
-                  opacity: 1,
-                  transition: {
-                    duration: 0.001,
-                    delay: 0.001
-                  }
-                }}
-                exit={{ 
-                  opacity: 0,
-                  transition: {
-                    duration: 0.1
-                  }
-                }}
-              >
-                Menu
-              </MenuItemCollapsed>
-            ) : (
-              <motion.div 
-                key="menu-items"
-                className="menu-items-container"
-                style={{ 
-                  display: 'flex', 
-                  justifyContent: 'center',
-                  minWidth: "84px",
-                  width: "100%"
-                }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ 
-                  opacity: 0,
-                  transition: {
-                    duration: 0.01 // Make menu items container disappear instantly
-                  }
-                }}
-                transition={{ 
-                  duration: 0.3,
-                  delay: 0.20
-                }}
-              >
-                {menuItems.map((item, index) => {
-                  if (item.hasDropdown) {
-                    return (
-                      <MenuItem 
-                        key={item.id}
-                        variants={menuItemVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        onMouseEnter={() => {
-                          if (isFullyExpanded && !lockDropdown && !isSubmitting) {
-                            setIsHovering(true);
-                            setOpenDropdown(item.id);
-                          }
-                        }}
-                        onClick={() => {
-                          if (isFullyExpanded) {
-                            handleClick(item.id);
-                          }
-                        }}
-                        onKeyDown={(e) => {
-                          if ((e.key === 'Enter' || e.key === ' ') && isFullyExpanded && !lockDropdown && !isSubmitting) {
-                            e.preventDefault();
-                            handleClick(item.id);
-                          }
-                        }}
-                        tabIndex={0}
-                        role="button"
-                        aria-haspopup="true"
-                        aria-expanded={openDropdown === item.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ 
-                          opacity: 0,
-                          transition: {
-                            duration: 0.01,
-                            delay: 0
-                          }
-                        }}
-                        transition={{ 
-                          duration: 0.2,
-                          delay: 0.15 + (index * 0.1)
-                        }}
-                      >
-                        {item.label}
-                      </MenuItem>
-                    );
-                  } else {
-                    return (
-                      <motion.div
-                        key={item.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ 
-                          opacity: 0,
-                          transition: {
-                            duration: 0.01, // Instant disappearance
-                            delay: 0 // No delay
-                          }
-                        }}
-                        transition={{ 
-                          duration: 0.2,
-                          delay: 0.15 + (index * 0.1)
-                        }}
-                      >
-                        {renderDirectItem(item)}
-                      </motion.div>
-                    );
-                  }
-                })}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </MenuPill>
-        
-        <MenuBridge />
-        
-        <DropdownContainer $isOpen={!!openDropdown}>
-          <AnimatePresence mode="wait">
-            {openDropdown && (
-              <Dropdown 
-                key={`dropdown-${openDropdown}`}
-                variants={dropdownVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                onMouseEnter={() => {
-                  setIsHovering(true);
-                  setIsExpanded(true);
-                }}
-                onMouseLeave={() => {
-                  setIsHovering(false);
-                  setTimeout(() => {
-                    if (!isHovering) {
-                      handleDropdownClose();
-                    }
-                  }, 200);
-                }}
-                ref={dropdownRef}
-              >
-                <AnimatePresence mode="wait">
-                  <ScrollWrapper
-                    key={`content-${openDropdown}`}
-                    variants={contentVariants}
+            <MenuPill
+              ref={menuRef}
+              className="menu-pill"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              $isExpanded={isExpanded}
+              animate={{
+                opacity: shouldShowMenu ? 1 : 0,
+                y: isScrolledOut ? -100 : 0,
+              }}
+              initial={{
+                opacity: shouldFadeIn ? 0 : 1,
+                y: 0,
+              }}
+              transition={{
+                opacity: shouldFadeIn
+                  ? { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }
+                  : { duration: 0.15 },
+                y: { duration: 0.15 },
+              }}
+              onAnimationComplete={() => {
+                if (isExpanded) {
+                  setIsFullyExpanded(true);
+                } else {
+                  setIsFullyExpanded(false);
+                }
+              }}
+            >
+              <AnimatePresence mode="wait">
+                {!isExpanded ? (
+                  <MenuItemCollapsed
+                    key="menu-label"
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      opacity: 1,
+                      transition: {
+                        duration: 0.001,
+                        delay: 0.001,
+                      },
+                    }}
+                    exit={{
+                      opacity: 0,
+                      transition: {
+                        duration: 0.1,
+                      },
+                    }}
+                  >
+                    Menu
+                  </MenuItemCollapsed>
+                ) : (
+                  <motion.div
+                    key="menu-items"
+                    className="menu-items-container"
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      minWidth: "84px",
+                      width: "100%",
+                    }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{
+                      opacity: 0,
+                      transition: {
+                        duration: 0.01, // Make menu items container disappear instantly
+                      },
+                    }}
+                    transition={{
+                      duration: 0.3,
+                      delay: 0.2,
+                    }}
+                  >
+                    {menuItems.map((item, index) => {
+                      if (item.hasDropdown) {
+                        return (
+                          <MenuItem
+                            key={item.id}
+                            variants={menuItemVariants}
+                            whileHover="hover"
+                            whileTap="tap"
+                            onMouseEnter={() => {
+                              if (
+                                isFullyExpanded &&
+                                !lockDropdown &&
+                                !isSubmitting
+                              ) {
+                                setIsHovering(true);
+                                setOpenDropdown(item.id);
+                              }
+                            }}
+                            onClick={() => {
+                              if (isFullyExpanded) {
+                                handleClick(item.id);
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              if (
+                                (e.key === "Enter" || e.key === " ") &&
+                                isFullyExpanded &&
+                                !lockDropdown &&
+                                !isSubmitting
+                              ) {
+                                e.preventDefault();
+                                handleClick(item.id);
+                              }
+                            }}
+                            tabIndex={0}
+                            role="button"
+                            aria-haspopup="true"
+                            aria-expanded={openDropdown === item.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{
+                              opacity: 0,
+                              transition: {
+                                duration: 0.01,
+                                delay: 0,
+                              },
+                            }}
+                            transition={{
+                              duration: 0.2,
+                              delay: 0.15 + index * 0.1,
+                            }}
+                          >
+                            {item.label}
+                          </MenuItem>
+                        );
+                      } else {
+                        return (
+                          <motion.div
+                            key={item.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{
+                              opacity: 0,
+                              transition: {
+                                duration: 0.01, // Instant disappearance
+                                delay: 0, // No delay
+                              },
+                            }}
+                            transition={{
+                              duration: 0.2,
+                              delay: 0.15 + index * 0.1,
+                            }}
+                          >
+                            {renderDirectItem(item)}
+                          </motion.div>
+                        );
+                      }
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </MenuPill>
+
+            <MenuBridge />
+
+            <DropdownContainer $isOpen={!!openDropdown}>
+              <AnimatePresence mode="wait">
+                {openDropdown && (
+                  <Dropdown
+                    key={`dropdown-${openDropdown}`}
+                    variants={dropdownVariants}
                     initial="hidden"
                     animate="visible"
                     exit="exit"
+                    onMouseEnter={() => {
+                      setIsHovering(true);
+                      setIsExpanded(true);
+                    }}
+                    onMouseLeave={() => {
+                      setIsHovering(false);
+                      setTimeout(() => {
+                        if (!isHovering) {
+                          handleDropdownClose();
+                        }
+                      }, 200);
+                    }}
+                    ref={dropdownRef}
                   >
-                    {menuItems.find(item => item.id === openDropdown)?.content()}
-                  </ScrollWrapper>
-                </AnimatePresence>
-              </Dropdown>
-            )}
-          </AnimatePresence>
-        </DropdownContainer>
-      </MenuContainer>
+                    <AnimatePresence mode="wait">
+                      <ScrollWrapper
+                        key={`content-${openDropdown}`}
+                        variants={contentVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                      >
+                        {menuItems
+                          .find((item) => item.id === openDropdown)
+                          ?.content()}
+                      </ScrollWrapper>
+                    </AnimatePresence>
+                  </Dropdown>
+                )}
+              </AnimatePresence>
+            </DropdownContainer>
+          </MenuContainer>
         )}
       </AnimatePresence>
     </>

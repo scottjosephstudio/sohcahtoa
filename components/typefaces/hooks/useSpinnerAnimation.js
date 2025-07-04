@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect } from 'react';
-import { gsap } from 'gsap';
-import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
-import { useNavigation } from '../../../context/NavigationContext';
+import { useCallback, useEffect } from "react";
+import { gsap } from "gsap";
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useNavigation } from "../../../context/NavigationContext";
 
 export default function useSpinnerAnimation() {
   const router = useRouter();
@@ -13,8 +13,8 @@ export default function useSpinnerAnimation() {
 
   // Prefetch the ID route when on Typefaces page for faster navigation
   useEffect(() => {
-    if (pathname === '/Typefaces') {
-      router.prefetch('/ID');
+    if (pathname === "/Typefaces") {
+      router.prefetch("/ID");
     }
   }, [pathname, router]);
 
@@ -29,43 +29,59 @@ export default function useSpinnerAnimation() {
       const tl = gsap.timeline({
         onComplete: () => {
           // Simple direct navigation after animation
-          if (pathname === '/Typefaces') {
-            router.push('/ID');
+          if (pathname === "/Typefaces") {
+            router.push("/ID");
           }
-        }
+        },
       });
 
       // Only fade out menu when on Typefaces page and spinner is clicked
-      if (pathname === '/Typefaces') {
-        tl.to('.menu-items-container', {
-          opacity: 0,
-          duration: 0.3,
-          ease: 'power3.in'
-        }, 0);
+      if (pathname === "/Typefaces") {
+        tl.to(
+          ".menu-items-container",
+          {
+            opacity: 0,
+            duration: 0.3,
+            ease: "power3.in",
+          },
+          0,
+        );
 
         // Only fade out menu pill during spinner click (navigation away from Typefaces)
-        tl.to('.menu-pill', {
-          opacity: 0,
-          duration: 0.3,
-          ease: 'power3.in'
-        }, 0);
+        tl.to(
+          ".menu-pill",
+          {
+            opacity: 0,
+            duration: 0.3,
+            ease: "power3.in",
+          },
+          0,
+        );
       }
 
       // Animate the elements out of the viewport
-      tl.to('.slot-machine-page', {
-        x: '0vw',
-        scale: 0,
-        duration: 0.25,
-        ease: 'power3.in'
-      }, 0);
+      tl.to(
+        ".slot-machine-page",
+        {
+          x: "0vw",
+          scale: 0,
+          duration: 0.25,
+          ease: "power3.in",
+        },
+        0,
+      );
 
-      tl.to('.banner-container', {
-        y: '100%',
-        duration: 0.3,
-        ease: 'power3.in'
-      }, 0);
+      tl.to(
+        ".banner-container",
+        {
+          y: "100%",
+          duration: 0.3,
+          ease: "power3.in",
+        },
+        0,
+      );
     },
-    [router, pathname, set$isNavigating]
+    [router, pathname, set$isNavigating],
   );
 
   return {

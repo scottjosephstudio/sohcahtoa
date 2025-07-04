@@ -1,31 +1,31 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { AnimatePresence } from 'framer-motion';
-import ResponsiveHeader from '../ResponsiveHeader/ResponsiveHeader';
-import TypefaceOverview from '../Typeface_Overview/TabMenu/TypefaceOverview';
-import LoginModal from '../Elements/Auth/LoginModal';
-import ResetPassword from '../Elements/Auth/ResetPassword';
-import UserDashboard from '../Elements/Auth/UserDashboard';
-import CartPanel from '../../cart/Controller/CartPanel';
-import ModalOverlay from './ModalOverlay';
-import ResponsiveFooter from '../ResponsiveFooter/ResponsiveFooter';
-import { useCartState } from '../hooks/useCartState';
-import { useAuthState } from '../hooks/useAuthState';
-import { useFormState } from '../hooks/useFormState';
-import { useUIState } from '../hooks/useUIState';
-import ClientOnly from './ClientOnly';
-import { PageContainer } from './ProductPage_Styles';
-import { calculateDefaultFontSize } from '../Typeface_Overview/Sections/Tester/LetterSpacingUtils';
+import React, { useState, useEffect, useRef } from "react";
+import { AnimatePresence } from "framer-motion";
+import ResponsiveHeader from "../ResponsiveHeader/ResponsiveHeader";
+import TypefaceOverview from "../Typeface_Overview/TabMenu/TypefaceOverview";
+import LoginModal from "../Elements/Auth/LoginModal";
+import ResetPassword from "../Elements/Auth/ResetPassword";
+import UserDashboard from "../Elements/Auth/UserDashboard";
+import CartPanel from "../../cart/Controller/CartPanel";
+import ModalOverlay from "./ModalOverlay";
+import ResponsiveFooter from "../ResponsiveFooter/ResponsiveFooter";
+import { useCartState } from "../hooks/useCartState";
+import { useAuthState } from "../hooks/useAuthState";
+import { useFormState } from "../hooks/useFormState";
+import { useUIState } from "../hooks/useUIState";
+import ClientOnly from "./ClientOnly";
+import { PageContainer } from "./ProductPage_Styles";
+import { calculateDefaultFontSize } from "../Typeface_Overview/Sections/Tester/LetterSpacingUtils";
 
 const ProductPage = () => {
   // IMPORTANT: Keep ALL hooks at the top level and in the same order on every render
-  const [activeTab, setActiveTab] = useState('specimen');
+  const [activeTab, setActiveTab] = useState("specimen");
   const [fontSettings, setFontSettings] = useState({
     fontSize: calculateDefaultFontSize(),
     lineHeight: 1,
     letterSpacing: 0,
-    isManuallySet: false
+    isManuallySet: false,
   });
   const [isMounted, setIsMounted] = useState(false);
   const typefaceOverviewRef = useRef(null);
@@ -40,15 +40,15 @@ const ProductPage = () => {
   // Always keep effects after state declarations
   useEffect(() => {
     setIsMounted(true);
-    
+
     // Preload font for glyphs tab to prevent FOUT when switching tabs
-    if (typeof window !== 'undefined' && document.fonts) {
+    if (typeof window !== "undefined" && document.fonts) {
       // Use requestIdleCallback for better performance, fallback to setTimeout
       const preloadFont = async () => {
         try {
           await document.fonts.ready;
           // Check if font is already loaded to avoid re-triggering font load
-          const fontFace = '100px Jant';
+          const fontFace = "100px Jant";
           if (!document.fonts.check(fontFace)) {
             await document.fonts.load(fontFace);
           }
@@ -56,7 +56,7 @@ const ProductPage = () => {
           // Silently handle font preload errors to not affect user experience
         }
       };
-      
+
       // Use requestIdleCallback for non-critical font preloading
       if (window.requestIdleCallback) {
         window.requestIdleCallback(preloadFont, { timeout: 2000 });
@@ -72,15 +72,15 @@ const ProductPage = () => {
   const authState = useAuthState();
   const formState = useFormState();
   const uiState = useUIState({ activeTab });
- 
+
   // Handle tab changes
   const handleTabChange = (newTab) => {
-    if (newTab === 'test') {
+    if (newTab === "test") {
       // Reset font settings when entering test tab
-      setFontSettings(prev => ({
+      setFontSettings((prev) => ({
         ...prev,
         fontSize: calculateDefaultFontSize(),
-        isManuallySet: false
+        isManuallySet: false,
       }));
     }
     uiState.handlers.handleTabExit(activeTab, newTab, setActiveTab);
@@ -90,9 +90,9 @@ const ProductPage = () => {
   if (!isMounted) {
     return null;
   }
- 
-  const { 
-    state: { 
+
+  const {
+    state: {
       isFullCartOpen,
       weightOption,
       selectedPackage,
@@ -103,15 +103,15 @@ const ProductPage = () => {
       customSocialLicense,
       cartItems,
       isInCart,
-      isCartDetailsOpen
+      isCartDetailsOpen,
     },
     setters: cartSetters,
     handlers: cartHandlers,
-    refs: { cartDetailsRef, cartCountRef }
+    refs: { cartDetailsRef, cartCountRef },
   } = cartState;
- 
-  const { 
-    state: { 
+
+  const {
+    state: {
       isLoginModalOpen,
       isLoggedIn,
       userEmail,
@@ -120,32 +120,23 @@ const ProductPage = () => {
       passwordError,
       billingDetails,
       newsletter,
-      isEditMode
+      isEditMode,
     },
     setters: authSetters,
-    handlers: authHandlers
+    handlers: authHandlers,
   } = authState;
- 
-  const { 
-    state: { 
-      isResetPassword,
-      showPassword,
-      $isSaving
-    },
+
+  const {
+    state: { isResetPassword, showPassword, $isSaving },
     setters: formSetters,
-    handlers: formHandlers
+    handlers: formHandlers,
   } = formState;
- 
-  const { 
-    state: { 
-      isNavigatingHome, 
-      windowWidth,
-      isTestExiting,
-      isGlyphsExiting
-    },
+
+  const {
+    state: { isNavigatingHome, windowWidth, isTestExiting, isGlyphsExiting },
     handlers: uiHandlers,
   } = uiState;
- 
+
   return (
     <ClientOnly>
       <PageContainer>
@@ -162,12 +153,12 @@ const ProductPage = () => {
           }}
           authState={{
             isLoggedIn,
-            handlers: authHandlers
+            handlers: authHandlers,
           }}
           uiHandlers={uiHandlers}
         />
- 
-        <TypefaceOverview 
+
+        <TypefaceOverview
           isNavigatingHome={isNavigatingHome}
           onClick={uiHandlers.handleHomeClick}
           activeTab={activeTab}
@@ -177,8 +168,8 @@ const ProductPage = () => {
           ref={typefaceOverviewRef}
         />
 
-        <ResponsiveFooter 
-          isTestTab={activeTab === 'test'} 
+        <ResponsiveFooter
+          isTestTab={activeTab === "test"}
           activeTab={activeTab}
           fontSettings={fontSettings}
           setFontSettings={setFontSettings}
@@ -197,10 +188,11 @@ const ProductPage = () => {
           isGlyphsExiting={isGlyphsExiting}
           onSearch={handleSearch}
         />
- 
-        {isLoginModalOpen && !isLoggedIn && (
-          !isResetPassword ? (
-            <LoginModal 
+
+        {isLoginModalOpen &&
+          !isLoggedIn &&
+          (!isResetPassword ? (
+            <LoginModal
               userEmail={userEmail}
               setUserEmail={authSetters.setUserEmail}
               userPassword={userPassword}
@@ -215,13 +207,13 @@ const ProductPage = () => {
               formState={formState.state}
             />
           ) : (
-            <LoginModal 
+            <LoginModal
               handleModalClick={uiHandlers.handleModalClick}
               handleClose={() => authSetters.setIsLoginModalOpen(false)}
               formSetters={formSetters}
               formState={formState.state}
             >
-              <ResetPassword 
+              <ResetPassword
                 setIsLoginModalOpen={authSetters.setIsLoginModalOpen}
                 resetEmail={formState.state.resetEmail}
                 setResetEmail={formSetters.setResetEmail}
@@ -239,17 +231,16 @@ const ProductPage = () => {
                 isResetting={formState.state.isResetting}
               />
             </LoginModal>
-          )
-        )}
- 
+          ))}
+
         <AnimatePresence>
           {isLoggedIn && isLoginModalOpen && (
             <>
-              <ModalOverlay 
+              <ModalOverlay
                 onClick={() => authSetters.setIsLoginModalOpen(false)}
                 zIndex={60}
               />
-              <UserDashboard 
+              <UserDashboard
                 userEmail={userEmail}
                 setUserEmail={authSetters.setUserEmail}
                 userPassword={userPassword}
@@ -278,37 +269,36 @@ const ProductPage = () => {
       <AnimatePresence>
         {isFullCartOpen && (
           <>
-            <ModalOverlay 
-              onClick={cartHandlers.handleCartClose}
-              zIndex={70}
+            <ModalOverlay onClick={cartHandlers.handleCartClose} zIndex={70} />
+            <CartPanel
+              key="cart-panel"
+              isOpen={isFullCartOpen}
+              onClose={cartHandlers.handleCartClose}
+              setIsLoggedIn={authSetters.setIsLoggedIn}
+              onNavigateHome={uiHandlers.handleHomeClick}
+              weightOption={weightOption}
+              setWeightOption={cartSetters.setWeightOption}
+              selectedPackage={selectedPackage}
+              setSelectedPackage={cartSetters.setSelectedPackage}
+              customizing={customizing}
+              setCustomizing={cartSetters.setCustomizing}
+              customPrintLicense={customPrintLicense}
+              setCustomPrintLicense={cartSetters.setCustomPrintLicense}
+              customWebLicense={customWebLicense}
+              setCustomWebLicense={cartSetters.setCustomWebLicense}
+              customAppLicense={customAppLicense}
+              setCustomAppLicense={cartSetters.setCustomAppLicense}
+              customSocialLicense={customSocialLicense}
+              setCustomSocialLicense={cartSetters.setCustomSocialLicense}
+              onUpdateBillingDetails={
+                authHandlers.handleUpdateBillingDetailsFromRegistration
+              }
             />
-          <CartPanel
-            key="cart-panel"
-            isOpen={isFullCartOpen}
-            onClose={cartHandlers.handleCartClose}
-            setIsLoggedIn={authSetters.setIsLoggedIn}
-            onNavigateHome={uiHandlers.handleHomeClick}
-            weightOption={weightOption}
-            setWeightOption={cartSetters.setWeightOption}
-            selectedPackage={selectedPackage}
-            setSelectedPackage={cartSetters.setSelectedPackage}
-            customizing={customizing}
-            setCustomizing={cartSetters.setCustomizing}
-            customPrintLicense={customPrintLicense}
-            setCustomPrintLicense={cartSetters.setCustomPrintLicense}
-            customWebLicense={customWebLicense}
-            setCustomWebLicense={cartSetters.setCustomWebLicense}
-            customAppLicense={customAppLicense}
-            setCustomAppLicense={cartSetters.setCustomAppLicense}
-            customSocialLicense={customSocialLicense}
-            setCustomSocialLicense={cartSetters.setCustomSocialLicense}
-            onUpdateBillingDetails={authHandlers.handleUpdateBillingDetailsFromRegistration}
-          />
           </>
         )}
       </AnimatePresence>
     </ClientOnly>
   );
- };
- 
- export default ProductPage;
+};
+
+export default ProductPage;

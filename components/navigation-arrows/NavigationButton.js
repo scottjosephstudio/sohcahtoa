@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 const NavigationButton = styled(motion.div)`
   display: flex;
@@ -9,10 +9,10 @@ const NavigationButton = styled(motion.div)`
   -webkit-transition: all 0.5s ease;
   position: relative;
   cursor: pointer;
-  
+
   &:first-child {
     margin-right: -16px;
   }
 `;
 
-export default NavigationButton; 
+export default NavigationButton;

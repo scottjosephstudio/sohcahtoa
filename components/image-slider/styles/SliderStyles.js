@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 export const SliderContainer = styled.div`
   position: relative;
@@ -8,18 +8,18 @@ export const SliderContainer = styled.div`
   overflow: hidden;
   box-shadow: 12px 12px 12px rgba(16, 12, 8, 0.6);
   background-color: #666666;
-  background-image: 
+  background-image:
     linear-gradient(135deg, rgba(255, 255, 255, 0.4) 40%, transparent 40%),
     linear-gradient(rgba(255, 255, 255, 0.4) 40%, transparent 40%);
   background-size: 6px 6px;
   transition: opacity 0.3s ease;
   contain: layout paint;
-  cursor: ${props => props.$hasMultipleImages ? 'pointer' : 'default'};
+  cursor: ${(props) => (props.$hasMultipleImages ? "pointer" : "default")};
 `;
 
 export const SlideImageContainer = styled.div`
   width: 100%;
-  opacity: ${props => props.$isTransitioning ? 0 : 1};
+  opacity: ${(props) => (props.$isTransitioning ? 0 : 1)};
   transition: opacity 0.3s ease;
 `;
 
@@ -28,7 +28,7 @@ export const CaptionContainer = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   margin: 6px 0 6px 0;
-  height: ${props => props.$height || 'auto'};
+  height: ${(props) => props.$height || "auto"};
   position: relative;
   overflow: visible;
 `;
@@ -47,7 +47,6 @@ export const SlideCaption = styled.figcaption`
   letter-spacing: 0.8px;
   color: #444;
   width: 80%;
-
 `;
 
 export const NumberIndicator = styled.div`
@@ -57,7 +56,7 @@ export const NumberIndicator = styled.div`
   min-width: 34px;
   height: 34px;
   border-radius: 50%;
-  background-color: #39ff14; 
+  background-color: #39ff14;
   color: rgba(16, 12, 8);
   font-size: 20px;
   padding: 0 8px;
@@ -70,7 +69,7 @@ export const LeftClickArea = styled.div`
   left: 0;
   width: 50%;
   height: 100%;
-  cursor: ${props => props.$hasMultipleImages ? 'w-resize' : 'default'};
+  cursor: ${(props) => (props.$hasMultipleImages ? "w-resize" : "default")};
   z-index: 10;
 `;
 
@@ -80,6 +79,6 @@ export const RightClickArea = styled.div`
   right: 0;
   width: 50%;
   height: 100%;
-  cursor: ${props => props.$hasMultipleImages ? 'e-resize' : 'default'};
+  cursor: ${(props) => (props.$hasMultipleImages ? "e-resize" : "default")};
   z-index: 10;
 `;

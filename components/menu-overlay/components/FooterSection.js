@@ -1,26 +1,27 @@
-import { Fragment } from 'react';
-import { Footer, FooterLink, VerticalDivider } from '../styles/MenuOverlayStyles';
-import { fadeInUp } from '../styles/animationVariants';
-import NavigationLink from './NavigationLink';
-import { getSafeUrl } from '../utils/urlUtils';
+import { Fragment } from "react";
+import {
+  Footer,
+  FooterLink,
+  VerticalDivider,
+} from "../styles/MenuOverlayStyles";
+import { fadeInUp } from "../styles/animationVariants";
+import NavigationLink from "./NavigationLink";
+import { getSafeUrl } from "../utils/urlUtils";
 
 const FooterSection = ({ links, sectionsLength, handleLinkClick, onClose }) => {
   return (
-    <Footer
-      variants={fadeInUp}
-      custom={sectionsLength + 4}
-    >
+    <Footer variants={fadeInUp} custom={sectionsLength + 4}>
       {links.map((link, index) => {
         // If the link is a relative path, ensure it's handled the same way
-        const href = link.link.startsWith('/') 
+        const href = link.link.startsWith("/")
           ? link.link
           : `/${getSafeUrl(link.link)}`;
-          
+
         return (
           <Fragment key={link.name}>
             <FooterLink>
-              <NavigationLink 
-                href={href} 
+              <NavigationLink
+                href={href}
                 label={link.name}
                 onClick={handleLinkClick(onClose)}
               />
@@ -34,4 +35,4 @@ const FooterSection = ({ links, sectionsLength, handleLinkClick, onClose }) => {
   );
 };
 
-export default FooterSection; 
+export default FooterSection;

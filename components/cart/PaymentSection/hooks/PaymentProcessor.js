@@ -1,5 +1,9 @@
-import React from 'react';
-import { useStripe, useElements, CardNumberElement } from '@stripe/react-stripe-js';
+import React from "react";
+import {
+  useStripe,
+  useElements,
+  CardNumberElement,
+} from "@stripe/react-stripe-js";
 
 const PaymentProcessor = ({
   onPaymentComplete,
@@ -8,14 +12,14 @@ const PaymentProcessor = ({
   savedRegistrationData,
   clientSecret,
   addressData,
-  children
+  children,
 }) => {
   const stripe = useStripe();
   const elements = useElements();
 
   const handleTransitionToConfirmation = async (paymentDetails) => {
     // Apply the background styling for the transition
-    const transitionStyle = document.createElement('style');
+    const transitionStyle = document.createElement("style");
     transitionStyle.innerHTML = `
       body {
         position: relative;
@@ -37,10 +41,10 @@ const PaymentProcessor = ({
       }
     `;
     document.head.appendChild(transitionStyle);
-    
+
     // Step 1: Close cart smoothly (800ms)
-    const fadeOutEvent = new CustomEvent('startPaymentTransition', {
-      detail: { isStarting: true }
+    const fadeOutEvent = new CustomEvent("startPaymentTransition", {
+      detail: { isStarting: true },
     });
     window.dispatchEvent(fadeOutEvent);
 
@@ -49,33 +53,33 @@ const PaymentProcessor = ({
       amount: paymentDetails.amount,
       id: paymentDetails.id,
       payment_intent: paymentDetails.payment_intent,
-      payment_intent_client_secret: paymentDetails.client_secret
+      payment_intent_client_secret: paymentDetails.client_secret,
     }).toString();
 
     // Step 2: After cart closes (800ms), trigger page element fadeout
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
     // Trigger page element fadeout
-    const pageTransitionEvent = new CustomEvent('pageTransitionStart', {
-      detail: { isNavigatingToConfirmation: true }
+    const pageTransitionEvent = new CustomEvent("pageTransitionStart", {
+      detail: { isNavigatingToConfirmation: true },
     });
     window.dispatchEvent(pageTransitionEvent);
 
     // Step 3: After page elements fade out (800ms), redirect to confirmation
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
     // Final redirect - directly go to payment confirmation without changing URL first
     window.location.href = `/payment-confirmation?${queryParams}`;
   };
 
   const processPayment = async () => {
     if (!stripe || !elements || !clientSecret) {
-      console.error('Stripe not initialized or missing client secret');
+      console.error("Stripe not initialized or missing client secret");
       return;
     }
 
     if (!addressData?.country || !addressData?.postcode) {
-      onError(new Error('Please provide both country and postcode'));
+      onError(new Error("Please provide both country and postcode"));
       setIsProcessing(false);
       return;
     }
@@ -84,9 +88,9 @@ const PaymentProcessor = ({
 
     try {
       const cardElement = elements.getElement(CardNumberElement);
-      
+
       if (!cardElement) {
-        throw new Error('Card element not found');
+        throw new Error("Card element not found");
       }
 
       const result = await stripe.confirmCardPayment(clientSecret, {
@@ -99,21 +103,21 @@ const PaymentProcessor = ({
               line1: savedRegistrationData?.street,
               city: savedRegistrationData?.city,
               postal_code: addressData.postcode,
-              country: addressData.country
-            }
-          }
+              country: addressData.country,
+            },
+          },
         },
-        setup_future_usage: 'on_session'
+        setup_future_usage: "on_session",
       });
 
       if (result.error) {
-        console.error('Payment error:', result.error);
+        console.error("Payment error:", result.error);
         onError(result.error);
         setIsProcessing(false);
         return;
       }
 
-      if (result.paymentIntent.status === 'succeeded') {
+      if (result.paymentIntent.status === "succeeded") {
         // Call onPaymentComplete for cleanup
         onPaymentComplete(result.paymentIntent);
 
@@ -122,24 +126,24 @@ const PaymentProcessor = ({
           amount: result.paymentIntent.amount / 100,
           id: result.paymentIntent.id,
           payment_intent: result.paymentIntent.id,
-          client_secret: result.paymentIntent.client_secret
+          client_secret: result.paymentIntent.client_secret,
         };
 
         // Start the smooth transition sequence
         await handleTransitionToConfirmation(paymentDetails);
       } else {
-        console.warn('Payment not succeeded:', result.paymentIntent.status);
+        console.warn("Payment not succeeded:", result.paymentIntent.status);
         onError(new Error(`Payment status: ${result.paymentIntent.status}`));
         setIsProcessing(false);
       }
     } catch (err) {
-      console.error('Payment processing error:', err);
+      console.error("Payment processing error:", err);
       onError(err);
       setIsProcessing(false);
     }
   };
 
-  return typeof children === 'function' ? children(processPayment) : null;
+  return typeof children === "function" ? children(processPayment) : null;
 };
 
 export default PaymentProcessor;

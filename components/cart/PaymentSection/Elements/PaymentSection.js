@@ -1,34 +1,31 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useElements } from '@stripe/react-stripe-js';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import PropTypes from "prop-types";
+import { motion, AnimatePresence } from "framer-motion";
+import { useElements } from "@stripe/react-stripe-js";
 
 // Import styled components and styles
-import { 
-  GlobalStyle, 
-  CardDetailsWrapper,
-  ErrorText 
-} from '@/components/cart/PaymentSection/PaymentSectionStyles';
-
 import {
-  StepContainer,
-  OptionHeader,
-} from '@/components/cart/styles';
+  GlobalStyle,
+  CardDetailsWrapper,
+  ErrorText,
+} from "@/components/cart/PaymentSection/PaymentSectionStyles";
+
+import { StepContainer, OptionHeader } from "@/components/cart/styles";
 
 // Import utility functions
-import { 
-  validateField, 
+import {
+  validateField,
   getCustomStripeError,
-  countryCodeMap 
-} from '@/components/cart/PaymentSection/hooks/PaymentValidationUtils';
+  countryCodeMap,
+} from "@/components/cart/PaymentSection/hooks/PaymentValidationUtils";
 
 // Import subcomponents
-import PaymentMethodSelector from '@/components/cart/PaymentSection/Elements/PaymentMethodSelector';
-import { 
-  CardNumberInput, 
-  CardExpiryAndCVCInputs 
-} from '@/components/cart/PaymentSection/Inputs/CardInput';
-import AddressInputs from '@/components/cart/PaymentSection/Inputs/AddressInput';
+import PaymentMethodSelector from "@/components/cart/PaymentSection/Elements/PaymentMethodSelector";
+import {
+  CardNumberInput,
+  CardExpiryAndCVCInputs,
+} from "@/components/cart/PaymentSection/Inputs/CardInput";
+import AddressInputs from "@/components/cart/PaymentSection/Inputs/AddressInput";
 
 export const PaymentSection = ({
   selectedPaymentMethod,
@@ -40,23 +37,23 @@ export const PaymentSection = ({
   onAddressChange,
   cartPanelRef,
   isLoading: externalLoading,
-  clientSecret
+  clientSecret,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const elements = insideElements ? useElements() : null;
-  const [country, setCountry] = useState('');
-  const [postcode, setPostcode] = useState('');
+  const [country, setCountry] = useState("");
+  const [postcode, setPostcode] = useState("");
   const [placeholderStates, setPlaceholderStates] = useState({
     cardNumber: true,
     cardExpiry: true,
-    cardCvc: true
+    cardCvc: true,
   });
   const [fieldErrors, setFieldErrors] = useState({
-    country: '',
-    postcode: '',
-    cardNumber: '',
-    cardExpiry: '',
-    cardCvc: '',
+    country: "",
+    postcode: "",
+    cardNumber: "",
+    cardExpiry: "",
+    cardCvc: "",
   });
   const [cardComplete, setCardComplete] = useState({
     cardNumber: false,
@@ -82,184 +79,185 @@ export const PaymentSection = ({
 
   const handleInputChange = (type) => (e) => {
     const value = e.target.value;
-    if (type === 'country') setCountry(value);
-    if (type === 'postcode') setPostcode(value);
-  
+    if (type === "country") setCountry(value);
+    if (type === "postcode") setPostcode(value);
+
     const error = validateField(type, value);
     setFieldErrors((prev) => ({
       ...prev,
-      [type]: value.trim() === '' ? '' : error,
+      [type]: value.trim() === "" ? "" : error,
     }));
-  
+
     // Clear any existing timeout
     if (inputTimeoutRef) {
       clearTimeout(inputTimeoutRef);
     }
-  
-    const isAllComplete = 
+
+    const isAllComplete =
       cardComplete.cardNumber &&
       cardComplete.cardExpiry &&
       cardComplete.cardCvc &&
-      (type === 'country' ? value.trim() !== '' : country.trim() !== '') &&
-      (type === 'postcode' ? value.trim() !== '' : postcode.trim() !== '');
-  
+      (type === "country" ? value.trim() !== "" : country.trim() !== "") &&
+      (type === "postcode" ? value.trim() !== "" : postcode.trim() !== "");
+
     if (isAllComplete) {
       const timeout = setTimeout(() => {
         if (cartPanelRef.current) {
-          if (window.matchMedia('(max-width: 768px)').matches) {
+          if (window.matchMedia("(max-width: 768px)").matches) {
             const totalHeight = cartPanelRef.current.scrollHeight;
             const viewportHeight = cartPanelRef.current.clientHeight;
             cartPanelRef.current.scrollTo({
               top: Math.max(0, totalHeight - viewportHeight + 30),
-              behavior: 'smooth'
+              behavior: "smooth",
             });
           } else {
             cartPanelRef.current.scrollTo({
               top: cartPanelRef.current.scrollHeight,
-              behavior: 'smooth'
+              behavior: "smooth",
             });
           }
         }
       }, 1000);
       setInputTimeoutRef(timeout);
     }
-  
+
     const isFormComplete =
       cardComplete.cardNumber &&
       cardComplete.cardExpiry &&
       cardComplete.cardCvc &&
-      (type === 'country' ? value.trim() !== '' : country.trim() !== '') &&
-      (type === 'postcode' ? value.trim() !== '' : postcode.trim() !== '') &&
+      (type === "country" ? value.trim() !== "" : country.trim() !== "") &&
+      (type === "postcode" ? value.trim() !== "" : postcode.trim() !== "") &&
       !Object.values({
         ...fieldErrors,
         [type]: error,
       }).some((err) => err);
-  
+
     onFormComplete?.(isFormComplete);
-  
-    const countryValue = type === 'country' ? value : country;
-    const countryCode = countryCodeMap[countryValue.toLowerCase().trim()] || countryValue;
-  
+
+    const countryValue = type === "country" ? value : country;
+    const countryCode =
+      countryCodeMap[countryValue.toLowerCase().trim()] || countryValue;
+
     onAddressChange?.({
       country: countryCode,
-      postcode: type === 'postcode' ? value : postcode,
+      postcode: type === "postcode" ? value : postcode,
     });
   };
 
   const handleInputBlur = (type) => () => {
-    const value = type === 'country' ? country : postcode;
+    const value = type === "country" ? country : postcode;
     const error = validateField(type, value);
     setFieldErrors((prev) => ({
       ...prev,
-      [type]: value.trim() === '' ? '' : error,
+      [type]: value.trim() === "" ? "" : error,
     }));
-    
+
     checkAllFieldsAndScroll();
   };
 
   const handleElementChange = (type, event) => {
     // Update placeholder visibility
-    setPlaceholderStates(prev => ({
+    setPlaceholderStates((prev) => ({
       ...prev,
-      [type]: event.empty
+      [type]: event.empty,
     }));
-  
+
     // Existing changes for Stripe Elements
     setCardComplete((prev) => ({
       ...prev,
       [type]: event.complete,
     }));
-    
+
     setFieldErrors((prev) => {
       const newErrors = {
         ...prev,
-        [type]: event.error ? getCustomStripeError(event.error) : '',
+        [type]: event.error ? getCustomStripeError(event.error) : "",
       };
-  
+
       return newErrors;
     });
-  
+
     const newComplete = {
       ...cardComplete,
       [type]: event.complete,
     };
-  
-    const isAllComplete = 
+
+    const isAllComplete =
       newComplete.cardNumber &&
       newComplete.cardExpiry &&
       newComplete.cardCvc &&
-      country.trim() !== '' &&
-      postcode.trim() !== '';
-  
+      country.trim() !== "" &&
+      postcode.trim() !== "";
+
     if (isAllComplete) {
       setTimeout(() => {
         if (cartPanelRef.current) {
-          if (window.matchMedia('(max-width: 768px)').matches) {
+          if (window.matchMedia("(max-width: 768px)").matches) {
             const totalHeight = cartPanelRef.current.scrollHeight;
             const viewportHeight = cartPanelRef.current.clientHeight;
             cartPanelRef.current.scrollTo({
               top: Math.max(0, totalHeight - viewportHeight + 30),
-              behavior: 'smooth'
+              behavior: "smooth",
             });
           } else {
             // Desktop scroll behavior
             cartPanelRef.current.scrollTo({
               top: cartPanelRef.current.scrollHeight,
-              behavior: 'smooth'
+              behavior: "smooth",
             });
           }
         }
       }, 300);
     }
-  
+
     const isFormComplete =
       newComplete.cardNumber &&
       newComplete.cardExpiry &&
       newComplete.cardCvc &&
-      country.trim() !== '' &&
-      postcode.trim() !== '' &&
+      country.trim() !== "" &&
+      postcode.trim() !== "" &&
       !Object.values(fieldErrors).some((error) => error);
-  
+
     onFormComplete?.(isFormComplete);
   };
 
   const checkAllFieldsAndScroll = () => {
-    const isAllComplete = 
+    const isAllComplete =
       cardComplete.cardNumber &&
       cardComplete.cardExpiry &&
       cardComplete.cardCvc &&
-      country.trim() !== '' &&
-      postcode.trim() !== '';
-  
+      country.trim() !== "" &&
+      postcode.trim() !== "";
+
     if (isAllComplete) {
       if (inputTimeoutRef) {
         clearTimeout(inputTimeoutRef);
       }
-      
+
       const timeout = setTimeout(() => {
         if (cartPanelRef.current) {
-          if (window.matchMedia('(max-width: 768px)').matches) {
+          if (window.matchMedia("(max-width: 768px)").matches) {
             const totalHeight = cartPanelRef.current.scrollHeight;
             const viewportHeight = cartPanelRef.current.clientHeight;
             cartPanelRef.current.scrollTo({
               top: Math.max(0, totalHeight - viewportHeight + 30),
-              behavior: 'smooth'
+              behavior: "smooth",
             });
           } else {
             cartPanelRef.current.scrollTo({
               top: cartPanelRef.current.scrollHeight,
-              behavior: 'smooth'
+              behavior: "smooth",
             });
           }
         }
       }, 1000);
-  
+
       setInputTimeoutRef(timeout);
     }
-  
+
     return isAllComplete;
   };
-  
+
   // Clear timeout on component unmount
   useEffect(() => {
     return () => {
@@ -306,7 +304,9 @@ export const PaymentSection = ({
                   <div>
                     <CardNumberInput
                       placeholderVisible={placeholderStates.cardNumber}
-                      onElementChange={(event) => handleElementChange('cardNumber', event)}
+                      onElementChange={(event) =>
+                        handleElementChange("cardNumber", event)
+                      }
                       error={fieldErrors.cardNumber}
                     />
                     <CardExpiryAndCVCInputs
@@ -314,7 +314,7 @@ export const PaymentSection = ({
                       onElementChange={handleElementChange}
                       errors={{
                         cardExpiry: fieldErrors.cardExpiry,
-                        cardCvc: fieldErrors.cardCvc
+                        cardCvc: fieldErrors.cardCvc,
                       }}
                     />
                   </div>
@@ -324,7 +324,7 @@ export const PaymentSection = ({
                     postcode={postcode}
                     errors={{
                       country: fieldErrors.country,
-                      postcode: fieldErrors.postcode
+                      postcode: fieldErrors.postcode,
                     }}
                     onInputChange={handleInputChange}
                     onInputBlur={handleInputBlur}
@@ -334,12 +334,8 @@ export const PaymentSection = ({
             </motion.div>
           )}
         </AnimatePresence>
-        
-        {error && (
-          <ErrorText>
-            {error.message}
-          </ErrorText>
-        )}
+
+        {error && <ErrorText>{error.message}</ErrorText>}
       </StepContainer>
     </>
   );
@@ -355,7 +351,7 @@ PaymentSection.propTypes = {
   onAddressChange: PropTypes.func.isRequired,
   cartPanelRef: PropTypes.object.isRequired,
   isLoading: PropTypes.bool,
-  clientSecret: PropTypes.string
+  clientSecret: PropTypes.string,
 };
 
 export default PaymentSection;

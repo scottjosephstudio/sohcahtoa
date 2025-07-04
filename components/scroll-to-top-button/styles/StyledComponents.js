@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 export const ScrollButtonContainer = styled(motion.div)`
   position: fixed;
@@ -12,7 +12,7 @@ export const ScrollButtonContainer = styled(motion.div)`
   mix-blend-mode: difference;
   opacity: 1;
   transition: opacity 0.5s ease;
-  
+
   &.fade-out {
     opacity: 0;
   }
@@ -21,4 +21,4 @@ export const ScrollButtonContainer = styled(motion.div)`
 export const SvgIcon = styled(motion.svg)`
   width: 54px;
   height: 54px;
-`; 
+`;

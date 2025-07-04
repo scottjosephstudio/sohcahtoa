@@ -1,5 +1,5 @@
-import React from 'react';
-import { LeftClickArea, RightClickArea } from '../styles/SliderStyles';
+import React from "react";
+import { LeftClickArea, RightClickArea } from "../styles/SliderStyles";
 
 /**
  * Component for slider navigation controls (invisible click areas)
@@ -13,18 +13,18 @@ const SliderControls = ({ hasMultipleImages, onPrevSlide, onNextSlide }) => {
 
   return (
     <>
-      <LeftClickArea 
-        onClick={onPrevSlide} 
-        $hasMultipleImages={hasMultipleImages} 
+      <LeftClickArea
+        onClick={onPrevSlide}
+        $hasMultipleImages={hasMultipleImages}
         aria-label="Previous slide"
       />
-      <RightClickArea 
-        onClick={onNextSlide} 
-        $hasMultipleImages={hasMultipleImages} 
+      <RightClickArea
+        onClick={onNextSlide}
+        $hasMultipleImages={hasMultipleImages}
         aria-label="Next slide"
       />
     </>
   );
 };
 
-export default SliderControls; 
+export default SliderControls;

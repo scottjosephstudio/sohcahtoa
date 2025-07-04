@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
 // Styled components
 export const MenuContainer = styled(motion.nav)`
@@ -8,7 +8,8 @@ export const MenuContainer = styled(motion.nav)`
   top: 28px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: ${props => props.$isModalOpen && props.$isTypefacesPath ? 40 : 100};
+  z-index: ${(props) =>
+    props.$isModalOpen && props.$isTypefacesPath ? 40 : 100};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,14 +32,14 @@ export const MenuPill = styled(motion.div)`
   justify-content: center;
   align-items: center;
   min-width: 84px;
-  width: ${props => props.$isExpanded ? 'auto' : '84px'};
+  width: ${(props) => (props.$isExpanded ? "auto" : "84px")};
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   -webkit-perspective: 1000;
   perspective: 1000;
-  
+
   /* Better Safari touch handling */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -59,7 +60,7 @@ export const MenuItem = styled(motion.div)`
   letter-spacing: 0.8px;
   color: rgb(16, 12, 8);
   white-space: nowrap;
-  
+
   /* Better Safari touch handling */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -92,7 +93,7 @@ export const DirectLink = styled(motion(Link))`
   color: rgb(16, 12, 8);
   text-decoration: none;
   white-space: nowrap;
-  
+
   /* Better Safari touch handling */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -119,7 +120,7 @@ export const DropdownContainer = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 22px;
-  pointer-events: ${({ $isOpen }) => ($isOpen ? 'auto' : 'none')};
+  pointer-events: ${({ $isOpen }) => ($isOpen ? "auto" : "none")};
   z-index: 95;
 `;
 
@@ -141,32 +142,42 @@ export const Dropdown = styled(motion.div)`
   -webkit-perspective: 1000;
   perspective: 1000;
   will-change: transform, opacity;
-  
+
   /* Top blur mask */
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 24px;
-    background: linear-gradient(to bottom, rgba(16, 12, 8, 0.85) 20%, rgba(16, 12, 8, 0.5) 70%, rgba(16, 12, 8, 0) 100%);
+    background: linear-gradient(
+      to bottom,
+      rgba(16, 12, 8, 0.85) 20%,
+      rgba(16, 12, 8, 0.5) 70%,
+      rgba(16, 12, 8, 0) 100%
+    );
     z-index: 3;
     pointer-events: none;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
     will-change: transform;
   }
-  
+
   /* Bottom blur mask */
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     height: 24px;
-    background: linear-gradient(to top, rgba(16, 12, 8, 0.85) 20%, rgba(16, 12, 8, 0.5) 70%, rgba(16, 12, 8, 0) 100%);
+    background: linear-gradient(
+      to top,
+      rgba(16, 12, 8, 0.85) 20%,
+      rgba(16, 12, 8, 0.5) 70%,
+      rgba(16, 12, 8, 0) 100%
+    );
     z-index: 3;
     pointer-events: none;
     -webkit-transform: translateZ(0);
@@ -198,29 +209,35 @@ export const DropdownContent = styled.div`
   perspective: 1000;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  
+
   /* Add data-lenis-prevent attribute class name for Lenis */
   &.DropdownContent {
     /* This class name will be used to find and add data-lenis-prevent */
   }
-  
+
   &::-webkit-scrollbar {
     display: none;
   }
-  
+
   /* Add extra margin to first and last elements */
   & > *:first-child {
     margin-top: 0px; /* Space at the top */
   }
-  
+
   & > *:last-child {
     margin-bottom: 0px; /* Space at the bottom */
   }
-  
-  a, span, p, div {
+
+  a,
+  span,
+  p,
+  div {
     color: white;
     text-decoration: none;
-    transition: color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+    transition:
+      color 0.3s ease,
+      transform 0.3s ease,
+      opacity 0.3s ease;
     font-size: 20px;
     line-height: 24px;
     letter-spacing: 0.8px;
@@ -228,7 +245,7 @@ export const DropdownContent = styled.div`
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
   }
-  
+
   div {
     color: inherit;
   }
@@ -276,7 +293,7 @@ export const ClientsTitle = styled(motion.p)`
   letter-spacing: 0.8px;
   position: relative;
   z-index: 2;
-   display: block;
+  display: block;
   text-decoration: underline !important; /* Add underline to section titles with !important */
   text-decoration-color: #39ff14 !important; /* Make the underline the same color as text */
   text-decoration-thickness: 2px !important; /* Control thickness */
@@ -317,7 +334,7 @@ export const NewsletterInput = styled.input`
   width: 100%;
   max-width: 300px;
   outline: none;
-  font-family: 'Jant', sans-serif;
+  font-family: "Jant", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -327,7 +344,7 @@ export const NewsletterInput = styled.input`
   box-shadow: none;
   -webkit-box-shadow: none;
   border-radius: 0;
-  
+
   /* Override autofill styles in WebKit browsers */
   &:-webkit-autofill,
   &:-webkit-autofill:hover,
@@ -336,10 +353,10 @@ export const NewsletterInput = styled.input`
     -webkit-text-fill-color: white !important;
     -webkit-box-shadow: 0 0 0 30px rgb(16, 12, 8) inset !important;
     transition: background-color 5000s ease-in-out 0s;
-    font-family: 'Jant', sans-serif !important;
+    font-family: "Jant", sans-serif !important;
     caret-color: white;
   }
-  
+
   /* Firefox and other browsers */
   &:autofill,
   &:autofill:hover,
@@ -348,14 +365,14 @@ export const NewsletterInput = styled.input`
     -webkit-text-fill-color: white !important;
     box-shadow: 0 0 0 30px rgb(16, 12, 8) inset !important;
     caret-color: white;
-    font-family: 'Jant', sans-serif !important;
+    font-family: "Jant", sans-serif !important;
   }
-  
+
   &::placeholder {
     color: rgba(255, 255, 255, 0.6);
-    font-family: 'Jant', sans-serif;
+    font-family: "Jant", sans-serif;
   }
-  
+
   &:focus {
     border-bottom-color: #39ff14;
     caret-color: white;
@@ -373,7 +390,7 @@ export const SubscribeButton = styled(motion.button)`
   border-radius: 8px;
   cursor: pointer;
   margin-bottom: 0px;
-  font-family: 'Jant', sans-serif;
+  font-family: "Jant", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -453,7 +470,8 @@ export const Backdrop = styled(motion.div)`
   }
 
   /* Webkit-specific fallback */
-  @supports (-webkit-backdrop-filter: blur(6px)) and (not (backdrop-filter: blur(6px))) {
+  @supports (-webkit-backdrop-filter: blur(6px)) and
+    (not (backdrop-filter: blur(6px))) {
     -webkit-backdrop-filter: blur(6px);
     background-color: rgba(211, 211, 211, 0.3);
   }
@@ -478,7 +496,7 @@ export const FooterLink = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  
+
   a {
     text-decoration: none;
     position: relative;
@@ -504,8 +522,8 @@ export const VerticalDivider = styled.div`
 export const StaggeredContent = styled.div`
   opacity: 0;
   animation: fadeIn 0.3s ease-out forwards;
-  animation-delay: ${props => props.$delay}s;
-  
+  animation-delay: ${(props) => props.$delay}s;
+
   @keyframes fadeIn {
     from {
       opacity: 0;

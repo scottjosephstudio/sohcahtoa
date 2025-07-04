@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import styled from 'styled-components';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import styled from "styled-components";
 import {
   ControlPanel,
   ControlsGrid,
@@ -11,30 +11,30 @@ import {
   Value,
   ResetButton,
   resetButtonVariants,
-  resetButtonSpanVariants
-} from './StyledComponents';
+  resetButtonSpanVariants,
+} from "./StyledComponents";
 
 const slideVariants = {
   initial: ({ isMobile }) => ({
-    [isMobile ? 'x' : 'y']: isMobile ? '100%' : '100vh',
-    opacity: 0
+    [isMobile ? "x" : "y"]: isMobile ? "100%" : "100vh",
+    opacity: 0,
   }),
   animate: ({ isMobile }) => ({
-    [isMobile ? 'x' : 'y']: 0,
+    [isMobile ? "x" : "y"]: 0,
     opacity: 1,
     transition: {
       duration: 0.3,
-      ease: [0.6, -0.05, 0.01, 0.99]
-    }
+      ease: [0.6, -0.05, 0.01, 0.99],
+    },
   }),
   exit: ({ isMobile }) => ({
-    [isMobile ? 'x' : 'y']: isMobile ? '100%' : '100vh',
+    [isMobile ? "x" : "y"]: isMobile ? "100%" : "100vh",
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: [0.6, -0.05, 0.01, 0.99]
-    }
-  })
+      ease: [0.6, -0.05, 0.01, 0.99],
+    },
+  }),
 };
 
 const ControlsWrapper = styled.div`
@@ -50,7 +50,7 @@ export const FontTesterControls = ({
   displayLetterSpacing,
   isNavigatingHome,
   isTestExiting,
-  isMobile
+  isMobile,
 }) => {
   return (
     <AnimatePresence mode="wait">
@@ -75,16 +75,22 @@ export const FontTesterControls = ({
                       min={14}
                       max={340}
                       step={1}
-                      onChange={(e) => handleSliderChange("fontSize", e.target.value)}
+                      onChange={(e) =>
+                        handleSliderChange("fontSize", e.target.value)
+                      }
                     />
                   </SliderContainer>
-                  <Value type="fontSize">{Math.round(settings.fontSize)}px</Value>
-                  <ResetButton 
+                  <Value type="fontSize">
+                    {Math.round(settings.fontSize)}px
+                  </Value>
+                  <ResetButton
                     onClick={() => resetSetting("fontSize")}
                     variants={resetButtonVariants}
                     whileHover="hover"
                   >
-                    <motion.span variants={resetButtonSpanVariants}>R</motion.span>
+                    <motion.span variants={resetButtonSpanVariants}>
+                      R
+                    </motion.span>
                   </ResetButton>
                 </ControlGroup>
 
@@ -98,16 +104,22 @@ export const FontTesterControls = ({
                       min={0}
                       max={2}
                       step={0.1}
-                      onChange={(e) => handleSliderChange("lineHeight", e.target.value)}
+                      onChange={(e) =>
+                        handleSliderChange("lineHeight", e.target.value)
+                      }
                     />
                   </SliderContainer>
-                  <Value type="lineHeight">{settings.lineHeight.toFixed(1)}</Value>
-                  <ResetButton 
+                  <Value type="lineHeight">
+                    {settings.lineHeight.toFixed(1)}
+                  </Value>
+                  <ResetButton
                     onClick={() => resetSetting("lineHeight")}
                     variants={resetButtonVariants}
                     whileHover="hover"
                   >
-                    <motion.span variants={resetButtonSpanVariants}>R</motion.span>
+                    <motion.span variants={resetButtonSpanVariants}>
+                      R
+                    </motion.span>
                   </ResetButton>
                 </ControlGroup>
 
@@ -123,18 +135,25 @@ export const FontTesterControls = ({
                       step={1}
                       onChange={(e) => {
                         const displayValue = parseFloat(e.target.value);
-                        const actualValue = letterSpacingConstraints.convertDisplayToActual(displayValue);
+                        const actualValue =
+                          letterSpacingConstraints.convertDisplayToActual(
+                            displayValue,
+                          );
                         handleSliderChange("letterSpacing", actualValue);
                       }}
                     />
                   </SliderContainer>
-                  <Value type="letterSpacing">{Math.round(displayLetterSpacing)}px</Value>
-                  <ResetButton 
+                  <Value type="letterSpacing">
+                    {Math.round(displayLetterSpacing)}px
+                  </Value>
+                  <ResetButton
                     onClick={() => resetSetting("letterSpacing")}
                     variants={resetButtonVariants}
                     whileHover="hover"
                   >
-                    <motion.span variants={resetButtonSpanVariants}>R</motion.span>
+                    <motion.span variants={resetButtonSpanVariants}>
+                      R
+                    </motion.span>
                   </ResetButton>
                 </ControlGroup>
               </ControlsGrid>

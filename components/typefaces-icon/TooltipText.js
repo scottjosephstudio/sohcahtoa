@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 const TooltipText = styled(motion.span)`
   position: absolute;
@@ -19,4 +19,4 @@ const TooltipText = styled(motion.span)`
   z-index: 9999;
 `;
 
-export default TooltipText; 
+export default TooltipText;

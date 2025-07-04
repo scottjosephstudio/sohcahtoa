@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 export const useEqualHeight = (dependencies = []) => {
   const containerRef = useRef(null);
@@ -9,17 +9,18 @@ export const useEqualHeight = (dependencies = []) => {
 
     const updateHeights = () => {
       // Get ALL option cards across all license groups
-      const allCards = containerRef.current.querySelectorAll('[data-option-card]');
+      const allCards =
+        containerRef.current.querySelectorAll("[data-option-card]");
       if (allCards.length === 0) return;
 
       // Reset heights to auto to get natural heights
-      allCards.forEach(card => {
-        card.style.height = 'auto';
+      allCards.forEach((card) => {
+        card.style.height = "auto";
       });
 
       // Get the maximum height across ALL cards
       let globalMax = 0;
-      allCards.forEach(card => {
+      allCards.forEach((card) => {
         const height = card.offsetHeight;
         if (height > globalMax) {
           globalMax = height;
@@ -28,7 +29,7 @@ export const useEqualHeight = (dependencies = []) => {
 
       // Apply the maximum height to ALL cards across all groups
       setMaxHeight(globalMax);
-      allCards.forEach(card => {
+      allCards.forEach((card) => {
         card.style.height = `${globalMax}px`;
       });
     };
@@ -41,13 +42,13 @@ export const useEqualHeight = (dependencies = []) => {
       setTimeout(updateHeights, 100); // Small delay to allow for reflow
     };
 
-    window.addEventListener('resize', handleResize);
-    
+    window.addEventListener("resize", handleResize);
+
     return () => {
       clearTimeout(timeoutId);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, dependencies);
 
   return { containerRef, maxHeight };
-}; 
+};

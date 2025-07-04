@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from "react";
+import styled from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
 
 const BlurOverlayStyles = styled(motion.div)`
   position: fixed;
@@ -12,7 +12,7 @@ const BlurOverlayStyles = styled(motion.div)`
   -ms-backdrop-filter: blur(6px);
   -o-backdrop-filter: blur(6px);
   z-index: 40;
-cursor: pointer;
+  cursor: pointer;
 `;
 
 const BlurOverlay = ({ isOpen, onClick }) => {

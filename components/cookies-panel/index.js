@@ -1,2 +1,2 @@
-export { default } from './CookiesPanel';
-export { CookiesPanelProvider } from './CookiesPanelProvider'; 
+export { default } from "./CookiesPanel";
+export { CookiesPanelProvider } from "./CookiesPanelProvider";

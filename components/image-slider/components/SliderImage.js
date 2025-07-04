@@ -1,7 +1,7 @@
-import React from 'react';
-import LazyLoadImage from '../../lazy-load-image';
-import { SlideImageContainer } from '../styles/SliderStyles';
-import { getImageSrc, getImageCaption } from '../../../lib/projectUtils';
+import React from "react";
+import LazyLoadImage from "../../lazy-load-image";
+import { SlideImageContainer } from "../styles/SliderStyles";
+import { getImageSrc, getImageCaption } from "../../../lib/projectUtils";
 
 /**
  * Component for displaying a single slider image
@@ -13,13 +13,13 @@ import { getImageSrc, getImageCaption } from '../../../lib/projectUtils';
  * @param {number} props.currentSlide Current slide index
  * @param {string} props.title Project title for alt text
  */
-const SliderImage = ({ 
-  image, 
-  isTransitioning, 
-  aspectRatioPercentage, 
-  placeholders, 
-  currentSlide, 
-  title 
+const SliderImage = ({
+  image,
+  isTransitioning,
+  aspectRatioPercentage,
+  placeholders,
+  currentSlide,
+  title,
 }) => {
   return (
     <SlideImageContainer $isTransitioning={isTransitioning}>
@@ -34,4 +34,4 @@ const SliderImage = ({
   );
 };
 
-export default SliderImage; 
+export default SliderImage;

@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 const fixedPositionStyles = `
   transform: translateZ(0);
@@ -15,7 +15,7 @@ export const ArrowLeft = styled.div`
   z-index: 10;
   cursor: pointer;
   ${fixedPositionStyles}
-  
+
   @media (min-width: 1420px) {
     bottom: 0px; /* Maintain same position at larger screens */
   }
@@ -28,12 +28,11 @@ export const ArrowRight = styled.div`
   z-index: 10;
   cursor: pointer;
   ${fixedPositionStyles}
-  
+
   @media (min-width: 1420px) {
     bottom: 0px; /* Maintain same position at larger screens */
   }
 `;
-
 
 export const SquareFolioHomeTypefaceRoute = styled.div`
   position: fixed;
@@ -43,7 +42,7 @@ export const SquareFolioHomeTypefaceRoute = styled.div`
   cursor: pointer;
   height: 80px;
   ${fixedPositionStyles}
-  
+
   @media (min-width: 1420px) {
     bottom: 0px; /* Maintain same position at larger screens */
   }
@@ -57,7 +56,7 @@ export const TypefacesIconTypefaceRoute = styled.div`
   cursor: pointer;
   height: 80px;
   ${fixedPositionStyles}
-  
+
   @media (min-width: 1420px) {
     bottom: 0px; /* Maintain same position at larger screens */
   }
@@ -68,12 +67,16 @@ export const SvgIcon = styled(motion.svg)`
   height: 60px;
   ${fixedPositionStyles}
 
-  ${props => !props.$isTypeface && `
-    fill: ${props.$isTypefacePath ? 'rgb(16, 12, 8)' : '#39ff14'};
+  ${(props) =>
+    !props.$isTypeface &&
+    `
+    fill: ${props.$isTypefacePath ? "rgb(16, 12, 8)" : "#39ff14"};
   `}
   
-  ${props => props.$isTypeface && `
-    color: ${props.$isTypefacePath ? 'rgb(16, 12, 8)' : '#39ff14'};
+  ${(props) =>
+    props.$isTypeface &&
+    `
+    color: ${props.$isTypefacePath ? "rgb(16, 12, 8)" : "#39ff14"};
   `}
 
   @media (min-width: 1420px) {
@@ -90,5 +93,4 @@ export const FooterWrapper = styled.div`
   z-index: 50;
   transition: filter 0.3s ease;
   ${fixedPositionStyles}
-
-  `;
+`;

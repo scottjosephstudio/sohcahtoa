@@ -1,5 +1,5 @@
 // FlashStartSlotMachineStyles.js
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes } from "styled-components";
 
 const gradient = keyframes`
   0% {
@@ -36,26 +36,45 @@ export const SlotMachineContainer = styled.div`
   width: 100%;
   background:
     radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 0 0,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 5px 5px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 10px 10px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 15px 15px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 20px 20px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 25px 25px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 30px 30px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 35px 35px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 40px 40px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 45px 45px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 50px 50px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 55px 55px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 60px 60px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 65px 65px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 70px 70px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 75px 75px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 80px 80px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 85px 85px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 90px 90px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 95px 95px;
-   background-size: 8px 8px;
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 5px
+      5px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 10px
+      10px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 15px
+      15px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 20px
+      20px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 25px
+      25px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 30px
+      30px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 35px
+      35px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 40px
+      40px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 45px
+      45px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 50px
+      50px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 55px
+      55px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 60px
+      60px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 65px
+      65px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 70px
+      70px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 75px
+      75px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 80px
+      80px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 85px
+      85px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 90px
+      90px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 20%) 95px
+      95px;
+  background-size: 8px 8px;
   background-color: #696969;
   overflow: hidden;
   isolation: isolate;
@@ -125,5 +144,6 @@ export const LetterShadow = styled.div`
 `;
 
 export const SlotMachineCursor = styled.div`
-  cursor: url('../../../assets/animations/ScrollUpDown.svg'), auto; /* Replace with the path to your custom cursor image */
+  cursor:
+    url("../../../assets/animations/ScrollUpDown.svg"), auto; /* Replace with the path to your custom cursor image */
 `;

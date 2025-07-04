@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { getCartState } from '../../cart/Utils/authUtils';
+import { useState, useEffect, useRef } from "react";
+import { getCartState } from "../../cart/Utils/authUtils";
 
 export const useCartState = () => {
   // Add refs for cart details
@@ -14,7 +14,7 @@ export const useCartState = () => {
   const [$isCartOpen, set$isCartOpen] = useState(false);
 
   // Cart customization states
-  const [weightOption, setWeightOption] = useState('');
+  const [weightOption, setWeightOption] = useState("");
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [customizing, setCustomizing] = useState(false);
   const [customPrintLicense, setCustomPrintLicense] = useState(null);
@@ -26,17 +26,17 @@ export const useCartState = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        cartDetailsRef.current && 
+        cartDetailsRef.current &&
         !cartDetailsRef.current.contains(event.target) &&
-        cartCountRef.current && 
+        cartCountRef.current &&
         !cartCountRef.current.contains(event.target)
       ) {
         setIsCartDetailsOpen(false);
       }
     };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export const useCartState = () => {
     if (savedCart) {
       setCartItems(1);
       setIsInCart(true);
-      setWeightOption(savedCart.weightOption || '');
+      setWeightOption(savedCart.weightOption || "");
       setSelectedPackage(savedCart.selectedPackage || null);
       setCustomizing(savedCart.customizing || false);
       setCustomPrintLicense(savedCart.customPrintLicense || null);
@@ -63,7 +63,7 @@ export const useCartState = () => {
     // Force immediate state reset to prevent animation lock
     setIsFullCartOpen(false);
     set$isCartOpen(false);
-    
+
     // Force a re-render to ensure state is properly updated
     setTimeout(() => {
       setIsFullCartOpen(false);
@@ -81,14 +81,14 @@ export const useCartState = () => {
     setIsInCart(false);
     setIsCartDetailsOpen(false);
     setIsFullCartOpen(false);
-    setWeightOption('');
+    setWeightOption("");
     setSelectedPackage(null);
     setCustomizing(false);
     setCustomPrintLicense(null);
     setCustomWebLicense(null);
     setCustomAppLicense(null);
     setCustomSocialLicense(null);
-    localStorage.removeItem('cartState');
+    localStorage.removeItem("cartState");
   };
 
   const handleGoToCart = () => {
@@ -120,7 +120,7 @@ export const useCartState = () => {
       customPrintLicense,
       customWebLicense,
       customAppLicense,
-      customSocialLicense
+      customSocialLicense,
     },
     setters: {
       setCartItems,
@@ -134,7 +134,7 @@ export const useCartState = () => {
       setCustomPrintLicense,
       setCustomWebLicense,
       setCustomAppLicense,
-      setCustomSocialLicense
+      setCustomSocialLicense,
     },
     handlers: {
       handleAddToCart,
@@ -143,11 +143,11 @@ export const useCartState = () => {
       handleRemoveFromCart,
       handleGoToCart,
       handleCartClick,
-      handleCartHover
+      handleCartHover,
     },
     refs: {
       cartDetailsRef,
-      cartCountRef
-    }
+      cartCountRef,
+    },
   };
 };

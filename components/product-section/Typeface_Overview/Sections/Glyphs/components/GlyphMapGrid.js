@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, forwardRef } from "react";
-import styled from 'styled-components';
+import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { HighlightedGlyph } from "./HighlightedGlyph";
 import { CharacterMap } from "./CharacterMap";
@@ -29,10 +29,10 @@ const ContentArea = styled.div`
     /* iPad portrait: stack vertically - only for actual tablet dimensions */
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
-    
+
     /* Add horizontal divider between rows */
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       left: 0;
       right: 0;
@@ -66,7 +66,7 @@ const GlyphPanel = styled(motion.div)`
   }
 
   @media (max-width: 767px) {
-    display: ${props => props.showInMobile ? 'flex' : 'none'};
+    display: ${(props) => (props.showInMobile ? "flex" : "none")};
     border-right: none;
     grid-column: 1;
     cursor: pointer;
@@ -87,7 +87,7 @@ const MapPanel = styled(motion.div)`
   }
 
   @media (max-width: 767px) {
-    display: ${props => props.showInMobile ? 'flex' : 'none'};
+    display: ${(props) => (props.showInMobile ? "flex" : "none")};
     grid-column: 1;
   }
 `;
@@ -95,7 +95,7 @@ const MapPanel = styled(motion.div)`
 const SearchContainer = styled(motion.div)`
   background: none;
   border-top: 1px solid rgb(16, 12, 8);
-  padding: 95px;
+  padding: 98px;
   pointer-events: none;
 
   .search-panel {
@@ -113,212 +113,106 @@ const SearchContainer = styled(motion.div)`
 // Shared fade variants for consistent animations across all glyph components
 const fadeVariants = {
   initial: {
-    opacity: 0
+    opacity: 0,
   },
   animate: {
     opacity: 1,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: "easeIn"
-    }
-  }
+      ease: "easeIn",
+    },
+  },
 };
 
-export const GlyphMapGrid = forwardRef(({ 
-  font = null, 
-  specimenUrl = "#",
-  onGlyphSelect: externalGlyphSelect,
-  isNavigatingHome = false,
-  activeTab,
-  isGlyphsExiting = false
-}, ref) => {
-  const [selectedGlyph, setSelectedGlyph] = useState("A");
-  const [hoveredGlyph, setHoveredGlyph] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showGlyphView, setShowGlyphView] = useState(false);
-  const characterMapRef = useRef(null);
-  // iPad mini specific detection (768x1024 for newer iPad mini)
-  const isIPadMini = (window.innerWidth === 768 && window.innerHeight === 1024) ||
-                     (window.innerWidth === 744 && window.innerHeight === 1133);
-  
-  // Regular iPad detection  
-  const isIPadRegular = window.innerWidth > 768 && 
-                        window.innerWidth <= 1024 && 
-                        window.innerHeight > window.innerWidth &&
-                        window.innerHeight <= 1366;
-  
-  const isIPadPortrait = isIPadMini || isIPadRegular;
-  const isMobile = window.innerWidth < 744 && !isIPadPortrait;
+export const GlyphMapGrid = forwardRef(
+  (
+    {
+      font = null,
+      specimenUrl = "#",
+      onGlyphSelect: externalGlyphSelect,
+      isNavigatingHome = false,
+      activeTab,
+      isGlyphsExiting = false,
+    },
+    ref,
+  ) => {
+    const [selectedGlyph, setSelectedGlyph] = useState("A");
+    const [hoveredGlyph, setHoveredGlyph] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [showGlyphView, setShowGlyphView] = useState(false);
+    const characterMapRef = useRef(null);
+    // iPad mini specific detection (768x1024 for newer iPad mini)
+    const isIPadMini =
+      (window.innerWidth === 768 && window.innerHeight === 1024) ||
+      (window.innerWidth === 744 && window.innerHeight === 1133);
 
-  const handleGlyphSelect = useCallback((glyph) => {
-    setSelectedGlyph(glyph);
-    setHoveredGlyph(null);
-    setShowGlyphView(true);
-    if (externalGlyphSelect) {
-      externalGlyphSelect(glyph);
-    }
-  }, [externalGlyphSelect]);
+    // Regular iPad detection
+    const isIPadRegular =
+      window.innerWidth > 768 &&
+      window.innerWidth <= 1024 &&
+      window.innerHeight > window.innerWidth &&
+      window.innerHeight <= 1366;
 
-  const handleGlyphHover = useCallback((glyph) => {
-    setHoveredGlyph(glyph);
-  }, []);
+    const isIPadPortrait = isIPadMini || isIPadRegular;
+    const isMobile = window.innerWidth < 744 && !isIPadPortrait;
 
-  const handleSearch = useCallback((query) => {
-    if (query.length === 1) {
-      setSelectedGlyph(query);
-      setHoveredGlyph(null);
-      
-      if (characterMapRef.current?.scrollToCharacter) {
-        characterMapRef.current.scrollToCharacter(query);
+    const handleGlyphSelect = useCallback(
+      (glyph) => {
+        setSelectedGlyph(glyph);
+        setHoveredGlyph(null);
+        setShowGlyphView(true);
+        if (externalGlyphSelect) {
+          externalGlyphSelect(glyph);
+        }
+      },
+      [externalGlyphSelect],
+    );
+
+    const handleGlyphHover = useCallback((glyph) => {
+      setHoveredGlyph(glyph);
+    }, []);
+
+    const handleSearch = useCallback((query) => {
+      if (query.length === 1) {
+        setSelectedGlyph(query);
+        setHoveredGlyph(null);
+
+        if (characterMapRef.current?.scrollToCharacter) {
+          characterMapRef.current.scrollToCharacter(query);
+        }
       }
+    }, []);
+
+    React.useEffect(() => {
+      setIsLoading(!font?.opentype);
+    }, [font?.opentype]);
+
+    // Expose handleSearch function to parent components
+    React.useImperativeHandle(ref, () => ({
+      handleSearch,
+    }));
+
+    if (isLoading) {
+      return <Container></Container>;
     }
-  }, []);
 
-  React.useEffect(() => {
-    setIsLoading(!font?.opentype);
-  }, [font?.opentype]);
-
-  // Expose handleSearch function to parent components
-  React.useImperativeHandle(ref, () => ({
-    handleSearch
-  }));
-
-  if (isLoading) {
-    return (
-      <Container>
-    
-      </Container>
-    );
-  }
-
-  // iPad Portrait view - check this first before desktop
-  if (isIPadPortrait) {
-    return (
-      <Container>
-        <ContentArea>
-          <MapPanel
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            variants={fadeVariants}
-          >
-            <CharacterMap
-              ref={characterMapRef}
-              font={font}
-              onGlyphSelect={handleGlyphSelect}
-              onGlyphHover={handleGlyphHover}
-              selectedGlyph={selectedGlyph}
-              hoveredGlyph={hoveredGlyph}
-              activeTab={activeTab}
-            />
-          </MapPanel>
-
-          <GlyphPanel
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            variants={fadeVariants}
-          >
-            <HighlightedGlyph 
-              glyph={hoveredGlyph || selectedGlyph} 
-              font={font}
-            />
-          </GlyphPanel>
-        </ContentArea>
-
-        <SearchContainer
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          variants={fadeVariants}
-        >
-      
-        </SearchContainer>
-      </Container>
-    );
-  }
-
-  // Desktop view
-  if (!isMobile) {
-    return (
-      <Container>
-        <ContentArea>
-          <GlyphPanel
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            variants={fadeVariants}
-          >
-            <HighlightedGlyph 
-              glyph={hoveredGlyph || selectedGlyph} 
-              font={font}
-            />
-          </GlyphPanel>
-
-          <MapPanel
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            variants={fadeVariants}
-          >
-            <CharacterMap
-              ref={characterMapRef}
-              font={font}
-              onGlyphSelect={handleGlyphSelect}
-              onGlyphHover={handleGlyphHover}
-              selectedGlyph={selectedGlyph}
-              hoveredGlyph={hoveredGlyph}
-              activeTab={activeTab}
-            />
-          </MapPanel>
-        </ContentArea>
-
-        <SearchContainer
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            variants={fadeVariants}
-          >
-      
-        </SearchContainer>
-      </Container>
-    );
-  }
-
-  // Mobile view
-  return (
-    <Container>
-      <ContentArea onClick={() => showGlyphView && setShowGlyphView(false)}>
-        <AnimatePresence mode="wait">
-          {showGlyphView ? (
-            <GlyphPanel
-              key="glyph"
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              variants={fadeVariants}
-              showInMobile={true}
-            >
-              <HighlightedGlyph 
-                glyph={hoveredGlyph || selectedGlyph} 
-                font={font}
-              />
-            </GlyphPanel>
-          ) : (
+    // iPad Portrait view - check this first before desktop
+    if (isIPadPortrait) {
+      return (
+        <Container>
+          <ContentArea>
             <MapPanel
-              key="map"
               initial="initial"
               animate="animate"
               exit="exit"
               variants={fadeVariants}
-              showInMobile={true}
             >
               <CharacterMap
                 ref={characterMapRef}
@@ -330,22 +224,128 @@ export const GlyphMapGrid = forwardRef(({
                 activeTab={activeTab}
               />
             </MapPanel>
-          )}
-        </AnimatePresence>
-      </ContentArea>
 
-      <SearchContainer
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        variants={fadeVariants}
-      >
-     
-      </SearchContainer>
-    </Container>
-  );
-});
+            <GlyphPanel
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={fadeVariants}
+            >
+              <HighlightedGlyph
+                glyph={hoveredGlyph || selectedGlyph}
+                font={font}
+              />
+            </GlyphPanel>
+          </ContentArea>
 
-GlyphMapGrid.displayName = 'GlyphMapGrid';
+          <SearchContainer
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={fadeVariants}
+          ></SearchContainer>
+        </Container>
+      );
+    }
+
+    // Desktop view
+    if (!isMobile) {
+      return (
+        <Container>
+          <ContentArea>
+            <GlyphPanel
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={fadeVariants}
+            >
+              <HighlightedGlyph
+                glyph={hoveredGlyph || selectedGlyph}
+                font={font}
+              />
+            </GlyphPanel>
+
+            <MapPanel
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={fadeVariants}
+            >
+              <CharacterMap
+                ref={characterMapRef}
+                font={font}
+                onGlyphSelect={handleGlyphSelect}
+                onGlyphHover={handleGlyphHover}
+                selectedGlyph={selectedGlyph}
+                hoveredGlyph={hoveredGlyph}
+                activeTab={activeTab}
+              />
+            </MapPanel>
+          </ContentArea>
+
+          <SearchContainer
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={fadeVariants}
+          ></SearchContainer>
+        </Container>
+      );
+    }
+
+    // Mobile view
+    return (
+      <Container>
+        <ContentArea onClick={() => showGlyphView && setShowGlyphView(false)}>
+          <AnimatePresence mode="wait">
+            {showGlyphView ? (
+              <GlyphPanel
+                key="glyph"
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={fadeVariants}
+                showInMobile={true}
+              >
+                <HighlightedGlyph
+                  glyph={hoveredGlyph || selectedGlyph}
+                  font={font}
+                />
+              </GlyphPanel>
+            ) : (
+              <MapPanel
+                key="map"
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={fadeVariants}
+                showInMobile={true}
+              >
+                <CharacterMap
+                  ref={characterMapRef}
+                  font={font}
+                  onGlyphSelect={handleGlyphSelect}
+                  onGlyphHover={handleGlyphHover}
+                  selectedGlyph={selectedGlyph}
+                  hoveredGlyph={hoveredGlyph}
+                  activeTab={activeTab}
+                />
+              </MapPanel>
+            )}
+          </AnimatePresence>
+        </ContentArea>
+
+        <SearchContainer
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          variants={fadeVariants}
+        ></SearchContainer>
+      </Container>
+    );
+  },
+);
+
+GlyphMapGrid.displayName = "GlyphMapGrid";
 
 export default GlyphMapGrid;

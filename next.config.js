@@ -2,27 +2,27 @@
 const nextConfig = {
   // Keep existing strict mode setting
   reactStrictMode: true,
-  
+
   // Enable standalone output for Docker deployment
-  output: 'standalone',
-  
+  output: "standalone",
+
   // Keep styled-components compiler configuration
   compiler: {
     styledComponents: true,
   },
-  
+
   // Keep existing webpack configuration for fonts
   webpack(config) {
     config.module.rules.push({
       test: /\.(woff|woff2|eot|ttf|otf)$/i,
-      type: 'asset/resource',
+      type: "asset/resource",
       generator: {
-        filename: 'static/fonts/[name][ext]',
+        filename: "static/fonts/[name][ext]",
       },
     });
     return config;
   },
-  
+
   // Add Turbopack configuration
   experimental: {
     // Enable Turbopack for development
@@ -30,17 +30,17 @@ const nextConfig = {
       // Turbopack rules for similar font handling
       rules: {
         // This helps Turbopack handle fonts similarly to your webpack config
-        '**/*.{woff,woff2,eot,ttf,otf}': [
+        "**/*.{woff,woff2,eot,ttf,otf}": [
           {
-            loader: 'file-loader',
+            loader: "file-loader",
             options: {
-              name: 'static/fonts/[name][ext]',
+              name: "static/fonts/[name][ext]",
             },
           },
         ],
       },
     },
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

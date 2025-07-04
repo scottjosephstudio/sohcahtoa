@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import styled from 'styled-components';
+import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 
 const SearchWrapper = styled(motion.div)`
   width: 300px;
   margin: 0 auto;
   position: relative;
-  
+
   @media (max-width: 768px) {
     width: 100%;
   }
-  
+
   @media (max-width: 600px) {
     width: 100%;
   }
@@ -22,7 +22,7 @@ const InputWrapper = styled.div`
 `;
 
 const SearchInput = styled.input`
-font-family: 'Jant', sans-serif;
+  font-family: "Jant", sans-serif;
   width: 100%;
   padding: 10px 42px 8px 12px;
   border: 2px solid rgb(16, 12, 8);
@@ -38,7 +38,7 @@ font-family: 'Jant', sans-serif;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  
+
   @media (max-width: 600px) {
     width: 100%;
   }
@@ -50,7 +50,7 @@ font-family: 'Jant', sans-serif;
   }
 
   &::placeholder {
-    color: ${props => (props.error ? 'red' : 'rgb(16, 12, 8)')};
+    color: ${(props) => (props.error ? "red" : "rgb(16, 12, 8)")};
     text-overflow: ellipsis;
   }
 `;
@@ -71,7 +71,7 @@ export const SearchPanel = ({
   onSearch,
   placeholder = "Search for a character...",
   isNavigatingHome = false,
-  isGlyphsExiting = false
+  isGlyphsExiting = false,
 }) => {
   const [query, setQuery] = useState("");
   const [error, setError] = useState("");
@@ -88,7 +88,7 @@ export const SearchPanel = ({
 
   const handleChange = (event) => {
     const newValue = event.target.value;
-    
+
     // If user is typing a new character and there's already a character,
     // replace the existing character with the new one
     if (newValue.length > 1) {
@@ -98,39 +98,39 @@ export const SearchPanel = ({
       onSearch(newChar);
       return;
     }
-    
+
     setQuery(newValue);
     setError("");
     onSearch(newValue);
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       onSearch(query);
     }
   };
 
   const slideVariants = {
-    initial: { 
+    initial: {
       y: 100,
-      opacity: 0
+      opacity: 0,
     },
     animate: {
       y: 0,
       opacity: 1,
       transition: {
         duration: 0.2,
-        ease: [0.4, 0, 0.2, 1]
-      }
+        ease: [0.4, 0, 0.2, 1],
+      },
     },
     exit: {
       y: 100,
       opacity: 0,
       transition: {
         duration: 0.2,
-        ease: [0.4, 0, 0.2, 1]
-      }
-    }
+        ease: [0.4, 0, 0.2, 1],
+      },
+    },
   };
 
   return (

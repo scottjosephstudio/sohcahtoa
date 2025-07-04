@@ -1,14 +1,16 @@
-import { useState } from 'react';
-import { useUIState } from './useUIState';
+import { useState } from "react";
+import { useUIState } from "./useUIState";
 
 export const useFormState = () => {
-  const { setters: { setIsLoginModalOpen } } = useUIState();
+  const {
+    setters: { setIsLoginModalOpen },
+  } = useUIState();
 
   // Password reset states
   const [isResetPassword, setIsResetPassword] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
-  const [resetEmail, setResetEmail] = useState('');
-  const [newPassword, setNewPassword] = useState('');
+  const [resetEmail, setResetEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -23,16 +25,16 @@ export const useFormState = () => {
 
   const handleInputFocus = (inputType) => {
     switch (inputType) {
-      case 'email':
+      case "email":
         setEmailError(false);
         break;
-      case 'password':
+      case "password":
         setPasswordError(false);
         break;
-      case 'resetEmail':
+      case "resetEmail":
         setResetEmailError(false);
         break;
-      case 'newPassword':
+      case "newPassword":
         setNewPasswordError(false);
         break;
     }
@@ -40,11 +42,11 @@ export const useFormState = () => {
 
   const handleResetPassword = (e) => {
     e.preventDefault();
-    const isResetEmailValid = resetEmail === 'info@scottpauljoseph.com';
+    const isResetEmailValid = resetEmail === "info@scottpauljoseph.com";
 
     if (!isResetEmailValid) {
       setResetEmailError(true);
-      setResetEmail('');
+      setResetEmail("");
     } else {
       setIsResetting(true);
       setResetEmailError(false);
@@ -54,28 +56,28 @@ export const useFormState = () => {
   const handleBackToLogin = () => {
     setIsResetPassword(false);
     setIsResetting(false);
-    setResetEmail('');
-    setNewPassword('');
+    setResetEmail("");
+    setNewPassword("");
   };
 
   const handleSubmitNewPassword = (e) => {
     e.preventDefault();
     const isNewPasswordValid = newPassword.length >= 8;
-  
+
     if (!isNewPasswordValid) {
       setNewPasswordError(true);
-      setNewPassword('');
+      setNewPassword("");
     } else {
       setShowSuccessMessage(true);
       setNewPasswordError(false);
       setIsSuccessTimeout(true);
-      
+
       setTimeout(() => {
         setShowSuccessMessage(false);
         setIsResetting(false);
         setIsResetPassword(false);
-        setResetEmail('');
-        setNewPassword('');
+        setResetEmail("");
+        setNewPassword("");
         if (isSuccessTimeout) {
           setIsLoginModalOpen(false);
         }
@@ -98,7 +100,7 @@ export const useFormState = () => {
       passwordError,
       resetEmailError,
       newPasswordError,
-      $isSaving
+      $isSaving,
     },
     setters: {
       setIsResetPassword,
@@ -113,14 +115,14 @@ export const useFormState = () => {
       setPasswordError,
       setResetEmailError,
       setNewPasswordError,
-      set$isSaving
+      set$isSaving,
     },
     handlers: {
       handleResetPassword,
       handleBackToLogin,
       handleSubmitNewPassword,
-      handleInputFocus
-    }
+      handleInputFocus,
+    },
   };
 };
 

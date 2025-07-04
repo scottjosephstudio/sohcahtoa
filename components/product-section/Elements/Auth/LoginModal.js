@@ -1,21 +1,21 @@
-import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Portal from '../../../providers/Portal';
-import { usePortal } from '../../../../context/PortalContext';
-import { 
+import React, { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Portal from "../../../providers/Portal";
+import { usePortal } from "../../../../context/PortalContext";
+import {
   LoginModal as LoginModalContainer,
-  SimpleLoginPanel, 
-  ModalHeader, 
-  ModalTitleLogin, 
-  LoginSubmitButton, 
+  SimpleLoginPanel,
+  ModalHeader,
+  ModalTitleLogin,
+  LoginSubmitButton,
   ResetPasswordLink,
   Label,
   TogglePasswordButton,
   loginPanelVariants,
   formContentVariants,
-  togglePasswordVariants
-} from '../../Controller/ProductPage_Styles';
-import styled from 'styled-components';
+  togglePasswordVariants,
+} from "../../Controller/ProductPage_Styles";
+import styled from "styled-components";
 
 // Custom styled components with bespoke spacing
 const CustomLoginForm = styled.form`
@@ -34,7 +34,7 @@ const CustomFormGroup = styled.div`
   &.email-group {
     margin-top: -8px;
     margin-bottom: -16px;
-    
+
     @media (max-width: 1200px) {
       margin-top: -8px;
     }
@@ -43,7 +43,7 @@ const CustomFormGroup = styled.div`
   &.password-group {
     margin-top: 6px;
     margin-bottom: -16px;
-    
+
     @media (max-width: 1200px) {
       margin-top: 6px;
       margin-bottom: -16px;
@@ -56,54 +56,60 @@ const CustomInput = styled.input`
   padding: 10px 12px 8px 12px;
   border-radius: 10px;
   margin-bottom: 0px;
-  color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
+  color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
   background-color: #f9f9f9;
-  border: 2px solid ${props => props.$hasError ? '#FF0000' : '#f9f9f9;'};
+  border: 2px solid ${(props) => (props.$hasError ? "#FF0000" : "#f9f9f9;")};
   outline: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
   position: relative;
-  z-index: ${props => props.$hasError ? '502' : '1'};
-  font-family: 'Jant', sans-serif;
+  z-index: ${(props) => (props.$hasError ? "502" : "1")};
+  font-family: "Jant", sans-serif;
   font-size: 20px;
   line-height: 24px !important;
   letter-spacing: 0.8px;
 
   @media (min-width: 1420px) {
-    font-family: 'Jant', sans-serif;
+    font-family: "Jant", sans-serif;
     font-size: 20px;
     line-height: 24px !important;
     letter-spacing: 0.8px;
   }
 
   &::placeholder {
-    color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
+    color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
     transition: color 0.15s ease;
   }
 
   &:hover {
     color: #f9f9f9;
     background-color: rgb(16, 12, 8);
-    border: 2px solid ${props => props.$hasError ? '#FF0000' : '#006efe'};
+    border: 2px solid ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
     cursor: pointer;
   }
 
   &:hover::placeholder {
     color: #f9f9f9;
   }
-  
+
   &:-webkit-autofill {
-    font-family: 'Jant';
+    font-family: "Jant";
   }
 
   &:-webkit-autofill,
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus {
-    -webkit-text-fill-color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
+    -webkit-text-fill-color: ${(props) =>
+      props.$hasError ? "#FF0000" : "#006efe"};
     -webkit-box-shadow: 0 0 0px 1000px #f9f9f9 inset;
-    transition: background-color 0s 600000s, color 0.15s ease;
+    transition:
+      background-color 0s 600000s,
+      color 0.15s ease;
   }
 
   &:-webkit-autofill:hover {
@@ -112,8 +118,8 @@ const CustomInput = styled.input`
   }
 
   &:focus {
-    color: ${props => props.$hasError ? '#FF0000' : '#006efe'};
-    border: 2px solid ${props => props.$hasError ? '#FF0000' : '#006efe'};
+    color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
+    border: 2px solid ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
   }
 `;
 
@@ -149,11 +155,11 @@ const Backdrop = styled(motion.div)`
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   pointer-events: auto !important;
-  
+
   /* Prevent mobile layout shifts and scrolling issues */
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  
+
   /* Ensure fixed positioning on mobile */
   @media (max-width: 768px) {
     position: fixed;
@@ -182,17 +188,17 @@ const LoginModal = ({
   handleClose,
   formSetters,
   formState,
-  children
+  children,
 }) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
   const { setIsModalOpen, zIndex } = usePortal();
-  
+
   useEffect(() => {
     setIsModalOpen(true);
     return () => setIsModalOpen(false);
   }, [setIsModalOpen]);
-  
+
   const handleBackdropClick = () => {
     setIsClosing(true);
     // Delay the actual close to allow exit animation
@@ -215,7 +221,7 @@ const LoginModal = ({
         transition={{ duration: 0.2, ease: "easeInOut" }}
         onClick={handleBackdropClick}
       />
-      
+
       <LoginModalContainer style={{ zIndex: zIndex?.modal || 920 }}>
         <AnimatePresence mode="wait">
           {children ? (
@@ -231,11 +237,12 @@ const LoginModal = ({
               }}
             >
               <ModalHeader>
-                <ModalTitleLogin style={{ marginBottom: '20px' }}>
-                  {formState?.isResetPassword 
-                    ? (formState?.isResetting ? 'Set New Password' : 'Reset Password') 
-                    : 'Log In'
-                  }
+                <ModalTitleLogin style={{ marginBottom: "20px" }}>
+                  {formState?.isResetPassword
+                    ? formState?.isResetting
+                      ? "Set New Password"
+                      : "Reset Password"
+                    : "Log In"}
                 </ModalTitleLogin>
               </ModalHeader>
               {children}
@@ -253,11 +260,11 @@ const LoginModal = ({
               }}
             >
               <ModalHeader>
-                <ModalTitleLogin style={{ marginBottom: '20px' }}>
+                <ModalTitleLogin style={{ marginBottom: "20px" }}>
                   Log In
                 </ModalTitleLogin>
               </ModalHeader>
-              <CustomLoginForm 
+              <CustomLoginForm
                 onSubmit={(e) => {
                   e.stopPropagation();
                   if (handleLoginSubmit) handleLoginSubmit(e);
@@ -266,12 +273,12 @@ const LoginModal = ({
               >
                 <CustomFormGroup className="email-group">
                   <CustomLabel>Email</CustomLabel>
-                  <CustomInput 
-                    type="email" 
+                  <CustomInput
+                    type="email"
                     placeholder={emailError ? "Invalid email" : ""}
                     value={userEmail}
                     onChange={(e) => setUserEmail(e.target.value)}
-                    onFocus={() => handleInputFocus('email')}
+                    onFocus={() => handleInputFocus("email")}
                     $hasError={emailError}
                     required
                     onClick={(e) => e.stopPropagation()}
@@ -285,14 +292,14 @@ const LoginModal = ({
                       placeholder={passwordError ? "Invalid password" : ""}
                       value={userPassword}
                       onChange={(e) => setUserPassword(e.target.value)}
-                      onFocus={() => handleInputFocus('password')}
+                      onFocus={() => handleInputFocus("password")}
                       $hasError={passwordError}
                       required
                       onClick={(e) => e.stopPropagation()}
                     />
                     <TogglePasswordButton
                       type="button"
-                      style={{ right: '16px' }} 
+                      style={{ right: "16px" }}
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowPassword(!showPassword);
@@ -301,11 +308,11 @@ const LoginModal = ({
                       initial="initial"
                       whileHover="hover"
                     >
-                      {showPassword ? 'Hide' : 'Show'}
+                      {showPassword ? "Hide" : "Show"}
                     </TogglePasswordButton>
                   </CustomPasswordContainer>
                 </CustomFormGroup>
-                <CustomLoginSubmitButton 
+                <CustomLoginSubmitButton
                   type="submit"
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -327,7 +334,7 @@ const LoginModal = ({
       </LoginModalContainer>
     </>
   );
-  
+
   return <Portal>{modalContent}</Portal>;
 };
 

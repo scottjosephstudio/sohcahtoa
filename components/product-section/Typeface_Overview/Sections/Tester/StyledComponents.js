@@ -1,6 +1,6 @@
 // StyledComponents.js
-import styled from "styled-components"
-import { motion } from 'framer-motion'
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 export const Container = styled.div`
   height: 100vh;
@@ -39,7 +39,7 @@ export const TextContainer = styled.div`
     top: 50%;
     transition: all 0.2s ease;
   }
-  
+
   /* Safari-specific fix for initial text rendering */
   @supports (-webkit-touch-callout: none) {
     -webkit-font-smoothing: antialiased;
@@ -78,11 +78,11 @@ export const EditableText = styled.p`
   backface-visibility: hidden;
   /* Ensure proper text rendering during animation in Safari */
   contain: layout style;
-  
+
   /* Safari-specific text rendering optimization */
   @supports (-webkit-touch-callout: none) {
     -webkit-text-size-adjust: 100%;
-    -webkit-font-feature-settings: 'kern' 1;
+    -webkit-font-feature-settings: "kern" 1;
     -webkit-text-rendering: optimizeLegibility;
   }
 `;
@@ -130,11 +130,11 @@ export const ControlGroup = styled.div`
 `;
 
 export const Label = styled.label`
-    font-size: 12px;
+  font-size: 12px;
   line-height: 14px;
   letter-spacing: 0.8px;
   white-space: nowrap;
-    letter-spacing: ${props => (props.$special ? '-1px' : '0.6px')};
+  letter-spacing: ${(props) => (props.$special ? "-1px" : "0.6px")};
 `;
 
 export const SliderContainer = styled.div`
@@ -156,7 +156,7 @@ export const Slider = styled.input`
     height: 16px;
     background: rgb(16, 12, 8);
     border-radius: 50%;
-  cursor: pointer;
+    cursor: pointer;
     margin-top: -7px;
   }
 
@@ -166,7 +166,7 @@ export const Slider = styled.input`
     background: rgb(16, 12, 8);
     border: none;
     border-radius: 50%;
-  cursor: pointer;
+    cursor: pointer;
   }
 
   &::-webkit-slider-runnable-track {
@@ -190,10 +190,10 @@ export const Value = styled.span`
   letter-spacing: 0.8px;
   color: rgb(16, 12, 8);
   white-space: nowrap;
-  min-width: ${props => {
-    if (props.type === 'fontSize') return '36px';
-    if (props.type === 'lineHeight') return '19px';
-    if (props.type === 'letterSpacing') return '40px';
+  min-width: ${(props) => {
+    if (props.type === "fontSize") return "36px";
+    if (props.type === "lineHeight") return "19px";
+    if (props.type === "letterSpacing") return "40px";
   }};
   display: inline-block;
   text-align: right;
@@ -208,14 +208,14 @@ export const ResetButton = styled(motion.button)`
   display: flex;
   align-items: center;
   justify-content: center;
-cursor: pointer;
+  cursor: pointer;
 
   span {
     display: inline-block;
     font-size: 12px;
-      font-size: 12px;
-  line-height: 14px;
-  letter-spacing: 0.8px;
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0.8px;
     font-weight: bold;
     transform: translate(0.3px, 1.2px);
   }
@@ -225,13 +225,13 @@ cursor: pointer;
 export const resetButtonVariants = {
   hover: {
     backgroundColor: "rgb(16, 12, 8)",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 export const resetButtonSpanVariants = {
   hover: {
     color: "white",
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };

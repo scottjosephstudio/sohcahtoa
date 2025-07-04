@@ -1,1 +1,1 @@
-export { default } from './MobileTypefaceIcon'; 
+export { default } from "./MobileTypefaceIcon";

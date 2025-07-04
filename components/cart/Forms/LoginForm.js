@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LoginHeader,
   LoginSectionHeader,
@@ -17,11 +17,11 @@ import {
   togglePasswordVariants,
   loginToggleVariants,
   buttonVariants,
-  resetPasswordLinkVariants
-} from '../styles';
+  resetPasswordLinkVariants,
+} from "../styles";
 
-const TEST_EMAIL = 'info@scottpauljoseph.com';
-const TEST_PASSWORD = 'Hybrid1983';
+const TEST_EMAIL = "info@scottpauljoseph.com";
+const TEST_PASSWORD = "Hybrid1983";
 
 export const LoginForm = ({
   showLoginForm,
@@ -35,41 +35,41 @@ export const LoginForm = ({
   onBackToLogin,
   loginButtonRef,
   isResettingPassword,
-  setIsResettingPassword
+  setIsResettingPassword,
 }) => {
-  const [resetData, setResetData] = useState({ email: '' });
+  const [resetData, setResetData] = useState({ email: "" });
   const [showErrors, setShowErrors] = useState({
     email: false,
     password: false,
-    resetEmail: false
+    resetEmail: false,
   });
 
   const handleInputChange = (field, value) => {
     // Clear error display when typing
-    setShowErrors(prev => ({
+    setShowErrors((prev) => ({
       ...prev,
-      [field]: false
+      [field]: false,
     }));
     onLoginInput(field, value);
   };
 
   const handleBlur = (field) => {
     // Only validate on blur if there's a value
-    if (field === 'email' && loginData?.email) {
+    if (field === "email" && loginData?.email) {
       if (loginData.email !== TEST_EMAIL) {
-        setShowErrors(prev => ({
+        setShowErrors((prev) => ({
           ...prev,
-          email: true
+          email: true,
         }));
-        onLoginInput('email', '');
+        onLoginInput("email", "");
       }
-    } else if (field === 'password' && loginData?.password) {
+    } else if (field === "password" && loginData?.password) {
       if (loginData.password !== TEST_PASSWORD) {
-        setShowErrors(prev => ({
+        setShowErrors((prev) => ({
           ...prev,
-          password: true
+          password: true,
         }));
-        onLoginInput('password', '');
+        onLoginInput("password", "");
       }
     }
   };
@@ -79,17 +79,17 @@ export const LoginForm = ({
     const newErrors = {
       email: loginData?.email !== TEST_EMAIL,
       password: loginData?.password !== TEST_PASSWORD,
-      resetEmail: false
+      resetEmail: false,
     };
 
     setShowErrors(newErrors);
 
     // Clear invalid fields
     if (newErrors.email) {
-      onLoginInput('email', '');
+      onLoginInput("email", "");
     }
     if (newErrors.password) {
-      onLoginInput('password', '');
+      onLoginInput("password", "");
     }
 
     // Only proceed if both are correct
@@ -107,10 +107,10 @@ export const LoginForm = ({
 
   const handleBackToLogin = () => {
     setIsResettingPassword(false);
-    setResetData({ email: '' });
-    setShowErrors(prev => ({
+    setResetData({ email: "" });
+    setShowErrors((prev) => ({
       ...prev,
-      resetEmail: false
+      resetEmail: false,
     }));
     if (onBackToLogin) {
       onBackToLogin();
@@ -120,11 +120,11 @@ export const LoginForm = ({
   const validateResetEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
-      setShowErrors(prev => ({
+      setShowErrors((prev) => ({
         ...prev,
-        resetEmail: true
+        resetEmail: true,
       }));
-      setResetData({ email: '' });
+      setResetData({ email: "" });
       return false;
     }
     return true;
@@ -136,13 +136,13 @@ export const LoginForm = ({
         <LoginSectionHeader data-scroll="login-toggle">
           Already have an account?
         </LoginSectionHeader>
-        <LoginToggleButton 
+        <LoginToggleButton
           onClick={onLoginToggle}
           variants={loginToggleVariants}
           initial="initial"
           whileHover="hover"
         >
-          <span>{showLoginForm ? 'Hide Login' : 'Login'}</span>
+          <span>{showLoginForm ? "Hide Login" : "Login"}</span>
         </LoginToggleButton>
       </LoginHeader>
 
@@ -164,69 +164,83 @@ export const LoginForm = ({
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                <FormRow>
-                  <FormGroup $noMargin data-scroll="login-inputs">
-                    <FormLabel>Email</FormLabel>
-                    <FormInput
-                      type="email"
-                      value={loginData?.email || ''}
-                      placeholder={showErrors.email ? "Invalid Email" : ''}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      onBlur={() => handleBlur('email')}
-                      $hasError={showErrors.email}
-                      required
-                    />
-                  </FormGroup>
-                  <FormGroup $noMargin>
-                    <FormLabel>Password</FormLabel>
-                    <PasswordContainer>
+                  <FormRow>
+                    <FormGroup $noMargin data-scroll="login-inputs">
+                      <FormLabel>Email</FormLabel>
                       <FormInput
-                        type={showPassword ? "text" : "password"}
-                        value={loginData?.password || ''}
-                        placeholder={showErrors.password ? "Invalid Password" : ''}
-                        onChange={(e) => handleInputChange('password', e.target.value)}
-                        onBlur={() => handleBlur('password')}
-                        $hasError={showErrors.password}
+                        type="email"
+                        value={loginData?.email || ""}
+                        placeholder={showErrors.email ? "Invalid Email" : ""}
+                        onChange={(e) =>
+                          handleInputChange("email", e.target.value)
+                        }
+                        onBlur={() => handleBlur("email")}
+                        $hasError={showErrors.email}
                         required
                       />
-                      <TogglePasswordButton
-                        type="button"
-                        onClick={onTogglePassword}
-                        variants={togglePasswordVariants}
-                        initial="initial"
-                        whileHover="hover"
-                      >
-                        {showPassword ? 'Hide' : 'Show'}
-                      </TogglePasswordButton>
-                    </PasswordContainer>
-                  </FormGroup>
-                </FormRow>
+                    </FormGroup>
+                    <FormGroup $noMargin>
+                      <FormLabel>Password</FormLabel>
+                      <PasswordContainer>
+                        <FormInput
+                          type={showPassword ? "text" : "password"}
+                          value={loginData?.password || ""}
+                          placeholder={
+                            showErrors.password ? "Invalid Password" : ""
+                          }
+                          onChange={(e) =>
+                            handleInputChange("password", e.target.value)
+                          }
+                          onBlur={() => handleBlur("password")}
+                          $hasError={showErrors.password}
+                          required
+                        />
+                        <TogglePasswordButton
+                          type="button"
+                          onClick={onTogglePassword}
+                          variants={togglePasswordVariants}
+                          initial="initial"
+                          whileHover="hover"
+                        >
+                          {showPassword ? "Hide" : "Show"}
+                        </TogglePasswordButton>
+                      </PasswordContainer>
+                    </FormGroup>
+                  </FormRow>
 
-                <LinkWrapper data-scroll="reset-link">
-                  <ResetPasswordLink 
-                    onClick={handleResetClick}
-                    variants={resetPasswordLinkVariants}
+                  <LinkWrapper data-scroll="reset-link">
+                    <ResetPasswordLink
+                      onClick={handleResetClick}
+                      variants={resetPasswordLinkVariants}
+                      initial="initial"
+                      whileHover="hover"
+                    >
+                      <span>Reset Password</span>
+                    </ResetPasswordLink>
+                  </LinkWrapper>
+
+                  <Button
+                    ref={loginButtonRef}
+                    data-scroll="login-button"
+                    onClick={handleSubmit}
+                    variants={buttonVariants}
                     initial="initial"
-                    whileHover="hover"
+                    animate={
+                      !loginData?.email || !loginData?.password
+                        ? "disabled"
+                        : "enabled"
+                    }
+                    whileHover={
+                      !loginData?.email || !loginData?.password ? {} : "hover"
+                    }
+                    whileTap={
+                      !loginData?.email || !loginData?.password ? {} : "hover"
+                    }
+                    disabled={!loginData?.email || !loginData?.password}
                   >
-                    <span>Reset Password</span>
-                  </ResetPasswordLink>
-                </LinkWrapper>
-
-                <Button
-                  ref={loginButtonRef}
-                  data-scroll="login-button"
-                  onClick={handleSubmit}
-                  variants={buttonVariants}
-                  initial="initial"
-                  animate={(!loginData?.email || !loginData?.password) ? "disabled" : "enabled"}
-                  whileHover={(!loginData?.email || !loginData?.password) ? {} : "hover"}
-                  whileTap={(!loginData?.email || !loginData?.password) ? {} : "hover"}
-                  disabled={!loginData?.email || !loginData?.password}
-                >
-                  Login
-                </Button>
-              </motion.div>
+                    Login
+                  </Button>
+                </motion.div>
               ) : (
                 <motion.div
                   key="reset"
@@ -236,69 +250,74 @@ export const LoginForm = ({
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                <FormRow>
-                  <FormGroup $noMargin data-scroll="reset-inputs">
-                    <FormLabel>Email</FormLabel>
-                    <FormInput
-                      type="email"
-                      value={resetData.email}
-                      placeholder={showErrors.resetEmail ? "Invalid Email" : ""}
-                      onChange={(e) => {
-                        setResetData({ email: e.target.value });
-                        setShowErrors(prev => ({
-                          ...prev,
-                          resetEmail: false
-                        }));
-                      }}
-                      onBlur={() => {
-                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                        if (!resetData.email || !emailRegex.test(resetData.email)) {
-                          setShowErrors(prev => ({
-                            ...prev,
-                            resetEmail: true
-                          }));
-                          setResetData({ email: '' });
+                  <FormRow>
+                    <FormGroup $noMargin data-scroll="reset-inputs">
+                      <FormLabel>Email</FormLabel>
+                      <FormInput
+                        type="email"
+                        value={resetData.email}
+                        placeholder={
+                          showErrors.resetEmail ? "Invalid Email" : ""
                         }
+                        onChange={(e) => {
+                          setResetData({ email: e.target.value });
+                          setShowErrors((prev) => ({
+                            ...prev,
+                            resetEmail: false,
+                          }));
+                        }}
+                        onBlur={() => {
+                          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                          if (
+                            !resetData.email ||
+                            !emailRegex.test(resetData.email)
+                          ) {
+                            setShowErrors((prev) => ({
+                              ...prev,
+                              resetEmail: true,
+                            }));
+                            setResetData({ email: "" });
+                          }
+                        }}
+                        $hasError={showErrors.resetEmail}
+                        required
+                      />
+                    </FormGroup>
+                  </FormRow>
+
+                  <LinkWrapper data-scroll="back-to-login">
+                    <ResetPasswordLink
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleBackToLogin();
                       }}
-                      $hasError={showErrors.resetEmail}
-                      required
-                    />
-                  </FormGroup>
-                </FormRow>
+                      variants={resetPasswordLinkVariants}
+                      initial="initial"
+                      whileHover="hover"
+                    >
+                      <span>Back to Login</span>
+                    </ResetPasswordLink>
+                  </LinkWrapper>
 
-                <LinkWrapper data-scroll="back-to-login">
-                  <ResetPasswordLink 
-                    onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleBackToLogin();
+                  <Button
+                    data-scroll="reset-button"
+                    onClick={() => {
+                      if (validateResetEmail(resetData.email)) {
+                        handleBackToLogin();
+                      }
                     }}
-                    variants={resetPasswordLinkVariants}
+                    variants={buttonVariants}
                     initial="initial"
-                    whileHover="hover"
+                    animate={!resetData.email ? "disabled" : "enabled"}
+                    whileHover={!resetData.email ? {} : "hover"}
+                    whileTap={!resetData.email ? {} : "hover"}
+                    disabled={!resetData.email}
                   >
-                    <span>Back to Login</span>
-                  </ResetPasswordLink>
-                </LinkWrapper>
-
-                <Button
-                  data-scroll="reset-button"
-                  onClick={() => {
-                    if (validateResetEmail(resetData.email)) {
-                      handleBackToLogin();
-                    }
-                  }}
-                  variants={buttonVariants}
-                  initial="initial"
-                  animate={!resetData.email ? "disabled" : "enabled"}
-                  whileHover={!resetData.email ? {} : "hover"}
-                  whileTap={!resetData.email ? {} : "hover"}
-                  disabled={!resetData.email}
-                >
-                  Reset Password
-                </Button>
-              </motion.div>
-            )}
+                    Reset Password
+                  </Button>
+                </motion.div>
+              )}
             </AnimatePresence>
           </LoginFormContainer>
         )}

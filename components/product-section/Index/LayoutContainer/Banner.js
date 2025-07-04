@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
+import React from "react";
+import { motion } from "framer-motion";
+import styled from "styled-components";
 
-import useInfiniteBanner from '../../../../hooks/TypefaceSlotMachine/useInfiniteBanner';
+import useInfiniteBanner from "../../../../hooks/TypefaceSlotMachine/useInfiniteBanner";
 
 // Create motion components from styled-components
 const MotionBannerContainer = styled(motion.div)`
@@ -51,7 +51,7 @@ const MotionBannerText = styled(motion.span)`
 `;
 
 export default function InfiniteWidthBanner({
-  bannerText = '// UNDER CONSTRUCTION //',
+  bannerText = "// UNDER CONSTRUCTION //",
 }) {
   const { containerRef, textRef, repetitions, controls } =
     useInfiniteBanner(bannerText);
@@ -60,9 +60,9 @@ export default function InfiniteWidthBanner({
     <MotionBannerContainer
       ref={containerRef}
       aria-label="Site status banner"
-      initial={{ y: '100%' }}
-      animate={{ y: '0%' }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
+      initial={{ y: "100%" }}
+      animate={{ y: "0%" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       className="banner-container" // Add the banner-container class
     >
       <MotionBannerContent animate={controls}>
@@ -75,7 +75,7 @@ export default function InfiniteWidthBanner({
             }}
             transition={{
               duration: 1,
-              ease: 'easeInOut',
+              ease: "easeInOut",
               repeat: Infinity,
             }}
           >

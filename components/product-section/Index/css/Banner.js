@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 // Banner Container
 export const BannerContainer = styled.div`

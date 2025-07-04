@@ -1,22 +1,26 @@
-'use client';
+"use client";
 
-import { Fragment } from 'react';
-import { AnimatePresence } from 'framer-motion';
-import menuData from '../../data/menuData';
+import { Fragment } from "react";
+import { AnimatePresence } from "framer-motion";
+import menuData from "../../data/menuData";
 
 // Import styles and animations
-import { Backdrop, Overlay, StudioName } from './styles/MenuOverlayStyles';
-import { backdropVariants, overlayVariants, fadeInUp } from './styles/animationVariants';
+import { Backdrop, Overlay, StudioName } from "./styles/MenuOverlayStyles";
+import {
+  backdropVariants,
+  overlayVariants,
+  fadeInUp,
+} from "./styles/animationVariants";
 
 // Import components
-import ProjectsSection from './components/ProjectsSection';
-import AboutSection from './components/AboutSection';
-import ClientsSection from './components/ClientsSection';
-import ContactSection from './components/ContactSection';
-import FooterSection from './components/FooterSection';
+import ProjectsSection from "./components/ProjectsSection";
+import AboutSection from "./components/AboutSection";
+import ClientsSection from "./components/ClientsSection";
+import ContactSection from "./components/ContactSection";
+import FooterSection from "./components/FooterSection";
 
 // Import hooks
-import { useMenuOverlayState } from './hooks/useMenuOverlayState';
+import { useMenuOverlayState } from "./hooks/useMenuOverlayState";
 
 export default function MenuOverlay({ $isOpen, onClose }) {
   const {
@@ -31,7 +35,7 @@ export default function MenuOverlay({ $isOpen, onClose }) {
     isSupabaseConnected,
     overlayRef,
     handleNewsletterSubmit,
-    handleLinkClick
+    handleLinkClick,
   } = useMenuOverlayState($isOpen, onClose);
 
   // Only render the menu content on the client and prevent rendering during transitions
@@ -40,20 +44,28 @@ export default function MenuOverlay({ $isOpen, onClose }) {
       <AnimatePresence>
         {$isOpen && (
           <>
-            <Backdrop 
-              onClick={onClose} 
+            <Backdrop
+              onClick={onClose}
               variants={backdropVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
             />
-            <Overlay 
-              $isOpen={$isOpen} 
-              ref={overlayRef} 
+            <Overlay
+              $isOpen={$isOpen}
+              ref={overlayRef}
               className="Overlay"
               initial={{ opacity: 0, visibility: "hidden" }}
-              animate={{ opacity: 1, visibility: "visible", transition: { duration: 0.3, ease: "easeInOut" } }}
-              exit={{ opacity: 0, visibility: "hidden", transition: { duration: 0.3, ease: "easeInOut" } }}
+              animate={{
+                opacity: 1,
+                visibility: "visible",
+                transition: { duration: 0.3, ease: "easeInOut" },
+              }}
+              exit={{
+                opacity: 0,
+                visibility: "hidden",
+                transition: { duration: 0.3, ease: "easeInOut" },
+              }}
             />
           </>
         )}
@@ -65,8 +77,8 @@ export default function MenuOverlay({ $isOpen, onClose }) {
     <>
       <AnimatePresence>
         {$isOpen && (
-          <Backdrop 
-            onClick={onClose} 
+          <Backdrop
+            onClick={onClose}
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
@@ -74,41 +86,38 @@ export default function MenuOverlay({ $isOpen, onClose }) {
           />
         )}
       </AnimatePresence>
-      
+
       <AnimatePresence>
         {$isOpen && (
-          <Overlay 
-            ref={overlayRef} 
+          <Overlay
+            ref={overlayRef}
             className="Overlay"
             variants={overlayVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
           >
-            <StudioName
-              variants={fadeInUp}
-              custom={0}
-            >
+            <StudioName variants={fadeInUp} custom={0}>
               {menuData.studioName}
             </StudioName>
-            
-            <ProjectsSection 
+
+            <ProjectsSection
               sections={menuData.sections}
               handleLinkClick={handleLinkClick}
               onClose={onClose}
             />
 
-            <AboutSection 
+            <AboutSection
               aboutData={menuData.about}
               sectionsLength={menuData.sections.length}
             />
 
-            <ClientsSection 
+            <ClientsSection
               selectedClients={menuData.selectedClients}
               sectionsLength={menuData.sections.length}
             />
 
-            <ContactSection 
+            <ContactSection
               contactData={menuData.contact}
               sectionsLength={menuData.sections.length}
               email={email}
@@ -122,7 +131,7 @@ export default function MenuOverlay({ $isOpen, onClose }) {
               handleNewsletterSubmit={handleNewsletterSubmit}
             />
 
-            <FooterSection 
+            <FooterSection
               links={menuData.links}
               sectionsLength={menuData.sections.length}
               handleLinkClick={handleLinkClick}

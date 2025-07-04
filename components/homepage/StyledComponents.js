@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import Link from 'next/link';
+import styled from "styled-components";
+import Link from "next/link";
 
 export const HomeContainer = styled.div`
   padding: 88px 20px 20px 20px;
@@ -13,26 +13,26 @@ export const ProjectsGrid = styled.div`
   max-width: 100%;
   padding: 0px;
   transition: opacity 0.3s ease;
-  -webkit-transition: opacity 0.3s ease; 
+  -webkit-transition: opacity 0.3s ease;
   align-items: start;
-  
+
   /* Responsive breakpoints for better image distribution */
   @media (min-width: 1400px) {
     grid-template-columns: repeat(5, 1fr);
   }
-  
+
   @media (min-width: 1100px) and (max-width: 1399px) {
     grid-template-columns: repeat(4, 1fr);
   }
-  
+
   @media (min-width: 800px) and (max-width: 1099px) {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   @media (min-width: 500px) and (max-width: 799px) {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   @media (max-width: 499px) {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -45,8 +45,8 @@ export const ProjectTile = styled(Link)`
   position: relative;
   text-decoration: none;
   transition: opacity 0.3s ease;
-  -webkit-transition: opacity 0.3s ease; 
-  
+  -webkit-transition: opacity 0.3s ease;
+
   &:hover {
     .caption {
       opacity: 1;
@@ -71,11 +71,11 @@ export const LoadMoreContainer = styled.div`
   display: flex;
   justify-content: center;
   margin: 20px 0 6px 0px;
-  opacity: ${props => props.$visible ? 1 : 0};
+  opacity: ${(props) => (props.$visible ? 1 : 0)};
   transition: opacity 0.5s ease;
   -webkit-transition: opacity 0.3s ease;
-  visibility: ${props => props.$visible ? 'visible' : 'hidden'};
-  
+  visibility: ${(props) => (props.$visible ? "visible" : "hidden")};
+
   @media (max-width: 375px) {
     justify-content: flex-start;
   }
@@ -95,12 +95,12 @@ export const LoadMoreButton = styled.button`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding-top: 9.2px;
   padding-bottom: 7.2px;
-  
+
   &:hover {
     transform: translateY(0px);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
   }
-  
+
   &:focus {
     outline: none;
   }
@@ -108,9 +108,9 @@ export const LoadMoreButton = styled.button`
 
 // Animation variants with 30px entrance animation
 export const containerVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
-    y: 0  // 30px down as requested
+    y: 0, // 30px down as requested
   },
   visible: {
     opacity: 1,
@@ -118,22 +118,22 @@ export const containerVariants = {
     transition: {
       duration: 0.6,
       ease: "easeOut",
-      staggerChildren: 0.1
-    }
-  }
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 export const itemVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
-    y: 0  // 30px down as requested
+    y: 0, // 30px down as requested
   },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.4,
-      ease: "easeOut"
-    }
-  }
-}; 
+      ease: "easeOut",
+    },
+  },
+};

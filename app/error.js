@@ -1,3 +1,3 @@
-'use client';
+"use client";
 
-export { default } from './error-pages/error'; 
+export { default } from "./error-pages/error";

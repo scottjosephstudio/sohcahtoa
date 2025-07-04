@@ -1,17 +1,10 @@
-import React from 'react'
-import { useFontTesterState } from '../hooks/useFontTesterState'
-import { FontTesterDisplay } from './FontTesterDisplay'
+import React from "react";
+import { useFontTesterState } from "../hooks/useFontTesterState";
+import { FontTesterDisplay } from "./FontTesterDisplay";
 
 export default function FontTester({ fontSettings, isNavigatingHome }) {
-  const {
-    settings,
-    text,
-    setText,
-    isTyping,
-    setIsTyping,
-    textRef,
-    isReady
-  } = useFontTesterState(fontSettings)
+  const { settings, text, setText, isTyping, setIsTyping, textRef, isReady } =
+    useFontTesterState(fontSettings);
 
   return (
     <FontTesterDisplay
@@ -24,5 +17,5 @@ export default function FontTester({ fontSettings, isNavigatingHome }) {
       isNavigatingHome={isNavigatingHome}
       isReady={isReady}
     />
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 export const Backdrop = styled(motion.div)`
   position: fixed;
@@ -12,12 +12,12 @@ export const Backdrop = styled(motion.div)`
   -webkit-backdrop-filter: blur(6px);
   z-index: 90;
   will-change: opacity, visibility;
-  
+
   /* Safari fallback for backdrop-filter */
   @supports not (backdrop-filter: blur(6px)) {
     background-color: rgba(0, 0, 0, 0.6);
   }
-  
+
   @media (min-width: 768px) {
     display: none;
   }
@@ -40,7 +40,7 @@ export const Overlay = styled(motion.div)`
   touch-action: pan-y;
   overscroll-behavior: contain;
   scroll-behavior: smooth;
-  
+
   /* Prevent iOS text size adjustment on orientation change */
   -webkit-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
@@ -50,7 +50,7 @@ export const Overlay = styled(motion.div)`
   /* Create blur mask effects */
   &::before,
   &::after {
-    content: '';
+    content: "";
     position: fixed;
     left: 0;
     width: 100%;
@@ -59,10 +59,15 @@ export const Overlay = styled(motion.div)`
     -webkit-backdrop-filter: blur(8px);
     z-index: 991;
     pointer-events: none;
-    
+
     /* Gradient mask to blend the blur */
     mask: linear-gradient(to bottom, transparent 0%, black 50%, black 100%);
-    -webkit-mask: linear-gradient(to bottom, transparent 0%, black 50%, black 100%);
+    -webkit-mask: linear-gradient(
+      to bottom,
+      transparent 0%,
+      black 50%,
+      black 100%
+    );
   }
 
   /* Top blur mask */
@@ -70,7 +75,12 @@ export const Overlay = styled(motion.div)`
     top: 0px; /* Align with your padding-top */
     background: rgba(16, 12, 8, 0.5);
     mask: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
-    -webkit-mask: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
+    -webkit-mask: linear-gradient(
+      to bottom,
+      black 0%,
+      black 50%,
+      transparent 100%
+    );
   }
 
   /* Bottom blur mask */
@@ -78,7 +88,12 @@ export const Overlay = styled(motion.div)`
     bottom: 0px; /* Align with your padding-bottom */
     background: rgba(16, 12, 8, 0.5);
     mask: linear-gradient(to top, black 0%, black 50%, transparent 100%);
-    -webkit-mask: linear-gradient(to top, black 0%, black 50%, transparent 100%);
+    -webkit-mask: linear-gradient(
+      to top,
+      black 0%,
+      black 50%,
+      transparent 100%
+    );
   }
 
   @media (min-width: 769px) {
@@ -122,7 +137,7 @@ export const SectionTitle = styled.div`
   -moz-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  
+
   /* Apply negative top margin to all SectionTitles except in the first SectionContainer */
   ${SectionContainer}:not(:first-child) > & {
     margin-top: -12px;
@@ -135,7 +150,7 @@ export const SectionGrid = styled.div`
   gap: 0px;
   column-gap: 20px;
   margin-bottom: 12px;
-  
+
   @media (max-width: 768px) {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
@@ -152,18 +167,18 @@ export const MenuItem = styled.div`
   -moz-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  
+
   /* Better Safari touch handling */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 
   a:hover {
-     text-decoration: underline !important;
-     text-decoration-color: #39ff14 !important;
-     text-decoration-thickness: 2px !important;
-     text-underline-offset: 3px;
+    text-decoration: underline !important;
+    text-decoration-color: #39ff14 !important;
+    text-decoration-thickness: 2px !important;
+    text-underline-offset: 3px;
   }
-  
+
   /* Enhanced touch feedback for Safari */
   a:active {
     opacity: 0.8;
@@ -217,11 +232,11 @@ export const ClientsGrid = styled(motion.div)`
   gap: 20px;
   margin-bottom: 12px;
 
-   @media (max-width: 600px) {
+  @media (max-width: 600px) {
     column-count: 2;
   }
 
-     @media (max-width: 500px) {
+  @media (max-width: 500px) {
     column-count: 1;
   }
 `;
@@ -251,7 +266,7 @@ export const ContactInfo = styled(motion.div)`
   -moz-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  
+
   /* Disable automatic link detection for phone numbers and emails */
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -260,7 +275,7 @@ export const ContactInfo = styled(motion.div)`
   -ms-user-select: none;
   user-select: none;
   pointer-events: none;
-  
+
   /* Ensure no automatic styling is applied */
   * {
     text-decoration: none !important;
@@ -292,12 +307,12 @@ export const FooterLink = styled.div`
   -moz-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  
+
   a:hover {
-     text-decoration: underline !important;
-  text-decoration-color: #39ff14 !important;
-  text-decoration-thickness: 2px !important;
-  text-underline-offset: 3px;
+    text-decoration: underline !important;
+    text-decoration-color: #39ff14 !important;
+    text-decoration-thickness: 2px !important;
+    text-underline-offset: 3px;
   }
 `;
 
@@ -347,7 +362,7 @@ export const NewsletterInput = styled.input`
   width: 100%;
   max-width: 300px;
   outline: none;
-  font-family: 'Jant', sans-serif;
+  font-family: "Jant", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -355,22 +370,22 @@ export const NewsletterInput = styled.input`
   -moz-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  
+
   /* Fix for curved edges on mobile */
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   border-radius: 0;
-  
+
   /* Prevent Safari zoom on input focus */
   @media screen and (max-width: 768px) {
     font-size: max(16px, 20px);
   }
-  
+
   /* Prevent Safari input shadow */
   box-shadow: none;
   -webkit-box-shadow: none;
-  
+
   /* Override autofill styles in WebKit browsers */
   &:-webkit-autofill,
   &:-webkit-autofill:hover,
@@ -379,9 +394,9 @@ export const NewsletterInput = styled.input`
     -webkit-text-fill-color: white !important;
     -webkit-box-shadow: 0 0 0 30px rgb(16, 12, 8) inset !important;
     transition: background-color 5000s ease-in-out 0s;
-    font-family: 'Jant', sans-serif !important;
+    font-family: "Jant", sans-serif !important;
   }
-  
+
   /* Firefox and other browsers */
   &:autofill,
   &:autofill:hover,
@@ -390,14 +405,14 @@ export const NewsletterInput = styled.input`
     -webkit-text-fill-color: white !important;
     box-shadow: 0 0 0 30px rgb(16, 12, 8) inset !important;
     caret-color: white;
-    font-family: 'Jant', sans-serif !important;
+    font-family: "Jant", sans-serif !important;
   }
-  
+
   &::placeholder {
     color: rgba(255, 255, 255, 0.6);
-    font-family: 'Jant', sans-serif;
+    font-family: "Jant", sans-serif;
   }
-  
+
   &:focus {
     border-bottom-color: #39ff14;
   }
@@ -414,7 +429,7 @@ export const SubscribeButton = styled(motion.button)`
   border-radius: 8px;
   cursor: pointer;
   margin-bottom: 0px;
-  font-family: 'Jant', sans-serif;
+  font-family: "Jant", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -423,24 +438,24 @@ export const SubscribeButton = styled(motion.button)`
   -moz-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  
+
   /* Fix for mobile appearance */
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  
+
   /* Better touch handling for Safari */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
-  
+
   /* Prevent Safari button shadow */
   box-shadow: none;
   -webkit-box-shadow: none;
-  
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
-`; 
+`;
