@@ -7,9 +7,6 @@ import {
 } from "../../../lib/utils";
 import ProjectDetail from "./ProjectDetailClient";
 
-// For completely static data that never changes after build:
-export const dynamic = "force-static";
-
 // Generate metadata for each project page
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;

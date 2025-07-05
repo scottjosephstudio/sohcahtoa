@@ -4,6 +4,8 @@ import "./globals.css";
 import Favicon from "./config/favicon";
 import ClientLayout from "./components/ClientLayout";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: process.env.NEXT_PUBLIC_SITE_NAME || "Scott Joseph Studio",
   description:
