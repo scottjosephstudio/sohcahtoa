@@ -95,7 +95,7 @@ const MapPanel = styled(motion.div)`
 const SearchContainer = styled(motion.div)`
   background: none;
   border-top: 1px solid rgb(16, 12, 8);
-  padding: 98px;
+  padding: 95px;
   pointer-events: none;
 
   .search-panel {

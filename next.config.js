@@ -13,6 +13,12 @@ const nextConfig = {
 
   // Keep existing webpack configuration for fonts
   webpack(config) {
+    // Add alias configuration
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname, '.'),
+    };
+
     config.module.rules.push({
       test: /\.(woff|woff2|eot|ttf|otf)$/i,
       type: "asset/resource",
