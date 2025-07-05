@@ -161,7 +161,7 @@ export const GlyphMapGrid = forwardRef(
       window.innerHeight <= 1366;
 
     const isIPadPortrait = isIPadMini || isIPadRegular;
-    const isMobile = window.innerWidth < 744 && !isIPadPortrait;
+    const isMobile = window.innerWidth < 768 && !isIPadPortrait;
 
     const handleGlyphSelect = useCallback(
       (glyph) => {
