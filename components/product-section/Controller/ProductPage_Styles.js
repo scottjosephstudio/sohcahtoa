@@ -707,6 +707,7 @@ export const CartCount = styled(motion.a)`
 
   span {
     margin-top: -2px; /* Shift number up slightly */
+    margin-left: -1px; /* Shift number left by 1px */
   }
 `;
 
@@ -718,7 +719,7 @@ export const CartDetails = styled(motion.div)`
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 2px 8px rgba(16, 12, 8, 0.3);
-  min-width: 278px;
+  min-width: 252px;
   z-index: 50;
   transform-origin: var(--transform-origin);
   transition:
@@ -755,7 +756,7 @@ export const CartDetails = styled(motion.div)`
 export const CartContent = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 24px; // Exact 12px gap between columns
+  gap: 12px; // Exact 12px gap between columns
 `;
 
 export const TextColumn = styled.div`
@@ -767,7 +768,7 @@ export const TextColumn = styled.div`
 export const ProductName = styled.div`
   font-size: 16px;
   ${textDecorationMixin4px}
-  margin-bottom: 4px;
+  margin-bottom: 0px;
   line-height: 1;
 `;
 

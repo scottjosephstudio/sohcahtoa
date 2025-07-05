@@ -6,6 +6,7 @@ export const FONT_TESTER_TEXTS = [
   "Executive Order 6102",
   "Tape packs and flyers",
   "Ah, certainly",
+  "You're absolutely right",
   "Die looted",
   "On any goods",
   "Statutory time limit",
