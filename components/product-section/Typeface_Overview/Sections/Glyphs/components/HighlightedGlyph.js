@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import styled from "styled-components";
-import { motion } from "framer-motion";
-import { getCharacterName } from "./CharacterNames";
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import { getCharacterName } from './CharacterNames';
 
 const Container = styled(motion.div)`
   height: 100%;
@@ -10,6 +10,7 @@ const Container = styled(motion.div)`
   flex-direction: column;
   gap: 0;
   padding: 12px 12px 12px 0px;
+
 `;
 
 const Header = styled.div`
@@ -19,7 +20,7 @@ const Header = styled.div`
   border-bottom: 1px solid rgb(16, 12, 8);
 
   @media (max-width: 768px) {
-    margin-right: -12px;
+  margin-right: -12px;
   }
 `;
 
@@ -51,6 +52,8 @@ const Canvas = styled.canvas`
   width: 100%;
   height: 100%;
   display: block;
+
+
 `;
 
 const MetricOverlay = styled.div`
@@ -61,6 +64,8 @@ const MetricOverlay = styled.div`
   bottom: 0;
   pointer-events: none;
   right: -12px;
+
+
 `;
 
 const MetricLine = styled.div`
@@ -110,59 +115,24 @@ const InfoValue = styled.span`
   min-width: 0;
 `;
 
-export const HighlightedGlyph = ({ glyph, font = {}, isHovered = false }) => {
+
+
+export const HighlightedGlyph = ({ glyph, font = {} }) => {
   const canvasRef = useRef(null);
   const [metrics, setMetrics] = useState({});
 
-  // Animate electricity effect if isHovered
-  const animationRef = useRef();
-  const [animationFrame, setAnimationFrame] = useState(0);
-
-  const drawElectricityOutline = (ctx, path, x0, baseline, fontSize, color, frame) => {
-    ctx.save();
-    ctx.strokeStyle = color;
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 8 + Math.sin(frame / 5) * 1;
-    ctx.lineWidth = 2 + Math.sin(frame / 7) * 1;
-    ctx.globalAlpha = 0.7 + 0.3 * Math.sin(frame / 1);
-    // Jitter effect: offset points slightly
-    const jitter = () => (Math.random() - 0.5) * 1;
-    ctx.beginPath();
-    for (let i = 0; i < path.commands.length; i++) {
-      const cmd = path.commands[i];
-      if (cmd.type === 'M') {
-        ctx.moveTo(x0 + cmd.x + jitter(), baseline + cmd.y + jitter());
-      } else if (cmd.type === 'L') {
-        ctx.lineTo(x0 + cmd.x + jitter(), baseline + cmd.y + jitter());
-      } else if (cmd.type === 'C') {
-        ctx.bezierCurveTo(
-          x0 + cmd.x1 + jitter(), baseline + cmd.y1 + jitter(),
-          x0 + cmd.x2 + jitter(), baseline + cmd.y2 + jitter(),
-          x0 + cmd.x + jitter(), baseline + cmd.y + jitter()
-        );
-      } else if (cmd.type === 'Q') {
-        ctx.quadraticCurveTo(
-          x0 + cmd.x1 + jitter(), baseline + cmd.y1 + jitter(),
-          x0 + cmd.x + jitter(), baseline + cmd.y + jitter()
-        );
-      }
-    }
-    ctx.stroke();
-    ctx.restore();
-  };
-
-  const calculateMetrics = useCallback((frame = 0) => {
+  const calculateMetrics = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || !font?.opentype || !glyph) return;
 
     const ctx = canvas.getContext("2d");
     const rect = canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-
+    
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
-
+    
     // Clear canvas
     ctx.clearRect(0, 0, rect.width, rect.height);
 
@@ -200,28 +170,24 @@ export const HighlightedGlyph = ({ glyph, font = {}, isHovered = false }) => {
     const glyphAdvanceWidth = opentypeGlyph.advanceWidth || 0;
     const glyphLeftBearing = opentypeGlyph.leftSideBearing || 0;
     const glyphRightBearing = glyphAdvanceWidth - (opentypeGlyph.xMax || 0);
-
+    
     const glyphWidth = glyphAdvanceWidth * glyphScale;
     const glyphStartX = (rect.width - glyphWidth) / 2;
     const x0 = glyphStartX;
-
+    
     // Use OpenType.js built-in draw method
-    ctx.fillStyle = "rgb(16, 12, 8)";
+    ctx.fillStyle = 'rgb(16, 12, 8)';
+    
     try {
+      // This is the official way to draw glyphs with OpenType.js
       opentypeGlyph.draw(ctx, x0, baseline, fontSize);
     } catch (error) {
       // Fallback: use system font rendering
       const fontSize = Math.min(rect.width * 0.3, rect.height * 0.3);
       ctx.font = `${fontSize}px serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
       ctx.fillText(glyph, rect.width / 2, baseline);
-    }
-
-    // Animate electricity outline if isHovered
-    if (isHovered && font?.opentype) {
-      const path = opentypeGlyph.getPath(0, 0, fontSize);
-      drawElectricityOutline(ctx, path, x0, baseline, fontSize, '#00f6ff', frame);
     }
 
     // Bearing line positions
@@ -230,7 +196,7 @@ export const HighlightedGlyph = ({ glyph, font = {}, isHovered = false }) => {
 
     setMetrics({
       ascenderY,
-      capHeightY,
+      capHeightY, 
       xHeightY,
       baseline,
       descenderY,
@@ -244,39 +210,22 @@ export const HighlightedGlyph = ({ glyph, font = {}, isHovered = false }) => {
       descenderValue: Math.round(descender),
       leftBearingValue: Math.round(glyphLeftBearing),
       rightBearingValue: Math.round(glyphRightBearing),
-      widthValue: Math.round(glyphAdvanceWidth),
+      widthValue: Math.round(glyphAdvanceWidth)
     });
-  }, [glyph, font, isHovered]);
+
+  }, [glyph, font]);
 
   useEffect(() => {
-    let frame = 0;
-    let running = true;
-    function animate() {
-      if (!running) return;
-      calculateMetrics(frame);
-      frame++;
-      animationRef.current = requestAnimationFrame(animate);
-    }
-    if (isHovered) {
-      animate();
-    } else {
-      calculateMetrics();
-    }
-    const resizeObserver = new ResizeObserver(() => calculateMetrics(frame));
+    calculateMetrics();
+    const resizeObserver = new ResizeObserver(calculateMetrics);
     if (canvasRef.current) {
       resizeObserver.observe(canvasRef.current);
     }
-    return () => {
-      running = false;
-      cancelAnimationFrame(animationRef.current);
-      resizeObserver.disconnect();
-    };
-  }, [calculateMetrics, isHovered]);
+    return () => resizeObserver.disconnect();
+  }, [calculateMetrics]);
 
   // Get glyph data directly from OpenType.js
-  const opentypeGlyph = font?.opentype
-    ? font.opentype.charToGlyph(glyph)
-    : null;
+  const opentypeGlyph = font?.opentype ? font.opentype.charToGlyph(glyph) : null;
 
   return (
     <Container initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -310,8 +259,8 @@ export const HighlightedGlyph = ({ glyph, font = {}, isHovered = false }) => {
             </MetricLine>
           )}
           {Number.isFinite(metrics.baseline) && (
-            <MetricLine style={{ top: metrics.baseline, background: "red" }}>
-              <MetricLabel style={{ left: 0, top: -15, color: "red" }}>
+            <MetricLine style={{ top: metrics.baseline, background: 'red' }}>
+              <MetricLabel style={{ left: 0, top: -15, color: 'red' }}>
                 Baseline: {metrics.baselineValue}
               </MetricLabel>
             </MetricLine>
@@ -333,65 +282,53 @@ export const HighlightedGlyph = ({ glyph, font = {}, isHovered = false }) => {
           )}
 
           {/* Bearing labels - positioned below descender line */}
-          {Number.isFinite(metrics.leftBearingX) &&
-            Number.isFinite(metrics.descenderY) && (
-              <MetricLabel
-                style={{
-                  left: metrics.leftBearingX - 6,
-                  top: metrics.descenderY + 6,
-                  transform: "translateX(-100%)",
-                }}
-              >
-                {metrics.leftBearingValue}
-              </MetricLabel>
-            )}
-          {Number.isFinite(metrics.leftBearingX) &&
-            Number.isFinite(metrics.rightBearingX) &&
-            Number.isFinite(metrics.descenderY) && (
-              <MetricLabel
-                style={{
-                  left: (metrics.leftBearingX + metrics.rightBearingX) / 2,
-                  top: metrics.descenderY + 6,
-                  transform: "translateX(-50%)",
-                }}
-              >
-                {metrics.widthValue}
-              </MetricLabel>
-            )}
-          {Number.isFinite(metrics.rightBearingX) &&
-            Number.isFinite(metrics.descenderY) && (
-              <MetricLabel
-                style={{
-                  left: metrics.rightBearingX + 6,
-                  top: metrics.descenderY + 6,
-                  transform: "translateX(0%)",
-                }}
-              >
-                {metrics.rightBearingValue}
-              </MetricLabel>
-            )}
+          {Number.isFinite(metrics.leftBearingX) && Number.isFinite(metrics.descenderY) && (
+            <MetricLabel style={{ 
+              left: metrics.leftBearingX - 6,
+              top: metrics.descenderY + 6,
+              transform: 'translateX(-100%)'
+            }}>
+              {metrics.leftBearingValue}
+            </MetricLabel>
+          )}
+          {Number.isFinite(metrics.leftBearingX) && Number.isFinite(metrics.rightBearingX) && Number.isFinite(metrics.descenderY) && (
+            <MetricLabel style={{ 
+              left: (metrics.leftBearingX + metrics.rightBearingX) / 2, 
+              top: metrics.descenderY + 6,
+              transform: 'translateX(-50%)'
+            }}>
+              {metrics.widthValue}
+            </MetricLabel>
+          )}
+          {Number.isFinite(metrics.rightBearingX) && Number.isFinite(metrics.descenderY) && (
+            <MetricLabel style={{ 
+              left: metrics.rightBearingX + 6,
+              top: metrics.descenderY + 6,
+              transform: 'translateX(0%)'
+            }}>
+              {metrics.rightBearingValue}
+            </MetricLabel>
+          )}
         </MetricOverlay>
       </GlyphContainer>
 
       <InfoGrid>
         <InfoLabel>Glyph Name</InfoLabel>
         <InfoValue>{getCharacterName(glyph)}</InfoValue>
-
+        
+        
         <InfoLabel>Unicode Decimal</InfoLabel>
         <InfoValue>{glyph.charCodeAt(0)}</InfoValue>
-
+        
         <InfoLabel>Unicode Hex</InfoLabel>
-        <InfoValue>
-          {glyph.charCodeAt(0).toString(16).toUpperCase().padStart(4, "0")}
-        </InfoValue>
-
+        <InfoValue>{glyph.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}</InfoValue>
+        
         <InfoLabel>HTML Entity (Hex)</InfoLabel>
-        <InfoValue>
-          &#x{glyph.charCodeAt(0).toString(16).toUpperCase()};
-        </InfoValue>
+        <InfoValue>&#x{glyph.charCodeAt(0).toString(16).toUpperCase()};</InfoValue>
+        
       </InfoGrid>
     </Container>
   );
 };
 
-export default HighlightedGlyph;
+export default HighlightedGlyph; 

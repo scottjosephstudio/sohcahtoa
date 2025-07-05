@@ -161,7 +161,7 @@ export const GlyphMapGrid = forwardRef(
       window.innerHeight <= 1366;
 
     const isIPadPortrait = isIPadMini || isIPadRegular;
-    const isMobile = window.innerWidth < 768 && !isIPadPortrait;
+    const isMobile = window.innerWidth < 744 && !isIPadPortrait;
 
     const handleGlyphSelect = useCallback(
       (glyph) => {
@@ -234,7 +234,6 @@ export const GlyphMapGrid = forwardRef(
               <HighlightedGlyph
                 glyph={hoveredGlyph || selectedGlyph}
                 font={font}
-                isHovered={!!hoveredGlyph && (hoveredGlyph === (hoveredGlyph || selectedGlyph))}
               />
             </GlyphPanel>
           </ContentArea>
@@ -263,7 +262,6 @@ export const GlyphMapGrid = forwardRef(
               <HighlightedGlyph
                 glyph={hoveredGlyph || selectedGlyph}
                 font={font}
-                isHovered={!!hoveredGlyph && (hoveredGlyph === (hoveredGlyph || selectedGlyph))}
               />
             </GlyphPanel>
 
@@ -312,7 +310,6 @@ export const GlyphMapGrid = forwardRef(
                 <HighlightedGlyph
                   glyph={hoveredGlyph || selectedGlyph}
                   font={font}
-                  isHovered={!!hoveredGlyph && (hoveredGlyph === (hoveredGlyph || selectedGlyph))}
                 />
               </GlyphPanel>
             ) : (
