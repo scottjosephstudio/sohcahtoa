@@ -4,7 +4,7 @@ import {
   PaymentMethodContainer,
   PaymentMethodButton,
   paymentMethodButtonVariants,
-} from "@/components/cart/PaymentSection/PaymentSectionStyles";
+} from "../PaymentSectionStyles";
 
 export const PaymentMethodSelector = ({
   selectedPaymentMethod,

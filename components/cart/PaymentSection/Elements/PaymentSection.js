@@ -2,30 +2,32 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import PropTypes from "prop-types";
 import { motion, AnimatePresence } from "framer-motion";
 import { useElements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 
 // Import styled components and styles
 import {
   GlobalStyle,
   CardDetailsWrapper,
   ErrorText,
-} from "@/components/cart/PaymentSection/PaymentSectionStyles";
+} from "../PaymentSectionStyles";
 
-import { StepContainer, OptionHeader } from "@/components/cart/styles";
+import { StepContainer, OptionHeader } from "../../styles";
 
 // Import utility functions
 import {
   validateField,
   getCustomStripeError,
   countryCodeMap,
-} from "@/components/cart/PaymentSection/hooks/PaymentValidationUtils";
+} from "../hooks/PaymentValidationUtils";
 
 // Import subcomponents
-import PaymentMethodSelector from "@/components/cart/PaymentSection/Elements/PaymentMethodSelector";
+import PaymentMethodSelector from "./PaymentMethodSelector";
 import {
   CardNumberInput,
   CardExpiryAndCVCInputs,
-} from "@/components/cart/PaymentSection/Inputs/CardInput";
-import AddressInputs from "@/components/cart/PaymentSection/Inputs/AddressInput";
+} from "../Inputs/CardInput";
+import AddressInputs from "../Inputs/AddressInput";
 
 export const PaymentSection = ({
   selectedPaymentMethod,

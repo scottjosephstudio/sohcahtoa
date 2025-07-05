@@ -33,6 +33,10 @@ const nextConfig = {
   experimental: {
     // Enable Turbopack for development
     turbo: {
+      // Add alias configuration for Turbopack
+      resolveAlias: {
+        '@': '.',
+      },
       // Turbopack rules for similar font handling
       rules: {
         // This helps Turbopack handle fonts similarly to your webpack config

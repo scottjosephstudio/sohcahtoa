@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   CardNumberElement,
@@ -15,7 +15,7 @@ import {
   ExpiryAndCVVContainer,
   baseStyles,
   inputContainerVariants,
-} from "@/components/cart/PaymentSection/PaymentSectionStyles";
+} from "../PaymentSectionStyles";
 
 export const CardNumberInput = ({
   placeholderVisible,

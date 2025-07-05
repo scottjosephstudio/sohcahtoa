@@ -69,7 +69,7 @@ const SearchIcon = styled.svg`
 
 export const SearchPanel = ({
   onSearch,
-  placeholder = "Search for a character...",
+  placeholder = "Search for a character",
   isNavigatingHome = false,
   isGlyphsExiting = false,
 }) => {

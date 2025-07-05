@@ -9,10 +9,14 @@ const ImageContainer = styled.div`
   height: 0;
   padding-bottom: ${(props) => {
     if (props.$aspectRatio) {
-      // Convert decimal aspect ratio to padding percentage
-      return typeof props.$aspectRatio === "number"
-        ? `${(1 / props.$aspectRatio) * 100}%`
-        : props.$aspectRatio;
+      // Handle both decimal aspect ratios and percentage strings
+      if (typeof props.$aspectRatio === "number") {
+        // Convert decimal aspect ratio (width/height) to padding percentage
+        return `${(1 / props.$aspectRatio) * 100}%`;
+      } else if (typeof props.$aspectRatio === "string") {
+        // If it's already a percentage string, use it directly
+        return props.$aspectRatio;
+      }
     }
     return "75%"; // Default 4:3 ratio
   }};
@@ -65,25 +69,30 @@ const ProjectImage = styled.img`
 `;
 
 // Safari-optimized LazyImage component
-const LazyImage = ({ src, alt, index }) => {
+const LazyImage = ({ src, alt, index, aspectRatio: propAspectRatio }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [isPreloaded, setIsPreloaded] = useState(false);
-  const [aspectRatio, setAspectRatio] = useState("75%"); // Default 4:3 ratio
+  const [calculatedAspectRatio, setCalculatedAspectRatio] = useState("75%"); // Default 4:3 ratio
   const imgRef = useRef(null);
   const preloadedImageRef = useRef(null);
 
-  // Pre-calculate aspect ratio immediately for layout stability
+  // Use prop aspectRatio if provided, otherwise calculate it
+  const aspectRatio = propAspectRatio || calculatedAspectRatio;
+
+  // Only calculate aspect ratio if not provided via props
   useEffect(() => {
-    const img = new Image();
-    img.onload = () => {
-      if (img.naturalWidth && img.naturalHeight) {
-        const ratio = (img.naturalHeight / img.naturalWidth) * 100;
-        setAspectRatio(`${ratio}%`);
-      }
-    };
-    img.src = src;
-  }, [src]);
+    if (!propAspectRatio) {
+      const img = new Image();
+      img.onload = () => {
+        if (img.naturalWidth && img.naturalHeight) {
+          const ratio = (img.naturalHeight / img.naturalWidth) * 100;
+          setCalculatedAspectRatio(`${ratio}%`);
+        }
+      };
+      img.src = src;
+    }
+  }, [src, propAspectRatio]);
 
   // Safari detection
   const isSafari = () => {
@@ -111,10 +120,10 @@ const LazyImage = ({ src, alt, index }) => {
       }
 
       img.onload = () => {
-        // Calculate actual aspect ratio from image dimensions
-        if (img.naturalWidth && img.naturalHeight) {
+        // Calculate actual aspect ratio from image dimensions only if not provided via props
+        if (!propAspectRatio && img.naturalWidth && img.naturalHeight) {
           const ratio = (img.naturalHeight / img.naturalWidth) * 100;
-          setAspectRatio(`${ratio}%`);
+          setCalculatedAspectRatio(`${ratio}%`);
         }
 
         setIsPreloaded(true);

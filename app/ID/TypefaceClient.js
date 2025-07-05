@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 
 // Minimal dynamic import - optimized for speed
 const TypefaceIndex = dynamic(
-  () => import("@/components/product-section/Controller/ProductPage"),
+  () => import("../../components/product-section/Controller/ProductPage"),
   { ssr: false },
 );
 
