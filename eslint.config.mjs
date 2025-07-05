@@ -28,9 +28,8 @@ export default [
     rules: {
       ...reactPlugin.configs.recommended.rules,
       "prettier/prettier": "warn",
-      "react/prop-types": "off",
-      "react/display-name": "off",
-      "react/react-in-jsx-scope": "off"
+      "react/no-unescaped-entities": "off",
+      "react/no-unknown-property": "off"
     },
     settings: {
       react: {
