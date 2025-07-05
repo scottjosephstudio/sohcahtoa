@@ -110,11 +110,48 @@ const InfoValue = styled.span`
   min-width: 0;
 `;
 
-export const HighlightedGlyph = ({ glyph, font = {} }) => {
+export const HighlightedGlyph = ({ glyph, font = {}, isHovered = false }) => {
   const canvasRef = useRef(null);
   const [metrics, setMetrics] = useState({});
 
-  const calculateMetrics = useCallback(() => {
+  // Animate electricity effect if isHovered
+  const animationRef = useRef();
+  const [animationFrame, setAnimationFrame] = useState(0);
+
+  const drawElectricityOutline = (ctx, path, x0, baseline, fontSize, color, frame) => {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 8 + Math.sin(frame / 5) * 1;
+    ctx.lineWidth = 2 + Math.sin(frame / 7) * 1;
+    ctx.globalAlpha = 0.7 + 0.3 * Math.sin(frame / 1);
+    // Jitter effect: offset points slightly
+    const jitter = () => (Math.random() - 0.5) * 1;
+    ctx.beginPath();
+    for (let i = 0; i < path.commands.length; i++) {
+      const cmd = path.commands[i];
+      if (cmd.type === 'M') {
+        ctx.moveTo(x0 + cmd.x + jitter(), baseline + cmd.y + jitter());
+      } else if (cmd.type === 'L') {
+        ctx.lineTo(x0 + cmd.x + jitter(), baseline + cmd.y + jitter());
+      } else if (cmd.type === 'C') {
+        ctx.bezierCurveTo(
+          x0 + cmd.x1 + jitter(), baseline + cmd.y1 + jitter(),
+          x0 + cmd.x2 + jitter(), baseline + cmd.y2 + jitter(),
+          x0 + cmd.x + jitter(), baseline + cmd.y + jitter()
+        );
+      } else if (cmd.type === 'Q') {
+        ctx.quadraticCurveTo(
+          x0 + cmd.x1 + jitter(), baseline + cmd.y1 + jitter(),
+          x0 + cmd.x + jitter(), baseline + cmd.y + jitter()
+        );
+      }
+    }
+    ctx.stroke();
+    ctx.restore();
+  };
+
+  const calculateMetrics = useCallback((frame = 0) => {
     const canvas = canvasRef.current;
     if (!canvas || !font?.opentype || !glyph) return;
 
@@ -170,9 +207,7 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
 
     // Use OpenType.js built-in draw method
     ctx.fillStyle = "rgb(16, 12, 8)";
-
     try {
-      // This is the official way to draw glyphs with OpenType.js
       opentypeGlyph.draw(ctx, x0, baseline, fontSize);
     } catch (error) {
       // Fallback: use system font rendering
@@ -181,6 +216,12 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(glyph, rect.width / 2, baseline);
+    }
+
+    // Animate electricity outline if isHovered
+    if (isHovered && font?.opentype) {
+      const path = opentypeGlyph.getPath(0, 0, fontSize);
+      drawElectricityOutline(ctx, path, x0, baseline, fontSize, '#00f6ff', frame);
     }
 
     // Bearing line positions
@@ -205,16 +246,32 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
       rightBearingValue: Math.round(glyphRightBearing),
       widthValue: Math.round(glyphAdvanceWidth),
     });
-  }, [glyph, font]);
+  }, [glyph, font, isHovered]);
 
   useEffect(() => {
-    calculateMetrics();
-    const resizeObserver = new ResizeObserver(calculateMetrics);
+    let frame = 0;
+    let running = true;
+    function animate() {
+      if (!running) return;
+      calculateMetrics(frame);
+      frame++;
+      animationRef.current = requestAnimationFrame(animate);
+    }
+    if (isHovered) {
+      animate();
+    } else {
+      calculateMetrics();
+    }
+    const resizeObserver = new ResizeObserver(() => calculateMetrics(frame));
     if (canvasRef.current) {
       resizeObserver.observe(canvasRef.current);
     }
-    return () => resizeObserver.disconnect();
-  }, [calculateMetrics]);
+    return () => {
+      running = false;
+      cancelAnimationFrame(animationRef.current);
+      resizeObserver.disconnect();
+    };
+  }, [calculateMetrics, isHovered]);
 
   // Get glyph data directly from OpenType.js
   const opentypeGlyph = font?.opentype

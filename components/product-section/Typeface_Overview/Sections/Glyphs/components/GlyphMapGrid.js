@@ -234,6 +234,7 @@ export const GlyphMapGrid = forwardRef(
               <HighlightedGlyph
                 glyph={hoveredGlyph || selectedGlyph}
                 font={font}
+                isHovered={!!hoveredGlyph && (hoveredGlyph === (hoveredGlyph || selectedGlyph))}
               />
             </GlyphPanel>
           </ContentArea>
@@ -262,6 +263,7 @@ export const GlyphMapGrid = forwardRef(
               <HighlightedGlyph
                 glyph={hoveredGlyph || selectedGlyph}
                 font={font}
+                isHovered={!!hoveredGlyph && (hoveredGlyph === (hoveredGlyph || selectedGlyph))}
               />
             </GlyphPanel>
 
@@ -310,6 +312,7 @@ export const GlyphMapGrid = forwardRef(
                 <HighlightedGlyph
                   glyph={hoveredGlyph || selectedGlyph}
                   font={font}
+                  isHovered={!!hoveredGlyph && (hoveredGlyph === (hoveredGlyph || selectedGlyph))}
                 />
               </GlyphPanel>
             ) : (
