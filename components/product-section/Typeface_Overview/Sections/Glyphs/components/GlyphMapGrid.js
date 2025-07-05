@@ -95,7 +95,7 @@ const MapPanel = styled(motion.div)`
 const SearchContainer = styled(motion.div)`
   background: none;
   border-top: 1px solid rgb(16, 12, 8);
-  padding: 95px;
+  padding: 98px;
   pointer-events: none;
 
   .search-panel {
@@ -161,7 +161,7 @@ export const GlyphMapGrid = forwardRef(
       window.innerHeight <= 1366;
 
     const isIPadPortrait = isIPadMini || isIPadRegular;
-    const isMobile = window.innerWidth < 744 && !isIPadPortrait;
+    const isMobile = window.innerWidth < 768 && !isIPadPortrait;
 
     const handleGlyphSelect = useCallback(
       (glyph) => {
