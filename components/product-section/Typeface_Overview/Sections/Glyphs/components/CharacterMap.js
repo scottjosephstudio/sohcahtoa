@@ -170,7 +170,6 @@ const GlyphCard = styled.button`
   border: 1px solid rgb(16, 12, 8);
   border-radius: 10px;
   padding: 0px;
-  transition: all 0.2s ease;
   position: relative;
 
   &:hover {
