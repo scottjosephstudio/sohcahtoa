@@ -52,6 +52,9 @@ const SearchInput = styled.input`
   &::placeholder {
     color: ${(props) => (props.error ? "red" : "rgb(16, 12, 8)")};
     text-overflow: ellipsis;
+      font-size: 20px;
+  line-height: 24px;
+  letter-spacing: 0.8px;
   }
 `;
 

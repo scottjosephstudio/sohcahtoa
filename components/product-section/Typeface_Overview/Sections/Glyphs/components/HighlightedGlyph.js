@@ -228,7 +228,7 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
   const opentypeGlyph = font?.opentype ? font.opentype.charToGlyph(glyph) : null;
 
   return (
-    <Container initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    <Container>
       <Header>
         <Title>Glyph Metrics</Title>
       </Header>
