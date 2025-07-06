@@ -153,6 +153,7 @@ const GlyphDisplay = styled.canvas`
   width: 48px;
   height: 48px;
   display: block;
+  transition: none; /* Prevent CSS transition from affecting canvas */
 
   @media (max-width: 768px) {
     width: 40px;
@@ -171,6 +172,7 @@ const GlyphCard = styled.button`
   border-radius: 10px;
   padding: 0px;
   position: relative;
+  transition: background 0.1s ease, border-color 0.1s ease;
 
   &:hover {
     cursor: pointer;
