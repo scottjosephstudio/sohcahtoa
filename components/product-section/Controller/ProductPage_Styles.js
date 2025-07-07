@@ -714,12 +714,12 @@ export const CartCount = styled(motion.a)`
 export const CartDetails = styled(motion.div)`
   position: absolute;
   background: rgba(145, 145, 145, 0.4);
-  padding: 16px 14px 16px 18px;
+  padding: 16px 16px 16px 16px;
   border-radius: 10px;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 2px 8px rgba(16, 12, 8, 0.3);
-  min-width: 252px;
+  min-width: 256px;
   z-index: 50;
   transform-origin: var(--transform-origin);
   transition:
@@ -756,7 +756,7 @@ export const CartDetails = styled(motion.div)`
 export const CartContent = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 12px; // Exact 12px gap between columns
+  gap: 16px; // Exact 12px gap between columns
 `;
 
 export const TextColumn = styled.div`
