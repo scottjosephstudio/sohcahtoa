@@ -99,42 +99,42 @@ export default function SlotMachine() {
             </LetterShadow>
           </LetterContainer>
         </SlotMachineContainer>
-        
-        {/* Font info with styled components */}
-        {fontInfo && totalFonts > 0 && (
-          <FontInfoDisplayMotion
-            initial={{ opacity: 1 }}
-            animate={{
-              opacity: $isNavigating ? 0 : 1,
-            }}
-            exit={{
-              opacity: 0,
-              transition: {
-                duration: 0.8,
-                ease: [0.25, 0.1, 0.25, 1],
-              },
-            }}
-            transition={{
-              duration: $isNavigating ? 0.3 : 0.15,
-              ease: "easeInOut",
-            }}
-          >
-            <FontName>
-              Font Name: {fontInfo.name}
-            </FontName>
-            <ScrollInstruction>
-              Scroll: Change letter
-            </ScrollInstruction>
-            <ClickInstruction>
-              {hasMultipleFonts ? (
-                `Click: Change Typeface`
-              ) : (
-                `Click: More Typefaces soon`
-              )}
-            </ClickInstruction>
-          </FontInfoDisplayMotion>
-        )}
       </SlotMachinePage>
+      
+      {/* Font info moved outside SlotMachinePage to avoid scaling effects */}
+      {fontInfo && totalFonts > 0 && (
+        <FontInfoDisplayMotion
+          initial={{ opacity: 1 }}
+          animate={{
+            opacity: $isNavigating ? 0 : 1,
+          }}
+          exit={{
+            opacity: 0,
+            transition: {
+              duration: 0.8,
+              ease: [0.25, 0.1, 0.25, 1],
+            },
+          }}
+          transition={{
+            duration: $isNavigating ? 0.3 : 0.15,
+            ease: "easeInOut",
+          }}
+        >
+          <FontName>
+            Font Name: {fontInfo.name}
+          </FontName>
+          <ScrollInstruction>
+            Scroll: Change letter
+          </ScrollInstruction>
+          <ClickInstruction>
+            {hasMultipleFonts ? (
+              `Click: Change Typeface`
+            ) : (
+              `Click: More Typefaces soon`
+            )}
+          </ClickInstruction>
+        </FontInfoDisplayMotion>
+      )}
     </SlotMachineCursor>
   );
 }
