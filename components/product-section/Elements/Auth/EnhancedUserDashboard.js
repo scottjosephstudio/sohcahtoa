@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import Portal from "../../../providers/Portal";
 import { usePortal } from "../../../../context/PortalContext";
@@ -202,7 +202,7 @@ const EnhancedUserDashboard = ({
   }, [setIsModalOpen]);
 
   // Enhanced data fetching
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     if (!userId) {
       setIsLoading(false);
       return;
@@ -220,6 +220,7 @@ const EnhancedUserDashboard = ({
 
       if (userError) {
         console.error("Error fetching user data:", userError);
+        setIsLoading(false);
         return;
       }
 
@@ -267,6 +268,8 @@ const EnhancedUserDashboard = ({
 
         if (purchaseError) {
           console.error("Error fetching purchase data:", purchaseError);
+          setIsLoading(false);
+          return;
         } else {
           // Transform the data to match the expected format
           const transformedData = [];
@@ -331,14 +334,15 @@ const EnhancedUserDashboard = ({
         code: error?.code || 'No error code',
         userId: userId
       });
+      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     fetchUserData();
-  }, [userId]);
+  }, [fetchUserData]);
 
   // Enhanced download functionality
   const handleDownload = async (userLicenseId, fontStyleId, format) => {

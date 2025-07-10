@@ -114,7 +114,7 @@ const AuthenticationWrapper = ({ authState, formState, uiState }) => {
           handleModalClick={uiHandlers.handleModalClick}
           setIsLoginModalOpen={authSetters.setIsLoginModalOpen}
           $isSaving={$isSaving}
-          userId={currentUser?.id || currentUser?.auth_user_id || null}
+          userId={currentUser?.id || currentUser?.dbData?.auth_user_id || null}
         />
       )}
     </>
