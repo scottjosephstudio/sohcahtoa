@@ -1,13 +1,25 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase client with service role key for server-side operations
-const supabaseService = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Check if required environment variables are available
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+let supabaseService = null;
+
+if (supabaseUrl && supabaseServiceKey) {
+  supabaseService = createClient(supabaseUrl, supabaseServiceKey);
+}
 
 export async function POST(request) {
+  // Check if service is available
+  if (!supabaseService) {
+    return NextResponse.json(
+      { success: false, error: 'Download service not available - missing environment variables' },
+      { status: 503 }
+    );
+  }
+
   try {
     const { userLicenseId, fontStyleId, format } = await request.json();
 

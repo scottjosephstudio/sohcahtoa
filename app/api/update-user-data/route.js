@@ -1,24 +1,25 @@
+import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Create client - try service role first, fallback to anon key
+// Check if required environment variables are available
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || (!supabaseServiceKey && !supabaseAnonKey)) {
-  throw new Error('Missing Supabase environment variables');
+let supabaseService = null;
+
+if (supabaseUrl && supabaseServiceKey) {
+  supabaseService = createClient(supabaseUrl, supabaseServiceKey);
 }
 
-// Use service role if available, otherwise use anon key
-const supabaseKey = supabaseServiceKey || supabaseAnonKey;
-const supabaseClient = createClient(supabaseUrl, supabaseKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-});
-
 export async function POST(request) {
+  // Check if service is available
+  if (!supabaseService) {
+    return NextResponse.json(
+      { success: false, error: 'Update service not available - missing environment variables' },
+      { status: 503 }
+    );
+  }
+
   try {
     const body = await request.json();
     const { 
@@ -42,7 +43,7 @@ export async function POST(request) {
     }
 
     // Update user record in database
-    const { data: updatedUser, error: updateError } = await supabaseClient
+    const { data: updatedUser, error: updateError } = await supabaseService
       .from('users')
       .update({
         email,
