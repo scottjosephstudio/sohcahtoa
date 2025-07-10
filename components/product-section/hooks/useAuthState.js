@@ -11,6 +11,7 @@ import { supabase } from "../../../lib/database/supabaseClient";
 export const useAuthState = () => {
   // Authentication states
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userEmail, setUserEmail] = useState("");
@@ -225,9 +226,9 @@ export const useAuthState = () => {
       });
 
       if (result.success) {
-      setIsLoggedIn(true);
-      setIsLoginModalOpen(false);
-      setIsAuthenticated(true);
+        setIsLoggedIn(true);
+        setIsLoginModalOpen(false);
+        setIsAuthenticated(true);
         setCurrentUser(result.user);
         // Password will be cleared by auth state change
       } else {
@@ -298,12 +299,18 @@ export const useAuthState = () => {
   };
 
   const handleLoginClick = () => {
-    setIsLoginModalOpen(!isLoginModalOpen);
-    // Clear any previous errors when opening modal
-    if (!isLoginModalOpen) {
-      setLoginError("");
-      setEmailError(false);
-      setPasswordError(false);
+    if (isLoggedIn) {
+      // User is logged in, toggle dashboard
+      setIsDashboardOpen(!isDashboardOpen);
+    } else {
+      // User is not logged in, show login modal
+      setIsLoginModalOpen(!isLoginModalOpen);
+      // Clear any previous errors when opening modal
+      if (!isLoginModalOpen) {
+        setLoginError("");
+        setEmailError(false);
+        setPasswordError(false);
+      }
     }
   };
 
@@ -384,6 +391,7 @@ export const useAuthState = () => {
       setUserEmail("");
     setUserPassword("");
       setIsLoginModalOpen(false); // Ensure login modal closes on logout
+      setIsDashboardOpen(false); // Ensure dashboard closes on logout
     } catch (error) {
       console.error('Logout error:', error);
       }
@@ -464,6 +472,8 @@ export const useAuthState = () => {
     // Authentication states
       isLoginModalOpen,
     setIsLoginModalOpen,
+      isDashboardOpen,
+      setIsDashboardOpen,
       isLoggedIn,
     setIsLoggedIn,
       isAuthenticated,

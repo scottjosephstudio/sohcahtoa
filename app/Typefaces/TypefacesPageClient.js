@@ -110,6 +110,7 @@ export default function TypefacesContent() {
   const authState = {
     state: {
       isLoginModalOpen: authStateFlat.isLoginModalOpen,
+      isDashboardOpen: authStateFlat.isDashboardOpen,
       isLoggedIn: authStateFlat.isLoggedIn,
       userEmail: authStateFlat.userEmail,
       userPassword: authStateFlat.userPassword,
@@ -122,6 +123,7 @@ export default function TypefacesContent() {
     },
     setters: {
       setIsLoginModalOpen: authStateFlat.setIsLoginModalOpen,
+      setIsDashboardOpen: authStateFlat.setIsDashboardOpen,
       setUserEmail: authStateFlat.setUserEmail,
       setUserPassword: authStateFlat.setUserPassword,
       setBillingDetails: authStateFlat.setBillingDetails,
@@ -145,11 +147,11 @@ export default function TypefacesContent() {
     () => (
       <LoginButton
         isLoggedIn={authStateFlat.isLoggedIn}
-        handleLoginClick={() => authStateFlat.setIsLoginModalOpen(!authStateFlat.isLoginModalOpen)}
+        handleLoginClick={authStateFlat.handleLoginClick}
         isNavigatingHome={false}
       />
     ),
-    [authStateFlat.isLoggedIn, authStateFlat.setIsLoginModalOpen, authStateFlat.isLoginModalOpen],
+    [authStateFlat.isLoggedIn, authStateFlat.handleLoginClick],
   );
 
   // Font info data

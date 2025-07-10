@@ -14,6 +14,7 @@ const AuthenticationWrapper = ({ authState, formState, uiState }) => {
   const {
     state: {
       isLoginModalOpen,
+      isDashboardOpen,
       isLoggedIn,
       userEmail,
       userPassword,
@@ -95,7 +96,7 @@ const AuthenticationWrapper = ({ authState, formState, uiState }) => {
         </>
       )}
 
-      {isLoggedIn && isLoginModalOpen && (
+      {isLoggedIn && isDashboardOpen && (
         <EnhancedUserDashboard
           userEmail={userEmail}
           setUserEmail={authSetters.setUserEmail}
@@ -112,7 +113,7 @@ const AuthenticationWrapper = ({ authState, formState, uiState }) => {
           handleSaveChanges={authHandlers.handleSaveChanges}
           handleLogout={authHandlers.handleLogout}
           handleModalClick={uiHandlers.handleModalClick}
-          setIsLoginModalOpen={authSetters.setIsLoginModalOpen}
+          setIsLoginModalOpen={authSetters.setIsDashboardOpen}
           $isSaving={$isSaving}
           userId={currentUser?.id || currentUser?.dbData?.auth_user_id || null}
         />

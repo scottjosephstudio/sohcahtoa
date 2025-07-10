@@ -137,6 +137,7 @@ const ProductPage = () => {
 
   const {
       isLoginModalOpen,
+      isDashboardOpen,
       isLoggedIn,
       userEmail,
       userPassword,
@@ -151,11 +152,13 @@ const ProductPage = () => {
     setNewsletter,
     setIsEditMode,
     setIsLoginModalOpen,
+    setIsDashboardOpen,
     setIsLoggedIn,
     handleLoginSubmit,
     handleInputFocus,
     handleSaveChanges,
     handleLogout,
+    handleLoginClick,
     handleUpdateBillingDetailsFromRegistration,
     loginError,
     isLoggingIn,
@@ -193,7 +196,7 @@ const ProductPage = () => {
           }}
           authState={{
             isLoggedIn,
-            handleLoginClick: () => setIsLoginModalOpen(!isLoginModalOpen),
+            handleLoginClick: handleLoginClick,
           }}
           uiHandlers={uiHandlers}
         />
@@ -280,10 +283,10 @@ const ProductPage = () => {
           ))}
 
         <AnimatePresence>
-          {isLoggedIn && isLoginModalOpen && (
+          {isLoggedIn && isDashboardOpen && (
             <>
               <ModalOverlay
-                onClick={() => setIsLoginModalOpen(false)}
+                onClick={() => setIsDashboardOpen(false)}
                 zIndex={60}
               />
               <EnhancedUserDashboard
@@ -302,9 +305,9 @@ const ProductPage = () => {
                 handleSaveChanges={handleSaveChanges}
                 handleLogout={handleLogout}
                 handleModalClick={uiHandlers.handleModalClick}
-                setIsLoginModalOpen={setIsLoginModalOpen}
+                setIsLoginModalOpen={setIsDashboardOpen}
                 $isSaving={$isSaving}
-                userId={currentUser?.id || null}
+                userId={currentUser?.id || currentUser?.dbData?.auth_user_id || null}
               />
             </>
           )}
