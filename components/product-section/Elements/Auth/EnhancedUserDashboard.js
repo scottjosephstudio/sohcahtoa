@@ -189,7 +189,7 @@ const EnhancedUserDashboard = ({
 }) => {
   // Enhanced state for purchase history
   const [purchases, setPurchases] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [downloadHistory, setDownloadHistory] = useState({});
 
   // Use the portal context
@@ -203,7 +203,10 @@ const EnhancedUserDashboard = ({
 
   // Enhanced data fetching
   const fetchUserData = async () => {
-    if (!userId) return;
+    if (!userId) {
+      setIsLoading(false);
+      return;
+    }
 
     try {
       setIsLoading(true);
