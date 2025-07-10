@@ -20,9 +20,6 @@ import {
   resetPasswordLinkVariants,
 } from "../styles";
 
-const TEST_EMAIL = "info@scottpauljoseph.com";
-const TEST_PASSWORD = "Hybrid1983";
-
 export const LoginForm = ({
   showLoginForm,
   onLoginToggle,
@@ -36,6 +33,7 @@ export const LoginForm = ({
   loginButtonRef,
   isResettingPassword,
   setIsResettingPassword,
+  isLoggingIn,
 }) => {
   const [resetData, setResetData] = useState({ email: "" });
   const [showErrors, setShowErrors] = useState({
@@ -54,45 +52,37 @@ export const LoginForm = ({
   };
 
   const handleBlur = (field) => {
-    // Only validate on blur if there's a value
+    // Basic validation on blur
     if (field === "email" && loginData?.email) {
-      if (loginData.email !== TEST_EMAIL) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(loginData.email)) {
         setShowErrors((prev) => ({
           ...prev,
           email: true,
         }));
-        onLoginInput("email", "");
       }
     } else if (field === "password" && loginData?.password) {
-      if (loginData.password !== TEST_PASSWORD) {
+      if (loginData.password.length < 1) { // Just check if password exists
         setShowErrors((prev) => ({
           ...prev,
           password: true,
         }));
-        onLoginInput("password", "");
       }
     }
   };
 
   const handleSubmit = () => {
     // Validate both fields on submit
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const newErrors = {
-      email: loginData?.email !== TEST_EMAIL,
-      password: loginData?.password !== TEST_PASSWORD,
+      email: !loginData?.email || !emailRegex.test(loginData.email),
+      password: !loginData?.password || loginData.password.length < 1, // Just check if password exists
       resetEmail: false,
     };
 
     setShowErrors(newErrors);
 
-    // Clear invalid fields
-    if (newErrors.email) {
-      onLoginInput("email", "");
-    }
-    if (newErrors.password) {
-      onLoginInput("password", "");
-    }
-
-    // Only proceed if both are correct
+    // Only proceed if both are valid
     if (!newErrors.email && !newErrors.password) {
       onLogin();
     }
@@ -226,19 +216,19 @@ export const LoginForm = ({
                     variants={buttonVariants}
                     initial="initial"
                     animate={
-                      !loginData?.email || !loginData?.password
+                      !loginData?.email || !loginData?.password || isLoggingIn
                         ? "disabled"
                         : "enabled"
                     }
                     whileHover={
-                      !loginData?.email || !loginData?.password ? {} : "hover"
+                      !loginData?.email || !loginData?.password || isLoggingIn ? {} : "hover"
                     }
                     whileTap={
-                      !loginData?.email || !loginData?.password ? {} : "hover"
+                      !loginData?.email || !loginData?.password || isLoggingIn ? {} : "hover"
                     }
-                    disabled={!loginData?.email || !loginData?.password}
+                    disabled={!loginData?.email || !loginData?.password || isLoggingIn}
                   >
-                    Login
+                    {isLoggingIn ? "Logging in..." : "Login"}
                   </Button>
                 </motion.div>
               ) : (

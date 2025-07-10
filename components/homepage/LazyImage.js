@@ -83,14 +83,14 @@ const LazyImage = ({ src, alt, index, aspectRatio: propAspectRatio }) => {
   // Only calculate aspect ratio if not provided via props
   useEffect(() => {
     if (!propAspectRatio) {
-      const img = new Image();
-      img.onload = () => {
-        if (img.naturalWidth && img.naturalHeight) {
-          const ratio = (img.naturalHeight / img.naturalWidth) * 100;
+    const img = new Image();
+    img.onload = () => {
+      if (img.naturalWidth && img.naturalHeight) {
+        const ratio = (img.naturalHeight / img.naturalWidth) * 100;
           setCalculatedAspectRatio(`${ratio}%`);
-        }
-      };
-      img.src = src;
+      }
+    };
+    img.src = src;
     }
   }, [src, propAspectRatio]);
 

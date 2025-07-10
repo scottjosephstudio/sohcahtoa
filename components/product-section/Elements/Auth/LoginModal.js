@@ -142,6 +142,40 @@ const CustomResetPasswordLink = styled(ResetPasswordLink)`
   margin-top: 0px;
 `;
 
+const ErrorMessage = styled.div`
+  color: #FF0000;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.6px;
+  margin-top: 0px;
+  margin-bottom:0px;
+  text-align: left;
+`;
+
+const ResendVerificationButton = styled(motion.button)`
+  background: #006efe;
+  color: white;
+  border: none;
+
+    padding: 12px 12px 12px 12px;
+  border: 2px solid #006efe;
+  border-radius: 10px;
+  font-size: 20px;
+  letter-spacing: 0.8px
+  cursor: pointer;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  
+  &:hover {
+    background: #0056cc;
+  }
+  
+  &:disabled {
+    background: #666;
+    cursor: not-allowed;
+  }
+`;
+
 // Backdrop overlay component
 const Backdrop = styled(motion.div)`
   position: fixed;
@@ -182,6 +216,11 @@ const LoginModal = ({
   setUserPassword,
   emailError,
   passwordError,
+  loginError,
+  isLoggingIn,
+  showResendVerification,
+  isResendingVerification,
+  handleResendVerification,
   handleLoginSubmit,
   handleInputFocus,
   handleModalClick,
@@ -315,9 +354,31 @@ const LoginModal = ({
                 <CustomLoginSubmitButton
                   type="submit"
                   onClick={(e) => e.stopPropagation()}
+                  disabled={isLoggingIn}
                 >
-                  Log In
+                  {isLoggingIn ? "Logging in..." : "Log In"}
                 </CustomLoginSubmitButton>
+                
+                {loginError && (
+                  <ErrorMessage>{loginError}</ErrorMessage>
+                )}
+                
+                {showResendVerification && (
+                  <ResendVerificationButton
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleResendVerification();
+                    }}
+                    disabled={isResendingVerification}
+                    whileHover={{ scale: isResendingVerification ? 1 : 1.02 }}
+                    whileTap={{ scale: isResendingVerification ? 1 : 0.98 }}
+                  >
+                    {isResendingVerification ? "Sending..." : "Resend Verification Email"}
+                  </ResendVerificationButton>
+                )}
+                
                 <CustomResetPasswordLink
                   onClick={(e) => {
                     e.preventDefault();

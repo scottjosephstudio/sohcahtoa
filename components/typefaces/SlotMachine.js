@@ -9,20 +9,42 @@ import {
   LetterOutline,
   LetterShadow,
   SlotMachineCursor,
+  FontInfoDisplay,
+  FontName,
+  FontDetails,
+  FontInstructions,
+  ScrollInstruction,
+  ClickInstruction,
 } from "./styles/FlashStartSlotMachine";
-import useSlotMachine from "./hooks/useSlotMachine";
+import useSlotMachineIntegration from "./hooks/useSlotMachineIntegration";
 
 export default function SlotMachine() {
-  const { currentLetter, slotMachineRef, letterRef, isLoaded, isAnimating } =
-    useSlotMachine();
+  const { 
+    currentLetter, 
+    selectedFont,
+    availableFonts,
+    slotMachineRef, 
+    letterRef, 
+    isLoaded, 
+    isAnimating,
+    fontsLoading,
+    handleClick,
+    fontInfo,
+    hasMultipleFonts,
+    currentFontIndex,
+    totalFonts,
+    canNavigate
+  } = useSlotMachineIntegration();
 
   return (
     <SlotMachineCursor>
       <SlotMachinePage
         ref={slotMachineRef}
-        className="slot-machine-page"
+        className="slot-machine-page font-selection-slot-machine"
+        onClick={handleClick}
         style={{
           visibility: isLoaded ? "visible" : "hidden",
+          cursor: fontsLoading ? "wait" : "pointer",
           // Add hardware acceleration styles
           transform: "translateZ(0)",
           willChange: isAnimating ? "transform" : "auto",
@@ -43,6 +65,8 @@ export default function SlotMachine() {
               style={{
                 transform: "translateZ(0)",
                 willChange: isAnimating ? "contents" : "auto",
+                opacity: fontsLoading ? 0.5 : 1,
+                transition: "opacity 0.3s ease",
               }}
             >
               {currentLetter}
@@ -52,6 +76,8 @@ export default function SlotMachine() {
               style={{
                 transform: "translateZ(0)",
                 willChange: isAnimating ? "contents" : "auto",
+                opacity: fontsLoading ? 0.5 : 1,
+                transition: "opacity 0.3s ease",
               }}
             >
               {currentLetter}
@@ -61,12 +87,33 @@ export default function SlotMachine() {
               style={{
                 transform: "translateZ(0)",
                 willChange: isAnimating ? "contents" : "auto",
+                opacity: fontsLoading ? 0.5 : 1,
+                transition: "opacity 0.3s ease",
               }}
             >
               {currentLetter}
             </LetterShadow>
           </LetterContainer>
         </SlotMachineContainer>
+        
+        {/* Font info with styled components */}
+        {fontInfo && totalFonts > 0 && (
+          <FontInfoDisplay>
+            <FontName>
+              Font Name: {fontInfo.name}
+            </FontName>
+            <ScrollInstruction>
+              Scroll: Change letter
+            </ScrollInstruction>
+            <ClickInstruction>
+              {hasMultipleFonts ? (
+                `Click: Change Typeface`
+              ) : (
+                `Click: More Typefaces soon`
+              )}
+            </ClickInstruction>
+          </FontInfoDisplay>
+        )}
       </SlotMachinePage>
     </SlotMachineCursor>
   );

@@ -37,6 +37,7 @@ export const UsageSelection = ({
   eulaAccepted,
   onEulaChange,
   savedRegistrationData,
+  currentUser,
   clientData,
   onClientDataChange,
   onUsageComplete,
@@ -195,7 +196,7 @@ export const UsageSelection = ({
                         <FormLabel>Name</FormLabel>
                         <FormInput
                           type="text"
-                          value={`${savedRegistrationData?.firstName || ""} ${savedRegistrationData?.surname || ""}`}
+                          value={`${currentUser?.dbData?.first_name || savedRegistrationData?.firstName || ""} ${currentUser?.dbData?.last_name || savedRegistrationData?.surname || ""}`}
                           disabled
                         />
                       </FormGroup>
@@ -203,7 +204,7 @@ export const UsageSelection = ({
                         <FormLabel>Address</FormLabel>
                         <FormInput
                           type="text"
-                          value={`${savedRegistrationData?.street || ""}, ${savedRegistrationData?.city || ""}, ${savedRegistrationData?.postcode || ""}`}
+                          value={`${currentUser?.dbData?.street_address || savedRegistrationData?.street || ""}, ${currentUser?.dbData?.city || savedRegistrationData?.city || ""}, ${currentUser?.dbData?.postal_code || savedRegistrationData?.postcode || ""}`}
                           disabled
                         />
                       </FormGroup>

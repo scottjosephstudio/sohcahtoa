@@ -159,7 +159,7 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
     const ascDescPixelHeight = ascDescRange * glyphScale;
     const verticalOffset = (rect.height - ascDescPixelHeight) / 2;
     const baseline = verticalOffset + ascender * glyphScale;
-
+    
     // Calculate positions using the same scale and offset
     const ascenderY = baseline - ascender * glyphScale;
     const capHeightY = baseline - capHeight * glyphScale;

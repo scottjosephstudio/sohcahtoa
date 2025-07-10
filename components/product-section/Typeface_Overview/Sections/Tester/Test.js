@@ -7,6 +7,7 @@ export default function TrialSection({
   activeTab,
   isNavigatingHome,
   fontSettings,
+  selectedFont,
 }) {
   return (
     <AnimatePresence mode="wait">
@@ -27,6 +28,7 @@ export default function TrialSection({
             variants={variants}
             fontSettings={fontSettings}
             isNavigatingHome={isNavigatingHome}
+            selectedFont={selectedFont}
           />
         </motion.div>
       )}

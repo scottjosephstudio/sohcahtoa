@@ -193,6 +193,7 @@ export default function PaymentConfirmation() {
 function PaymentContent({ setIsExiting }) {
   const [status, setStatus] = useState("processing");
   const [countdown, setCountdown] = useState(null);
+  const [shouldExit, setShouldExit] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -202,6 +203,20 @@ function PaymentContent({ setIsExiting }) {
   const id = searchParams.get("id");
   // Try to get security token from URL if it exists
   const urlToken = searchParams.get("security_token");
+
+  // Handle exit animation trigger
+  useEffect(() => {
+    if (shouldExit) {
+      setIsExiting(true);
+      // Redirect after animation completes (200ms based on loginPanelVariants)
+      const token = urlToken || sessionStorage.getItem("payment_security_token");
+      setTimeout(() => {
+        router.push(
+          `/Typefaces?completed_payment=true&security_token=${token}`,
+        );
+      }, 300);
+    }
+  }, [shouldExit, setIsExiting, router, urlToken]);
 
   useEffect(() => {
     // Apply background style to body for consistent transitions
@@ -226,7 +241,10 @@ function PaymentContent({ setIsExiting }) {
     `;
     document.head.appendChild(styleTag);
 
+    let countdownInterval = null;
+
     const handlePaymentSuccess = (paymentDetails) => {
+      // Clear cart and user data immediately
       localStorage.removeItem("cartState");
       localStorage.removeItem("isAuthenticated");
       localStorage.removeItem("userEmail");
@@ -234,6 +252,17 @@ function PaymentContent({ setIsExiting }) {
       localStorage.removeItem("lastName");
       localStorage.removeItem("billingDetails");
       localStorage.removeItem("hasProceedBeenClicked");
+      
+      // Clear Supabase session to ensure logout
+      if (typeof window !== 'undefined') {
+        // Clear any auth tokens
+        localStorage.removeItem('supabase-auth-token');
+        sessionStorage.removeItem('supabase-auth-token');
+        
+        // Notify other components that cart was cleared and user logged out
+        window.dispatchEvent(new CustomEvent('cartCleared'));
+        window.dispatchEvent(new CustomEvent('userLoggedOut'));
+      }
 
       // Generate UUID for this transaction if not already in URL
       const token = urlToken || uuidv4();
@@ -258,18 +287,12 @@ function PaymentContent({ setIsExiting }) {
       // Start countdown instead of immediate redirect
       setCountdown(9);
 
-      const countdownInterval = setInterval(() => {
+      countdownInterval = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(countdownInterval);
-            // Start exit animation
-            setIsExiting(true);
-            // Redirect after animation completes (200ms based on loginPanelVariants)
-            setTimeout(() => {
-              router.push(
-                `/Typefaces?completed_payment=true&security_token=${token}`,
-              );
-            }, 300);
+            // Trigger exit in separate effect to avoid setState during render
+            setShouldExit(true);
             return 0;
           }
           return prev - 1;
@@ -300,6 +323,11 @@ function PaymentContent({ setIsExiting }) {
           switch (paymentDetails.status) {
             case "succeeded":
               setStatus("succeeded");
+              
+              // Payment processing is already handled by PaymentProcessor component
+              // No need to process the purchase again here
+              console.log('✅ Payment succeeded, purchase already processed by PaymentProcessor');
+              
               handlePaymentSuccess(paymentDetails);
               break;
             case "processing":
@@ -329,6 +357,9 @@ function PaymentContent({ setIsExiting }) {
 
     // Cleanup function
     return () => {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
       // Don't remove the style on unmount to maintain background during transition
       // The Typefaces page will override these styles when it loads
     };

@@ -59,9 +59,10 @@ export default function useSpinnerAnimation() {
         );
       }
 
-      // Animate the elements out of the viewport
+      // Animate the slot machine out when navigating (use more specific selector)
+      // This should only happen when the spinner (coin) is clicked, not when slot machine is used for font selection
       tl.to(
-        ".slot-machine-page",
+        ".font-selection-slot-machine",
         {
           x: "0vw",
           scale: 0,

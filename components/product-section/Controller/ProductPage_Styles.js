@@ -276,21 +276,21 @@ export const CloseButton = styled(motion.button)`
   z-index: 1000;
 `;
 
-export const LogoutButton = styled.button`
+export const LogoutButton = styled(motion.button)`
   ${fontNormalization}
   background: none;
-  position: fixed;
-  right: 20px;
-  margin-top: 2px;
   border: none;
   cursor: pointer;
   font-size: 20px;
   color: rgb(16, 12, 8);
-  margin-left: auto;
   transition: text-decoration 0.2s;
   white-space: nowrap;
   overflow: visible;
-  position: relative;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
 
   &:hover {
     text-shadow:
@@ -456,6 +456,8 @@ export const SectionTitleBilling = styled.span`
   @media (min-width: 1420px) {
     letter-spacing: 0.8px;
   }
+
+
 `;
 
 export const AddressSection = styled.div`
@@ -479,14 +481,19 @@ export const NewsletterSection = styled.div`
   font-size: 20px;
   line-height: 24px;
   letter-spacing: 0.6px;
-  margin-top: -30px;
+  margin-top: -20px;
   margin-bottom: -6px;
   display: flex;
   align-items: center;
   gap: 12px;
 
   @media (max-width: 1024px) {
-    margin-top: -24px;
+    margin-top: -20px;
+    margin-bottom: -6px;
+  }
+
+    @media (min-width: 1200px) {
+    margin-top: -30px;
     margin-bottom: -6px;
   }
 `;
@@ -714,12 +721,14 @@ export const CartCount = styled(motion.a)`
 export const CartDetails = styled(motion.div)`
   position: absolute;
   background: rgba(145, 145, 145, 0.4);
-  padding: 16px 16px 16px 16px;
+  padding: 16px;
   border-radius: 10px;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 2px 8px rgba(16, 12, 8, 0.3);
-  min-width: 256px;
+  min-width: fit-content;
+  max-width: 400px;
+  width: max-content;
   z-index: 50;
   transform-origin: var(--transform-origin);
   transition:
@@ -756,13 +765,16 @@ export const CartDetails = styled(motion.div)`
 export const CartContent = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 16px; // Exact 12px gap between columns
+  gap: 16px;
+  width: 100%;
 `;
 
 export const TextColumn = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex: 1;
+  min-width: 0; /* Allow text to wrap if needed */
 `;
 
 export const ProductName = styled.div`
@@ -1110,11 +1122,12 @@ export const FormGroup = styled.div`
   gap: 8px;
 
   &.email-group {
-    margin-top: -8px;
+    margin-top: -12px;
     margin-bottom: -24px;
     
     @media (max-width: 1200px) {
-      margin-top: -8px;
+      margin-top: -12px;
+      margin-bottom: -16px
     }
   }
 
@@ -1462,6 +1475,8 @@ export const downloadButtonVariants = {
   initial: {
     color: "#006efe",
     textDecoration: "none",
+    textDecorationThickness: "0px",
+    textUnderlineOffset: "0px",
   },
   hover: {
     color: "#006efe",

@@ -169,7 +169,8 @@ const FontViewer = forwardRef(
       activeTab,
       isGlyphsExiting,
       isNavigatingHome,
-      fontPath = "/fonts/JANTReg.ttf",
+      fontPath,
+      selectedFont,
       onMetricsLoad,
       onError,
     },
@@ -198,11 +199,20 @@ const FontViewer = forwardRef(
     if (loading) {
       return (
         <Container>
-          <Content
-            initial="initial"
-            animate="animate"
-            variants={fadeVariants}
-          ></Content>
+          <Content>
+            <div style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              width: '100%',
+              fontSize: '16px',
+              letterSpacing: '0.8px',
+              color: 'rgb(16, 12, 8)'
+            }}>
+              Loading {selectedFont?.name || 'font'}...
+            </div>
+          </Content>
         </Container>
       );
     }
@@ -210,11 +220,21 @@ const FontViewer = forwardRef(
     if (error) {
       return (
         <Container>
-          <Content
-            initial="initial"
-            animate="animate"
-            variants={fadeVariants}
-          ></Content>
+          <Content>
+            <div style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              width: '100%',
+              fontSize: '16px',
+              letterSpacing: '0.8px',
+              color: 'red',
+              textAlign: 'center'
+            }}>
+              Error loading {selectedFont?.name || 'font'}: {error}
+            </div>
+          </Content>
         </Container>
       );
     }
@@ -222,18 +242,20 @@ const FontViewer = forwardRef(
     return (
       <Container>
         <Content
+          variants={fadeVariants}
           initial="initial"
           animate="animate"
           exit="exit"
-          variants={fadeVariants}
         >
-          <GlyphMapGrid
-            font={font}
-            activeTab={activeTab}
-            isGlyphsExiting={isGlyphsExiting}
-            isNavigatingHome={isNavigatingHome}
-            ref={glyphMapGridRef}
-          />
+          {font && (
+            <GlyphMapGrid
+              ref={glyphMapGridRef}
+              font={font}
+              selectedFont={selectedFont}
+              isGlyphsExiting={isGlyphsExiting}
+              isNavigatingHome={isNavigatingHome}
+            />
+          )}
         </Content>
       </Container>
     );

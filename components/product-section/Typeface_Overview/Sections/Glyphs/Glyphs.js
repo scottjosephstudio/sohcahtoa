@@ -8,7 +8,7 @@ const Section = styled.div`
 `;
 
 export default forwardRef(function TechnicalSection(
-  { activeTab, isGlyphsExiting, isNavigatingHome },
+  { activeTab, isGlyphsExiting, isNavigatingHome, selectedFont },
   ref,
 ) {
   const fontViewerRef = useRef(null);
@@ -22,6 +22,24 @@ export default forwardRef(function TechnicalSection(
     },
   }));
 
+  // Get font path from selected font
+  const getFontPath = () => {
+    if (!selectedFont || !selectedFont.font_styles || selectedFont.font_styles.length === 0) {
+      return "/fonts/JANTReg.ttf"; // Fallback
+    }
+    
+    const firstStyle = selectedFont.font_styles[0];
+    const fontFiles = firstStyle.font_files;
+    
+    // Prefer TTF, then OTF, then WOFF2, then WOFF
+    if (fontFiles?.ttf) return fontFiles.ttf;
+    if (fontFiles?.otf) return fontFiles.otf;
+    if (fontFiles?.woff2) return fontFiles.woff2;
+    if (fontFiles?.woff) return fontFiles.woff;
+    
+    return "/fonts/JANTReg.ttf"; // Final fallback
+  };
+
   return (
     <Section>
       <div>
@@ -30,7 +48,8 @@ export default forwardRef(function TechnicalSection(
             activeTab={activeTab}
             isGlyphsExiting={isGlyphsExiting}
             isNavigatingHome={isNavigatingHome}
-            fontPath="/fonts/JANTReg.ttf"
+            fontPath={getFontPath()}
+            selectedFont={selectedFont}
             ref={fontViewerRef}
           />
         </main>

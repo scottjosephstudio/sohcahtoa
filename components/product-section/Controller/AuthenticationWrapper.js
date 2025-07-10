@@ -3,9 +3,14 @@ import { AnimatePresence } from "framer-motion";
 import LoginModalOverlay from "../Elements/Auth/LoginModalOverlay";
 import LoginModal from "../Elements/Auth/LoginModal";
 import ResetPassword from "../Elements/Auth/ResetPassword";
-import UserDashboard from "../Elements/Auth/UserDashboard";
+import EnhancedUserDashboard from "../Elements/Auth/EnhancedUserDashboard";
 
 const AuthenticationWrapper = ({ authState, formState, uiState }) => {
+  // Basic null checks - the data should now be properly structured
+  if (!authState?.state || !formState?.state || !uiState?.handlers) {
+    return null;
+  }
+
   const {
     state: {
       isLoginModalOpen,
@@ -17,6 +22,7 @@ const AuthenticationWrapper = ({ authState, formState, uiState }) => {
       billingDetails,
       newsletter,
       isEditMode,
+      currentUser,
     },
     setters: authSetters,
     handlers: authHandlers,
@@ -25,9 +31,13 @@ const AuthenticationWrapper = ({ authState, formState, uiState }) => {
   const { handlers: uiHandlers } = uiState;
 
   const {
-    state: { isResetPassword, showPassword, $isSaving },
+    state: { 
+      isResetPassword, 
+      showPassword, 
+      $isSaving 
+    },
     setters: formSetters,
-    handlers: formHandlers, // Add this line to extract formHandlers
+    handlers: formHandlers,
   } = formState;
 
   return (
@@ -86,7 +96,7 @@ const AuthenticationWrapper = ({ authState, formState, uiState }) => {
       )}
 
       {isLoggedIn && isLoginModalOpen && (
-        <UserDashboard
+        <EnhancedUserDashboard
           userEmail={userEmail}
           setUserEmail={authSetters.setUserEmail}
           userPassword={userPassword}
@@ -104,7 +114,7 @@ const AuthenticationWrapper = ({ authState, formState, uiState }) => {
           handleModalClick={uiHandlers.handleModalClick}
           setIsLoginModalOpen={authSetters.setIsLoginModalOpen}
           $isSaving={$isSaving}
-          hasPurchases={false}
+          userId={currentUser?.id || currentUser?.auth_user_id || null}
         />
       )}
     </>

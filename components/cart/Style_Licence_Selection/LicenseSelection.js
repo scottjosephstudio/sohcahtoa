@@ -6,6 +6,8 @@ import {
   licenseOptions,
 } from "../Constants/constants";
 import { useEqualHeight } from "../hooks/useEqualHeight";
+import { useCart } from "../Utils/CartContext";
+import { calculateMultiFontPrice } from "../Utils/multiFontPricing";
 import {
   StepContainer,
   OptionHeader,
@@ -31,8 +33,73 @@ export const LicenseSelection = ({
   onLicenseSelect,
 }) => {
   const { containerRef } = useEqualHeight([customizing, customLicenses]);
+  const { selectedFonts, selectedStyles, selectedFontIds } = useCart();
 
   if (!isOpen || !weightOption) return null;
+
+  // Calculate multi-font pricing for each package
+  const getPackagePrice = (packageKey) => {
+    // Only count fonts that are actually selected (checked)
+    const checkedFonts = selectedFonts.filter(font => selectedFontIds.has(font.id));
+    
+    if (checkedFonts.length === 0) {
+      // Fallback to original single-font pricing
+      return packages[packageKey].price;
+    }
+
+    try {
+      return calculateMultiFontPrice(
+        checkedFonts,
+        selectedStyles,
+        "package",
+        packageKey,
+        {}
+      );
+    } catch (error) {
+      console.error('Error calculating package price:', error);
+      return packages[packageKey].price;
+    }
+  };
+
+  // Calculate multi-font pricing for custom licenses
+  const getCustomLicensePrice = (licenseType, licenseKey) => {
+    // Only count fonts that are actually selected (checked)
+    const checkedFonts = selectedFonts.filter(font => selectedFontIds.has(font.id));
+    
+    if (checkedFonts.length === 0) {
+      // Fallback to original single-font pricing
+      return licenseOptions[licenseType][licenseKey].price;
+    }
+
+    // Create a mock custom license object for this specific license
+    const mockCustomLicense = {};
+    mockCustomLicense[`custom${licenseType.charAt(0).toUpperCase() + licenseType.slice(1)}License`] = licenseKey;
+
+    try {
+      return calculateMultiFontPrice(
+        checkedFonts,
+        selectedStyles,
+        "custom",
+        null,
+        mockCustomLicense
+      );
+    } catch (error) {
+      console.error('Error calculating custom license price:', error);
+      return licenseOptions[licenseType][licenseKey].price;
+    }
+  };
+
+  // Get the count of selected fonts for display
+  const getSelectedFontCount = () => {
+    return selectedFonts.filter(font => selectedFontIds.has(font.id)).length;
+  };
+
+  // Get font count text for display
+  const getFontCountText = () => {
+    const count = getSelectedFontCount();
+    if (count <= 1) return "";
+    return ` (${count} typefaces)`;
+  };
 
   const renderCustomLicenseSection = () => {
     // Flatten all license options into direct cards like packages
@@ -73,8 +140,8 @@ export const LicenseSelection = ({
               animate={isSelected ? "selected" : "initial"}
             >
               <PackageTitle>
-                <span>{displayName}</span>
-                <span>${option.price}.00</span>
+                <span>{displayName}{getFontCountText()}</span>
+                <span>${getCustomLicensePrice(type, key)}.00</span>
               </PackageTitle>
               <LicenseDetail>— {option.limit}</LicenseDetail>
             </PackageCard>
@@ -114,8 +181,8 @@ export const LicenseSelection = ({
                   animate={selectedPackage === key ? "selected" : "initial"}
                 >
                   <PackageTitle>
-                    <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
-                    <span>${pkg.price}.00</span>
+                    <span>{key.charAt(0).toUpperCase() + key.slice(1)}{getFontCountText()}</span>
+                    <span>${getPackagePrice(key)}.00</span>
                   </PackageTitle>
                   <LicenseDetail>— Desktop Licence {pkg.print}</LicenseDetail>
                   <LicenseDetail>— Web Licence {pkg.web}</LicenseDetail>

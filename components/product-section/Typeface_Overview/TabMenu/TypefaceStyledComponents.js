@@ -110,7 +110,7 @@ export const TypefaceTab = styled(motion.button)`
 export const typefaceTabVariants = {
   hover: (props) => ({
     color: props.$isActive ? "#000" : "#fff",
-    transition: { duration: 0.2 },
+    transition: { duration: 0.1 },
   }),
 };
 

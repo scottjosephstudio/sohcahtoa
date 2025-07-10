@@ -58,6 +58,7 @@ const CartPanelContent = ({
     showPaymentForm,
     showUsageSelection,
     showRegistration,
+    isTransitioningToPayment,
     clientSecret,
     stripePromise,
     cartPanelRef,
@@ -71,6 +72,7 @@ const CartPanelContent = ({
     customWebLicense,
     customAppLicense,
     customSocialLicense,
+    cartFont,
     isLicenceOpen,
     isContinueClicked,
     isPaymentCompleted,
@@ -87,7 +89,6 @@ const CartPanelContent = ({
     selectedPaymentMethod,
     isStripeFormComplete,
     isProcessing,
-    handlePayment,
     handleProceed,
     isCheckoutDisabled,
     handleRemoveStyle,
@@ -97,7 +98,7 @@ const CartPanelContent = ({
     selectedUsage,
     eulaAccepted,
     handleContinue,
-    setWeightOption,
+    handleWeightSelect,
     handlePackageSelect,
     handleCustomize,
     handleLicenseSelect,
@@ -130,8 +131,10 @@ const CartPanelContent = ({
     setIsResettingPassword,
     handleBackToLogin,
     savedRegistrationData,
+    currentUser,
     addressData,
     error,
+    isLoggingIn,
     setSelectedPaymentMethod,
     isApplePayAvailable,
     setIsStripeFormComplete,
@@ -141,7 +144,31 @@ const CartPanelContent = ({
     didReturnToStageOne,
     hasProceedBeenClicked,
     summaryModifiedAfterTab,
+    selectedFonts,
+    selectedStyles,
+    handleUpdateFonts,
+    handleUpdateStyles,
   } = useCart();
+
+  // Handle removing a font from multi-font selection
+  const handleRemoveFont = (fontId) => {
+    const updatedFonts = selectedFonts.filter(font => font.id !== fontId);
+    const updatedStyles = { ...selectedStyles };
+    delete updatedStyles[fontId];
+    
+    // If this was the last font in the selection, clear the entire cart but keep it open
+    if (updatedFonts.length === 0) {
+      // Use the available handleRemoveStyle function but prevent any cart-closing side effects
+      // by calling it in a way that clears everything but keeps the cart open
+      handleRemoveStyle();
+      
+      return;
+    }
+    
+    // Otherwise, just update the font selection
+    handleUpdateFonts(updatedFonts);
+    handleUpdateStyles(updatedStyles);
+  };
 
   if (!isOpen) return null;
 
@@ -222,12 +249,11 @@ const CartPanelContent = ({
           isScrolled={isScrolled}
         />
 
-        {showPaymentForm ? (
+        {showPaymentForm && clientSecret ? (
           <Elements
             stripe={stripePromise}
-            options={
-              clientSecret
-                ? {
+            key={clientSecret} // Force remount when clientSecret changes
+            options={{
                     clientSecret,
                     appearance: {
                       theme: "flat",
@@ -296,25 +322,7 @@ const CartPanelContent = ({
                       },
                     ],
                     loader: "never",
-                  }
-                : {
-                    appearance: {
-                      theme: "flat",
-                      variables: {
-                        fontFamily: "Jant",
-                      },
-                    },
-                    fonts: [
-                      {
-                        family: "Jant",
-                        src: "url(https://utfs.io/f/J5IMjEXp8AEY8aPimJU4FNM8dJQrlw1iAPGOIvB3xfXUaLEp)",
-                        weight: "400",
-                        style: "normal",
-                      },
-                    ],
-                    loader: "never",
-                  }
-            }
+            }}
           >
             <PaymentProcessor
               onPaymentComplete={handlePaymentComplete}
@@ -324,6 +332,7 @@ const CartPanelContent = ({
               }}
               setIsProcessing={setIsProcessing}
               savedRegistrationData={savedRegistrationData}
+              currentUser={currentUser}
               clientSecret={clientSecret}
               addressData={addressData}
             >
@@ -381,6 +390,7 @@ const CartPanelContent = ({
                       onRemoveStyle={handleRemoveStyle}
                       onRemoveLicense={handleRemoveLicense}
                       onRemovePackage={handleRemovePackage}
+                      onRemoveFont={handleRemoveFont}
                       onAddLicense={handleAddLicense}
                       showPaymentForm={showPaymentForm}
                       selectedPaymentMethod={selectedPaymentMethod}
@@ -435,6 +445,7 @@ const CartPanelContent = ({
                       eulaAccepted={eulaAccepted}
                       onEulaChange={handleEulaChange}
                       savedRegistrationData={savedRegistrationData}
+                      currentUser={currentUser}
                       clientData={clientData}
                       onClientDataChange={handleClientDataChange}
                       onUsageComplete={handleUsageComplete}
@@ -466,14 +477,19 @@ const CartPanelContent = ({
                       isResettingPassword={isResettingPassword}
                       setIsResettingPassword={setIsResettingPassword}
                       onBackToLogin={handleBackToLogin}
+                      isLoggingIn={isLoggingIn}
                     />
+                  </motion.div>
+                ) : isTransitioningToPayment ? (
+                  <motion.div key="transitioning" variants={contentVariants}>
+                    {/* Show nothing during transition to prevent flash */}
                   </motion.div>
                 ) : (
                   <motion.div key="stage1" variants={contentVariants}>
                     <Stage1Container>
                       <StyleSelection
                         weightOption={weightOption}
-                        onWeightSelect={setWeightOption}
+                        onWeightSelect={handleWeightSelect}
                         isContinueClicked={isContinueClicked}
                         isLicenceOpen={isLicenceOpen}
                         onContinue={handleContinue}
@@ -486,6 +502,12 @@ const CartPanelContent = ({
                           customAppLicense,
                           customSocialLicense,
                         }}
+                        cartFont={cartFont}
+                        selectedFonts={selectedFonts}
+                        selectedStyles={selectedStyles}
+                        onUpdateFonts={handleUpdateFonts}
+                        onUpdateStyles={handleUpdateStyles}
+                        onRemoveStyle={handleRemoveStyle}
                       />
 
                       <LicenseSelection
@@ -530,12 +552,12 @@ const CartPanelContent = ({
                 onRemoveStyle={handleRemoveStyle}
                 onRemoveLicense={handleRemoveLicense}
                 onRemovePackage={handleRemovePackage}
+                onRemoveFont={handleRemoveFont}
                 onAddLicense={handleAddLicense}
                 showPaymentForm={showPaymentForm}
                 selectedPaymentMethod={selectedPaymentMethod}
                 isStripeFormComplete={isStripeFormComplete}
                 isCheckoutDisabled={isCheckoutDisabled}
-                onPayment={handlePayment}
                 isProcessing={isProcessing}
                 onProceed={handleProceed}
                 isMobileLayout={isMobile}

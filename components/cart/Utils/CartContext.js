@@ -8,18 +8,20 @@ import React, {
   useRef,
   useEffect,
 } from "react";
+import { flushSync } from "react-dom";
 import { loadStripe } from "@stripe/stripe-js";
-import {
-  isUserAuthenticated,
-  loginUser,
-  getCartState,
-  saveCartState,
-} from "./authUtils";
 import {
   LICENSE_TYPES,
   packages,
   licenseOptions,
 } from "../Constants/constants";
+import { useFontSelection } from "../../../context/FontSelectionContext";
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  calculateMultiFontPrice, 
+  getPricingBreakdown,
+  addFontToSelection 
+} from './multiFontPricing';
 
 export const CartContext = createContext();
 
@@ -30,9 +32,33 @@ const stripePromise = loadStripe(
   },
 );
 
+// Simple cart state management functions
+const getCartState = () => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const saved = localStorage.getItem('cartState');
+    return saved ? JSON.parse(saved) : null;
+  } catch (error) {
+    console.error('Error loading cart state:', error);
+    return null;
+  }
+};
+
+const saveCartState = (cartState) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('cartState', JSON.stringify(cartState));
+  } catch (error) {
+    console.error('Error saving cart state:', error);
+  }
+};
+
 export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
   const router = useRouter();
   const pathname = usePathname();
+
+  // Get selected font from context (for fallback)
+  const { selectedFont } = useFontSelection();
 
   // State Management
   const [isFullCartOpen, setIsFullCartOpen] = useState(false);
@@ -46,15 +72,22 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
   const [preventAutoScroll, setPreventAutoScroll] = useState(false);
 
-  // Authentication States
+  // Cart font state - this will hold the font that was selected when added to cart
+  const [cartFont, setCartFont] = useState(null);
+
+  // Multi-font selection state - NEW
+  const [selectedFonts, setSelectedFonts] = useState([]);
+  const [selectedStyles, setSelectedStyles] = useState({});
+  const [selectedFontIds, setSelectedFontIds] = useState(new Set());
+  const [fontPricingMultipliers, setFontPricingMultipliers] = useState({});
+
+  // Authentication States (simplified with NextAuth)
   const [showRegistration, setShowRegistration] = useState(false);
   const [isRegistrationComplete, setIsRegistrationComplete] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [resetStep, setResetStep] = useState("email");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAuthenticatedAndPending, setIsAuthenticatedAndPending] =
-    useState(false);
+  const [isAuthenticatedAndPending, setIsAuthenticatedAndPending] = useState(false);
   const [showUsageSelection, setShowUsageSelection] = useState(false);
   const [eulaAccepted, setEulaAccepted] = useState(false);
   const [requireProceedClick, setRequireProceedClick] = useState(false);
@@ -91,6 +124,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
 
   // Payment States
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [isTransitioningToPayment, setIsTransitioningToPayment] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
@@ -117,6 +151,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
   const [selectedUsage, setSelectedUsage] = useState(null);
   const [viewPreference, setViewPreference] = useState(null);
   const [error, setError] = useState(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Navigation States
   const [hasProceedBeenClicked, setHasProceedBeenClicked] = useState(false);
@@ -141,6 +176,152 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
   const formDividerRef = useRef(null);
   const stripeWrapperRef = useRef(null);
 
+  // Placeholder authentication functions since useAuth was removed
+  const register = async (userData) => {
+    try {
+      // Import the actual register function from authUtils
+      const { registerUser } = await import('./authUtils');
+      const result = await registerUser(userData);
+      
+      if (result.success) {
+        // Get the full user record from the database
+        const { getUserByAuthId } = await import('../../../lib/database/supabaseClient');
+        const { data: dbUser, error: dbError } = await getUserByAuthId(result.user.id);
+        
+        if (dbError) {
+          console.error('Error fetching user record:', dbError);
+        }
+        
+        // Structure the user data with both auth and database info
+        const structuredUser = {
+          ...result.user,
+          dbData: dbUser || null
+        };
+        
+        // Set the structured user data
+        setCurrentUser(structuredUser);
+        return { success: true, user: structuredUser, needsVerification: result.needsVerification };
+      } else {
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      return { success: false, error: 'Registration failed. Please try again.' };
+    }
+  };
+
+  // Simplified login function - removed complex wrapper that was causing hangs
+  const login = async (email, password) => {
+    try {
+      const { supabase } = await import('../../../lib/database/supabaseClient');
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      if (data.user) {
+        // Get the database user record
+        const { data: dbUser, error: dbError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('auth_user_id', data.user.id)
+          .single();
+        
+        if (dbError) {
+          console.error('Error fetching user record:', dbError);
+        }
+        
+        // Structure the user data
+        const structuredUser = {
+          ...data.user,
+          dbData: dbUser || null
+        };
+        
+        setCurrentUser(structuredUser);
+        return { success: true, user: structuredUser };
+      }
+
+      return { success: false, error: 'Login failed' };
+    } catch (error) {
+      console.error('Login error:', error);
+      return { success: false, error: 'Login failed. Please try again.' };
+    }
+  };
+
+  // User state
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // Debug function to clear session (for testing)
+  const debugLogout = async () => {
+    try {
+      // Import the actual logout function from authUtils
+      const { logoutUser } = await import('./authUtils');
+      await logoutUser();
+      
+      // Clear all authentication-related state
+      setCurrentUser(null);
+      setShowRegistration(false);
+      setIsRegistrationComplete(false);
+      setShowUsageSelection(false);
+      setShowPaymentForm(false);
+      setSelectedUsage(null);
+      setEulaAccepted(false);
+      setIsAuthenticatedAndPending(false);
+      
+      // Clear registration and login data
+      setRegistrationData({
+        firstName: "",
+        surname: "",
+        email: "",
+        password: "",
+        street: "",
+        city: "",
+        postcode: "",
+        country: "",
+      });
+      setLoginData({
+        email: "",
+        password: "",
+      });
+      
+      // Clear client data
+      setClientData({
+        companyName: "",
+        contactName: "",
+        contactEmail: "",
+        contactPhone: "",
+      });
+      
+      // Reset proceed state
+      setHasProceedBeenClicked(false);
+      localStorage.removeItem("hasProceedBeenClicked");
+      
+      // Trigger UI update by dispatching events
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('authStateChange', { 
+          detail: { isAuthenticated: false } 
+        }));
+      }
+      
+      console.log('🔄 Session cleared');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Even if logout fails, clear local state
+      setCurrentUser(null);
+      setShowRegistration(false);
+      setIsRegistrationComplete(false);
+      setShowUsageSelection(false);
+      setShowPaymentForm(false);
+      setSelectedUsage(null);
+      setEulaAccepted(false);
+      setIsAuthenticatedAndPending(false);
+    }
+  };
+
   // Effects
   useEffect(() => {
     handleCartState();
@@ -159,6 +340,10 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     selectedUsage,
     eulaAccepted,
     isAuthenticatedAndPending,
+    cartFont,
+    selectedFonts,
+    selectedStyles,
+    selectedFontIds,
   ]);
 
   useEffect(() => {
@@ -185,70 +370,43 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
 
   useEffect(() => {
     handleCartStateLoad();
-  }, [isOpen, isAuthenticated]);
+  }, [isOpen, currentUser]);
 
+  // Load cart state immediately on mount, not just when cart opens
   useEffect(() => {
-    handleAuthenticationCheck();
+    handleCartStateLoad();
   }, []);
-
-  useEffect(() => {
-    handleResponsiveLayout();
-    const resizeHandler = () => {
-      handleResponsiveLayout();
-      updateBottomPadding(window.matchMedia("(max-width: 768px)").matches);
-    };
-    window.addEventListener("resize", resizeHandler);
-    return () => window.removeEventListener("resize", resizeHandler);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (cartPanelRef.current) {
-        setIsScrolled(cartPanelRef.current.scrollTop > 50);
-      }
-    };
-
-    if (cartPanelRef.current) {
-      cartPanelRef.current.addEventListener("scroll", handleScroll);
-    }
-
-    return () => {
-      if (cartPanelRef.current) {
-        cartPanelRef.current.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    // Handle scroll to bottom after state updates are complete
-    if (
-      !preventAutoScroll &&
-      shouldScrollToBottom &&
-      bottomPadding > 0 &&
-      cartPanelRef.current &&
-      window.matchMedia("(max-width: 768px)").matches
-    ) {
-      const totalHeight = cartPanelRef.current.scrollHeight;
-      const viewportHeight = cartPanelRef.current.clientHeight;
-
-      cartPanelRef.current.scrollTo({
-        top: Math.max(0, totalHeight - viewportHeight + 24),
-        behavior: "smooth",
-      });
-
-      setShouldScrollToBottom(false);
-    }
-  }, [shouldScrollToBottom, bottomPadding, preventAutoScroll]);
 
   useEffect(() => {
     const handleAuthChange = (event) => {
-      const { isAuthenticated } = event.detail;
-      setIsAuthenticated(isAuthenticated);
-
-      if (!isAuthenticated) {
+      const { isAuthenticated: authState, user } = event.detail;
+      
+      if (authState && user) {
+        // User has logged in via main login modal
+        console.log('🔄 User logged in via main modal, updating cart state');
+        
+        // Update current user in cart
+        setCurrentUser(user);
+        
+        // If cart is open and user just logged in, update the cart flow
+        if (isOpen) {
+          setShowRegistration(false);
+          setIsRegistrationComplete(true);
+          setIsAuthenticatedAndPending(false);
+          
+          // Don't automatically advance to usage selection
+          // Let the user proceed manually from stage 1
+          setShowUsageSelection(false);
+          setShowPaymentForm(false);
+        }
+      } else if (!authState) {
+        // User has logged out
+        console.log('🔄 User logged out, clearing cart auth state');
+        setCurrentUser(null);
         setShowRegistration(false);
         setIsRegistrationComplete(false);
         setShowUsageSelection(false);
+        setShowPaymentForm(false);
         setSelectedUsage(null);
         setEulaAccepted(false);
         setIsAuthenticatedAndPending(false);
@@ -257,17 +415,221 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
 
     window.addEventListener("authStateChange", handleAuthChange);
 
-    const isAuth = localStorage.getItem("isAuthenticated") === "true";
-    setIsAuthenticated(isAuth);
+    // Remove localStorage check and call proper auth check
+    handleAuthenticationCheck();
+
+    // Add Supabase auth state listener
+    const setupAuthListener = async () => {
+      try {
+        const { supabase } = await import('../../../lib/database/supabaseClient');
+        const { getUserByAuthId } = await import('../../../lib/database/supabaseClient');
+        
+        // Clear any invalid tokens before setting up the listener
+        try {
+          const { data: { user }, error } = await supabase.auth.getUser();
+          
+          if (error && error.message && error.message.includes('Invalid Refresh Token')) {
+            // Clear the invalid session
+            await supabase.auth.signOut();
+            
+            // Clear any remaining token data from localStorage
+            if (typeof window !== 'undefined') {
+              // Clear Supabase auth tokens
+              Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('supabase.auth.token') || key.startsWith('sb-')) {
+                  localStorage.removeItem(key);
+                }
+              });
+              
+              // Clear session storage as well
+              Object.keys(sessionStorage).forEach(key => {
+                if (key.startsWith('supabase.auth.token') || key.startsWith('sb-')) {
+                  sessionStorage.removeItem(key);
+                }
+              });
+            }
+          }
+        } catch (tokenError) {
+          // If there's any error during token clearing, just continue
+          console.warn('Error clearing invalid tokens in CartContext:', tokenError);
+        }
+        
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            try {
+              if (event === 'SIGNED_IN' && session?.user) {
+                // Get the full user record from the database
+                const { data: dbUser, error: dbError } = await getUserByAuthId(session.user.id);
+                
+                if (dbError) {
+                  console.error('Error fetching user record on auth change:', dbError);
+                }
+                
+                const structuredUser = {
+                  ...session.user,
+                  dbData: dbUser || null
+                };
+                
+                setCurrentUser(structuredUser);
+              } else if (event === 'SIGNED_OUT') {
+                setCurrentUser(null);
+              } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+                // For token refresh, we might already have the user data
+                // Only fetch if we don't have it or if it's incomplete
+                if (!currentUser || !currentUser.dbData) {
+                  const { data: dbUser, error: dbError } = await getUserByAuthId(session.user.id);
+                  
+                  if (dbError) {
+                    console.error('Error fetching user record on token refresh:', dbError);
+                  }
+                  
+                  const structuredUser = {
+                    ...session.user,
+                    dbData: dbUser || null
+                  };
+                  
+                  setCurrentUser(structuredUser);
+                }
+              }
+            } catch (authError) {
+              console.error('Error in auth state change handler:', authError);
+              // If there's an error, ensure user is set to null
+              setCurrentUser(null);
+            }
+          }
+        );
+        
+        // Store subscription for cleanup
+        return subscription;
+      } catch (error) {
+        console.error('Error setting up auth listener:', error);
+        return null;
+      }
+    };
+
+    let authSubscription = null;
+    setupAuthListener().then(subscription => {
+      authSubscription = subscription;
+    });
 
     return () => {
       window.removeEventListener("authStateChange", handleAuthChange);
+      if (authSubscription) {
+        authSubscription.unsubscribe();
+      }
     };
   }, []);
 
+  // Check authentication when cart opens
+  useEffect(() => {
+    if (isOpen) {
+      handleAuthenticationCheck();
+    }
+  }, [isOpen]);
+
+  // NEW: Initialize multi-font selection with current cart font
+  useEffect(() => {
+    if (cartFont && Array.isArray(selectedFonts) && selectedFonts.length === 0) {
+      const { selectedFonts: fonts, selectedStyles: styles } = addFontToSelection([], {}, cartFont, []);
+      setSelectedFonts(fonts || []);
+      setSelectedStyles(styles || {});
+      
+      // Persist this initialization to localStorage
+      const cartState = {
+        weightOption,
+        selectedPackage,
+        customizing,
+        customPrintLicense,
+        customWebLicense,
+        customAppLicense,
+        customSocialLicense,
+        selectedFont: cartFont,
+        selectedFonts: fonts || [],
+        selectedStyles: styles || {},
+      };
+      saveCartState(cartState);
+    }
+  }, [cartFont, selectedFonts?.length]);
+
+  // Update authentication check to use NextAuth session
+  const handleAuthenticationCheck = async () => {
+    try {
+      // Clear any invalid tokens before checking authentication
+      try {
+        const { supabase } = await import('../../../lib/database/supabaseClient');
+        const { data: { user }, error } = await supabase.auth.getUser();
+        
+        if (error && error.message && error.message.includes('Invalid Refresh Token')) {
+          // Clear the invalid session
+          await supabase.auth.signOut();
+          
+          // Clear any remaining token data from localStorage
+          if (typeof window !== 'undefined') {
+            // Clear Supabase auth tokens
+            Object.keys(localStorage).forEach(key => {
+              if (key.startsWith('supabase.auth.token') || key.startsWith('sb-')) {
+                localStorage.removeItem(key);
+              }
+            });
+            
+            // Clear session storage as well
+            Object.keys(sessionStorage).forEach(key => {
+              if (key.startsWith('supabase.auth.token') || key.startsWith('sb-')) {
+                sessionStorage.removeItem(key);
+              }
+            });
+          }
+          
+          // Set user to null and return early
+          setCurrentUser(null);
+          return;
+        }
+      } catch (tokenError) {
+        // If there's any error during token clearing, just continue
+        console.warn('Error clearing invalid tokens in handleAuthenticationCheck:', tokenError);
+      }
+      
+      // Import the getCurrentUser function from authUtils
+      const { getCurrentUser } = await import('./authUtils');
+      const authUser = await getCurrentUser();
+      
+      if (authUser) {
+        // If getCurrentUser returns a database user record, structure it properly
+        if (authUser.auth_user_id) {
+          // This is a database user record
+          const structuredUser = {
+            id: authUser.auth_user_id,
+            email: authUser.email,
+            dbData: authUser
+          };
+          setCurrentUser(structuredUser);
+        } else {
+          // This is a Supabase auth user, get the database record
+          const { getUserByAuthId } = await import('../../../lib/database/supabaseClient');
+          const { data: dbUser, error: dbError } = await getUserByAuthId(authUser.id);
+          
+          if (dbError) {
+            console.error('Error fetching user record:', dbError);
+          }
+          
+          const structuredUser = {
+            ...authUser,
+            dbData: dbUser || null
+          };
+          setCurrentUser(structuredUser);
+        }
+      } else {
+        setCurrentUser(null);
+      }
+    } catch (error) {
+      console.error('Error checking authentication:', error);
+      setCurrentUser(null);
+    }
+  };
+
   // Handlers
   const handleCartState = () => {
-    if (weightOption || selectedPackage || customizing) {
+    if (weightOption || selectedPackage || customizing || cartFont) {
       saveCartState({
         weightOption,
         selectedPackage,
@@ -283,33 +645,92 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
         selectedUsage,
         eulaAccepted,
         isAuthenticatedAndPending,
+        selectedFont: cartFont,
+        selectedFonts,
+        selectedStyles,
+        selectedFontIds: Array.from(selectedFontIds),
       });
-    }
-  };
-
-  const handleCartStateLoad = () => {
-    if (isOpen) {
-      const savedCart = getCartState();
-      if (savedCart && isAuthenticated) {
-        loadSavedCartState(savedCart);
+      
+      // Dispatch custom event to notify cart count components
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('cartStateChanged'));
       }
     }
   };
 
-  const handleAuthenticationCheck = () => {
-    const wasAuthenticated = localStorage.getItem("isAuthenticated");
-    if (wasAuthenticated === "true") {
-      setIsAuthenticated(true);
-      if (hasCartSelections()) {
-        setSavedRegistrationData({
-          firstName: "Scott",
-          surname: "Joseph",
-          email: "info@scottpauljoseph.com",
-          street: "Studio 80, 1 Cardwell Terrace",
-          city: "London",
-          postcode: "N7 0NH",
-          country: "UK",
-        });
+  const handleCartStateLoad = () => {
+    const savedCart = getCartState();
+    if (savedCart) {
+      if (isOpen && currentUser) {
+        loadSavedCartState(savedCart);
+        
+        // For authenticated users, override any saved form states
+        // and set the correct stage based on current state
+        if (savedCart.weightOption || weightOption) {
+          const hasLicenseSelection = savedCart.selectedPackage || savedCart.customizing || 
+            selectedPackage || customizing;
+          
+          if (hasLicenseSelection) {
+            // Only override stages if user is not currently in usage selection flow
+            // This preserves the login -> usage selection progression
+            if (!showUsageSelection && !isAuthenticatedAndPending) {
+            // User is authenticated and has made selections
+            setShowRegistration(false);
+            setShowUsageSelection(false);
+            setShowPaymentForm(false);
+            setIsRegistrationComplete(true);
+            setIsAuthenticatedAndPending(false);
+            
+            // Don't automatically advance to any stage - let user proceed manually
+            // This prevents the cart from jumping to registration form
+            }
+          }
+        }
+      } else {
+        // Always load the saved font, regardless of open state or authentication
+        setCartFont(savedCart.selectedFont || null);
+        // Also load multi-font selections
+        setSelectedFonts(savedCart.selectedFonts || []);
+        setSelectedStyles(savedCart.selectedStyles || {});
+        // Load selectedFontIds and convert back to Set
+        setSelectedFontIds(new Set(savedCart.selectedFontIds || []));
+        // Load weightOption so Continue button is enabled
+        setWeightOption(savedCart.weightOption || "");
+        
+        // Ensure Continue button works on first cart open
+        setIsContinueClicked(false);
+        setIsLicenceOpen(false);
+      }
+    }
+    
+    // When cart opens, check authentication state and set appropriate stage
+    if (isOpen && currentUser) {
+      // For authenticated users, always start at stage 1 unless they've already proceeded
+      const hasProceedBeenClicked = localStorage.getItem("hasProceedBeenClicked") === "true";
+      
+      // Don't reset stage if user has completed usage selection, is in active flow, 
+      // OR is currently in authentication flow (just logged in)
+      if (!hasProceedBeenClicked && 
+          !showUsageSelection && 
+          !isAuthenticatedAndPending && 
+          !isRegistrationComplete) {
+        // User hasn't clicked proceed yet and isn't in active flow, keep them at stage 1
+          setShowRegistration(false);
+        setShowUsageSelection(false);
+          setShowPaymentForm(false);
+        setIsAuthenticatedAndPending(false);
+        setIsRegistrationComplete(true); // Mark as complete since they're authenticated
+      }
+    } else if (isOpen && !currentUser) {
+      // For unauthenticated users with cart items, they'll need to register
+      const hasCartItems = (savedCart?.weightOption || weightOption) && 
+        (savedCart?.selectedPackage || savedCart?.customizing || selectedPackage || customizing);
+      
+      if (hasCartItems) {
+        setShowRegistration(false); // Don't auto-show registration, let them proceed manually
+        setShowUsageSelection(false);
+        setShowPaymentForm(false);
+        setIsAuthenticatedAndPending(false);
       }
     }
   };
@@ -440,6 +861,44 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
   };
 
   const handleClose = () => {
+    // Save cart state before closing to maintain persistence
+    if (currentUser) {
+      // For authenticated users, save current state
+      saveCartState({
+        weightOption,
+        selectedPackage,
+        customizing,
+        customPrintLicense,
+        customWebLicense,
+        customAppLicense,
+        customSocialLicense,
+        showRegistration: false,
+        showUsageSelection: showUsageSelection,
+        showPaymentForm: showPaymentForm,
+        isRegistrationComplete: isRegistrationComplete,
+        selectedUsage,
+        eulaAccepted,
+        isAuthenticatedAndPending: isAuthenticatedAndPending,
+        selectedFont: cartFont,
+        selectedFonts,
+        selectedStyles,
+      });
+    } else {
+      // For unauthenticated users, save basic cart state
+      saveCartState({
+        weightOption,
+        selectedPackage,
+        customizing,
+        customPrintLicense,
+        customWebLicense,
+        customAppLicense,
+        customSocialLicense,
+        selectedFont: cartFont,
+        selectedFonts,
+        selectedStyles,
+      });
+    }
+
     // Reset scroll position
     if (cartPanelRef.current) {
       cartPanelRef.current.scrollTo({
@@ -448,7 +907,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       });
     }
 
-    // Call the parent's close function immediately like UserDashboard
+    // Call the parent's close function
     onClose();
   };
 
@@ -476,6 +935,9 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       selectedUsage: null,
       eulaAccepted: false,
       isAuthenticatedAndPending: false,
+      selectedFont: cartFont,
+      selectedFonts,
+      selectedStyles,
     });
   };
 
@@ -503,38 +965,121 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
   };
 
   const handleProceed = () => {
+    console.log('🔄 handleProceed called with state:', {
+      showRegistration,
+      showUsageSelection,
+      showPaymentForm,
+      isRegistrationComplete,
+      selectedUsage,
+      eulaAccepted,
+      selectedPackage,
+      customizing,
+      calculateCustomTotal: customizing ? calculateCustomTotal() : 0
+    });
+    
+    // Check if user has completed usage selection and is ready for payment
+    // NEW: Allow showUsageSelection to be true (usage form visible) but usage completed
     if (
       !showRegistration &&
-      !showUsageSelection &&
       !showPaymentForm &&
+      isRegistrationComplete &&
+      selectedUsage &&
+      eulaAccepted &&
       (selectedPackage || (customizing && calculateCustomTotal() > 0))
     ) {
-      handleInitialProceed();
+      console.log('✅ Proceeding to payment form');
+      // User has completed usage selection, proceed to payment
+      // Use flushSync to ensure synchronous state updates and prevent any flash
+      flushSync(() => {
+        setIsTransitioningToPayment(true);
+        setShowUsageSelection(false);
+      });
+      
+      flushSync(() => {
+        setShowPaymentForm(true);
+        setIsTransitioningToPayment(false);
+      });
+      
+      // Save the updated cart state
+      saveCartState({
+        weightOption,
+        selectedPackage,
+        customizing,
+        customPrintLicense,
+        customWebLicense,
+        customAppLicense,
+        customSocialLicense,
+        showRegistration: false,
+        showUsageSelection: false,
+        showPaymentForm: true,
+        isRegistrationComplete: true,
+        selectedUsage,
+        eulaAccepted,
+        isAuthenticatedAndPending: false,
+        selectedFont: cartFont,
+        selectedFonts,
+        selectedStyles,
+      });
+      
+      scrollToTop();
       return;
     }
 
     if (
-      (showRegistration || showUsageSelection || showPaymentForm) &&
+      !showRegistration &&
+      !showUsageSelection &&
+      !showPaymentForm &&
+      !isTransitioningToPayment &&
+      (selectedPackage || (customizing && calculateCustomTotal() > 0))
+    ) {
+      console.log('🔄 Calling handleInitialProceed');
+      handleInitialProceed();
+      return;
+    }
+
+    if (showPaymentForm && isPaymentFormValid() && !isProcessing) {
+      // Payment processing is handled by the PaymentProcessor component
+      // through the onPayment prop in CartSummary
+      console.log('💳 Payment form is valid, ready for processing');
+      return;
+    }
+
+    if (
+      showRegistration &&
       !isCheckoutDisabled
     ) {
+      console.log('📝 Calling handleFormProceed');
       handleFormProceed();
     }
+
+    // Note: showUsageSelection should NOT trigger handleFormProceed
+    // Usage selection completion is handled by handleUsageComplete
+    // The Proceed button should only be enabled after usage completion
 
     scrollToTop();
   };
 
+
+
   const handleInitialProceed = () => {
-    if (isAuthenticated) {
-      if (isRegistrationComplete || didReturnToStageOne) {
-        setShowPaymentForm(true);
-        setShowUsageSelection(false);
-        setSelectedUsage(null);
-      } else {
+    console.log('🔄 handleInitialProceed called', { 
+      currentUser: currentUser?.email || 'none'
+    });
+    
+    if (currentUser) {
+      // If user is authenticated, skip to usage selection
+      console.log('✅ Authenticated user, going to usage selection');
+      setShowRegistration(false);
         setShowUsageSelection(true);
+      setShowPaymentForm(false);
         setIsAuthenticatedAndPending(true);
-      }
-    } else {
+      setIsRegistrationComplete(true); // Mark as complete since user is logged in
+      } else {
+      console.log('❌ Not authenticated, showing registration');
       setShowRegistration(true);
+      setShowUsageSelection(false);
+      setShowPaymentForm(false);
+      setIsAuthenticatedAndPending(false);
     }
 
     setHasProceedBeenClicked(true);
@@ -548,13 +1093,16 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       customWebLicense,
       customAppLicense,
       customSocialLicense,
-      showRegistration: !isAuthenticated,
-      showUsageSelection: isAuthenticated && !isRegistrationComplete,
-      showPaymentForm: isAuthenticated && isRegistrationComplete,
-      isRegistrationComplete,
+      showRegistration: !currentUser,
+      showUsageSelection: !!currentUser,
+      showPaymentForm: false,
+      isRegistrationComplete: !!currentUser,
       selectedUsage,
       eulaAccepted,
-      isAuthenticatedAndPending: isAuthenticated && !isRegistrationComplete,
+      isAuthenticatedAndPending: !!currentUser,
+      selectedFont: cartFont,
+      selectedFonts,
+      selectedStyles,
     });
   };
 
@@ -564,11 +1112,26 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       setShowUsageSelection(true);
       setIsAuthenticatedAndPending(true);
     } else if (showUsageSelection && selectedUsage && eulaAccepted) {
-      setShowPaymentForm(true);
-      setShowUsageSelection(false);
-      setIsRegistrationComplete(true);
-    } else if (showPaymentForm && selectedPaymentMethod) {
-      handlePayment();
+      // REQUIRED: User must be authenticated to proceed to payment
+      if (!currentUser) {
+        setError({ message: "You must be logged in to purchase fonts. Please register or sign in." });
+        return;
+      }
+      
+      const userEmail = currentUser.email || currentUser.dbData?.email;
+      if (!userEmail) {
+        setError({ message: "Valid user account required. Please ensure you're properly logged in." });
+        return;
+      }
+
+      // Let handleUsageComplete handle the transition from usage selection to summary
+      // This function should NOT directly set showPaymentForm=true
+      // The proper flow is: usage completion -> summary stage -> proceed button -> payment
+      console.log('Usage selection complete, should trigger handleUsageComplete instead');
+      
+    } else if (showPaymentForm && isPaymentFormValid()) {
+      // Handle payment processing
+      handlePaymentComplete();
     }
   };
 
@@ -608,7 +1171,8 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
 
   const hasCartSelections = () => {
     return (
-      weightOption && (selectedPackage || (customizing && hasLicenseSelected()))
+      (weightOption && (selectedPackage || (customizing && hasLicenseSelected()))) ||
+      (selectedFonts.length > 0 && Object.keys(selectedStyles).length > 0)
     );
   };
 
@@ -660,7 +1224,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       ? isRegistrationComplete && eulaAccepted
       : showPaymentForm
         ? isPaymentFormValid()
-        : !showRegistration || isRegistrationComplete)
+        : !showRegistration || (isRegistrationComplete && selectedUsage && eulaAccepted))
   );
 
   const scrollToTop = () => {
@@ -769,27 +1333,24 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
 
   // Modify your handleContinue function
   const handleContinue = () => {
-    if (!isContinueClicked) {
+    if (!isLicenceOpen) {
+      // Always open license selection if it's not already open
       setIsContinueClicked(true);
       setIsLicenceOpen(true);
-      if (!isLicenceOpen) {
-        scrollToTop();
+      // Ensure weightOption is set so LicenseSelection component renders
+      if (!weightOption) {
+        setWeightOption("display");
       }
+      scrollToTop();
     } else {
+      // If license selection is open, close cart and navigate
       setTimeout(() => {
         onClose(); // This should set isFullCartOpen to false in ProductPage
         setTimeout(() => {
           // Wait for overlay animation to complete before navigating
-          if (router.pathname === "/Typeface") {
-            handleNavigateHome(null, "/Typefaces");
-          }
+          handleNavigateHome(null, "/Typefaces");
         }, 300); // Additional delay for overlay animation
       }, 300);
-    }
-
-    if (isContinueClicked && isLicenceOpen) {
-      setHasProceedBeenClicked(false);
-      localStorage.removeItem("hasProceedBeenClicked");
     }
   };
 
@@ -805,6 +1366,16 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     setCustomAppLicense(null);
     setCustomSocialLicense(null);
 
+    // Clear multi-font selection state
+    setSelectedFonts([]);
+    setSelectedStyles({});
+    setSelectedFontIds(new Set());
+    setCartFont(null);
+
+    // Reset the Continue button state so it will work properly
+    setIsContinueClicked(false);
+    setIsLicenceOpen(false);
+
     // Important: Do NOT reset authentication state
     // Only reset cart-specific states
     setShowRegistration(false);
@@ -818,17 +1389,12 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     setHasProceedBeenClicked(false);
     localStorage.removeItem("hasProceedBeenClicked");
 
-    // Preserve authentication state when clearing cart
-    const currentAuthState = localStorage.getItem("isAuthenticated");
-    const userEmail = localStorage.getItem("userEmail");
-
-    // Clear cart state
+    // Clear cart state but preserve authentication
     localStorage.removeItem("cartState");
-
-    // Restore authentication state
-    if (currentAuthState === "true" && userEmail) {
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userEmail", userEmail);
+    // Notify other components that cart was cleared
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cartCleared'));
+      window.dispatchEvent(new CustomEvent('cartStateChanged'));
     }
 
     // Update bottom padding since all items are removed
@@ -839,14 +1405,13 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
   };
 
   const resetRegistrationState = () => {
-    // Reset authentication and registration-related states
     setShowRegistration(false);
     setIsRegistrationComplete(false);
-    setShowLoginForm(false);
-    setIsResettingPassword(false);
-    setResetStep("email");
-    setIsAuthenticated(false);
+    setShowUsageSelection(false);
+    setShowPaymentForm(false);
     setIsAuthenticatedAndPending(false);
+    setSelectedUsage(null);
+    setEulaAccepted(false);
     setRegistrationData({
       firstName: "",
       surname: "",
@@ -861,17 +1426,14 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       email: "",
       password: "",
     });
-    setResetData({
-      email: "",
-      newPassword: "",
+    setClientData({
+      companyName: "",
+      contactName: "",
+      contactEmail: "",
+      contactPhone: "",
     });
-
-    // Remove authentication-related local storage items
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("firstName");
-    localStorage.removeItem("lastName");
-    localStorage.removeItem("billingDetails");
+    setHasProceedBeenClicked(false);
+    localStorage.removeItem("hasProceedBeenClicked");
   };
 
   const handleRemoveLicense = (type) => {
@@ -965,6 +1527,10 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     setHasProceedBeenClicked(false);
     localStorage.removeItem("hasProceedBeenClicked");
 
+    // Don't close license selection panel - keep it open so Continue button works
+    // setIsLicenceOpen(false); // Remove this line if it exists
+    // setIsContinueClicked(false); // Remove this line if it exists
+
     // Immediately reset bottom padding since we're removing the package
     setBottomPadding(0);
 
@@ -1021,65 +1587,146 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     }
   };
 
-  const handlePayment = async () => {
-    if (!selectedPaymentMethod || !clientSecret) {
-      console.error("Payment method or client secret not available");
+  // REMOVED: Old handlePayment function that conflicted with PaymentProcessor
+  // Payment is now handled by PaymentProcessor component using modern Stripe Elements API
+
+  const handlePaymentComplete = async (paymentIntent) => {
+    console.log('🔄 handlePaymentComplete called', { 
+      currentUser: currentUser?.email || 'none',
+      paymentIntentId: paymentIntent?.id || 'none',
+      currentUserStructure: currentUser
+    });
+    
+    // Prevent double payment processing
+    const paymentProcessingKey = `payment_processing_${paymentIntent?.id}`;
+    if (localStorage.getItem(paymentProcessingKey)) {
+      console.log('⚠️ Payment already being processed, skipping duplicate');
+      return;
+    }
+    
+    // Set processing lock
+    localStorage.setItem(paymentProcessingKey, 'true');
+    
+    // Clean up processing lock after 60 seconds (safety measure)
+    setTimeout(() => {
+      localStorage.removeItem(paymentProcessingKey);
+    }, 60000);
+    
+    if (!currentUser) {
+      console.error('❌ No current user found during payment completion');
+      setError({ message: 'Authentication error. Please log in again and retry.' });
+      setIsProcessing(false);
+      localStorage.removeItem(paymentProcessingKey);
       return;
     }
 
-    setIsProcessing(true);
-
-    try {
-      const stripe = await stripePromise;
-
-      // Get the Elements instance from the Stripe context
-      const { error: paymentError, paymentIntent } =
-        await stripe.confirmPayment({
-          elements: stripe.elements(), // This is the correct way to pass elements
-          confirmParams: {
-            payment_method_data: {
-              billing_details: {
-                name:
-                  savedRegistrationData?.firstName +
-                  " " +
-                  savedRegistrationData?.surname,
-                email: savedRegistrationData?.email,
-                address: {
-                  line1: savedRegistrationData?.street,
-                  city: savedRegistrationData?.city,
-                  postal_code: savedRegistrationData?.postcode,
-                  country: savedRegistrationData?.country,
-                },
-              },
-            },
-            return_url: `${window.location.origin}/payment-confirmation`,
-          },
-        });
-
-      if (paymentError) {
-        console.error("Payment error:", paymentError);
-        setError(paymentError);
+    // Get user email from current user
+    const userEmail = currentUser.email || currentUser.dbData?.email;
+    
+    if (!userEmail) {
+      console.error('❌ No user email found', { currentUser });
+      setError({ message: 'Unable to verify user account. Please log in again and retry.' });
         setIsProcessing(false);
+        localStorage.removeItem(paymentProcessingKey);
+        return;
+      }
+    
+    console.log('✅ User email found:', userEmail);
+
+    // Save data to localStorage for payment confirmation page
+    const cartData = {
+      totalPrice: calculateTotalPrice(),
+      selectedFonts,
+      selectedStyles,
+      cartFont,
+      selectedFont,
+      selectedPackage,
+      customPrintLicense,
+      customWebLicense,
+      customAppLicense,
+      customSocialLicense
+    };
+    
+    // Save essential data to localStorage for payment confirmation page
+    localStorage.setItem("cartState", JSON.stringify(cartData));
+    localStorage.setItem("userEmail", userEmail);
+    localStorage.setItem("firstName", currentUser.dbData?.first_name || savedRegistrationData?.firstName || registrationData?.firstName || '');
+    localStorage.setItem("lastName", currentUser.dbData?.last_name || savedRegistrationData?.surname || registrationData?.surname || '');
+    localStorage.setItem("selectedUsage", selectedUsage || 'personal');
+    localStorage.setItem("eulaAccepted", eulaAccepted ? 'true' : 'false');
+    
+    const billingDetails = {
+      street: currentUser.dbData?.street_address || savedRegistrationData?.street || registrationData?.street || '',
+      city: currentUser.dbData?.city || savedRegistrationData?.city || registrationData?.city || '',
+      postcode: currentUser.dbData?.postal_code || savedRegistrationData?.postcode || registrationData?.postcode || '',
+      country: currentUser.dbData?.country || savedRegistrationData?.country || registrationData?.country || ''
+    };
+    localStorage.setItem("billingDetails", JSON.stringify(billingDetails));
+    
+    try {
+      // Process the purchase in the database
+      const purchaseData = {
+        paymentIntentId: paymentIntent.id,
+        cartData: {
+          totalPrice: calculateTotalPrice(),
+          selectedFonts,
+          selectedStyles,
+          cartFont,
+          selectedFont,
+          selectedPackage,
+          customPrintLicense,
+          customWebLicense,
+          customAppLicense,
+          customSocialLicense
+        },
+        userData: {
+          email: userEmail
+        },
+        billingDetails: {
+          name: `${currentUser.dbData?.first_name || savedRegistrationData?.firstName || registrationData?.firstName} ${currentUser.dbData?.last_name || savedRegistrationData?.surname || registrationData?.surname}`,
+          email: userEmail,
+          street: currentUser.dbData?.street_address || savedRegistrationData?.street || registrationData?.street,
+          city: currentUser.dbData?.city || savedRegistrationData?.city || registrationData?.city,
+          postcode: currentUser.dbData?.postal_code || savedRegistrationData?.postcode || registrationData?.postcode,
+          country: currentUser.dbData?.country || savedRegistrationData?.country || registrationData?.country
+        },
+        usageType: selectedUsage,
+        eulaAccepted,
+        companyInfo: clientData
+      };
+
+      const response = await fetch('/api/process-purchase', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(purchaseData)
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        console.error('Purchase processing failed:', result.error);
+        setError({ message: result.error || 'Purchase processing failed. Please try again.' });
+        setIsProcessing(false);
+        localStorage.removeItem(paymentProcessingKey);
         return;
       }
 
-      if (paymentIntent.status === "succeeded") {
-        handlePaymentComplete(paymentIntent);
-      }
-    } catch (err) {
-      console.error("Payment processing error:", err);
-      setError(err);
+    } catch (error) {
+      console.error('Error processing purchase:', error);
+      setError({ message: 'Network error during purchase processing. Please try again.' });
       setIsProcessing(false);
+      localStorage.removeItem(paymentProcessingKey);
+      return;
     }
-  };
 
-  const handlePaymentComplete = (paymentIntent) => {
-    // Save the purchase details
+    // Save local copy for immediate UI feedback (legacy support)
     const purchase = {
       id: paymentIntent.id,
       amount: paymentIntent.amount / 100,
       date: new Date().toLocaleDateString(),
-      fontName: "Soh-Cah-Toa",
+      fontName: cartFont?.name || selectedFont?.name || "Font",
       licenseType: selectedPackage || "custom",
       licenses: {
         print: selectedPackage ? true : !!customPrintLicense,
@@ -1093,14 +1740,21 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     purchases.push(purchase);
     localStorage.setItem("purchases", JSON.stringify(purchases));
 
-    // Clean up storage
-    localStorage.removeItem("cartState");
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("firstName");
-    localStorage.removeItem("lastName");
-    localStorage.removeItem("billingDetails");
-    localStorage.removeItem("hasProceedBeenClicked");
+    // Notify other components that cart was cleared
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cartCleared'));
+      window.dispatchEvent(new CustomEvent('cartStateChanged'));
+    }
+    
+    // Clean up processing lock on successful completion
+    localStorage.removeItem(paymentProcessingKey);
+    
+    // DON'T clean up storage here - let payment confirmation page handle it
+    // localStorage.removeItem("userEmail");
+    // localStorage.removeItem("firstName");
+    // localStorage.removeItem("lastName");
+    // localStorage.removeItem("billingDetails");
+    // localStorage.removeItem("hasProceedBeenClicked");
 
     // Trigger fade-out animation with slightly faster timing
     setIsPaymentCompleted(true);
@@ -1196,28 +1850,32 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     }
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (isRegistrationFormValid()) {
-      loginUser({
+      try {
+        const result = await register({
         email: registrationData.email,
         password: registrationData.password,
         firstName: registrationData.firstName,
         lastName: registrationData.surname,
+          streetAddress: registrationData.street,
+          city: registrationData.city,
+          postalCode: registrationData.postcode,
+          country: registrationData.country,
+          newsletter: registrationData.newsletter || false,
       });
 
-      setIsAuthenticated(true);
-
+        if (result.success) {
+          // Registration successful - NextAuth handles authentication state
       if (setIsLoggedIn) {
         setIsLoggedIn(true);
       }
-
       setShowRegistration(false);
+          setShowUsageSelection(true);
 
       // Enable auto-scroll prevention during transition
       setPreventAutoScroll(true);
       setShouldScrollToBottom(false);
-
-      setShowUsageSelection(true);
 
       // Manual scroll to top after all other effects are done
       setTimeout(() => {
@@ -1249,11 +1907,18 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
         }),
       );
 
-      localStorage.setItem("isAuthenticated", "true");
-
       setIsAuthenticatedAndPending(true);
       setSelectedUsage("personal");
       setEulaAccepted(true);
+        } else {
+          // Registration failed - show error
+          console.error('Registration failed:', result.error);
+          setError({ message: result.error || 'Registration failed. Please try again.' });
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        setError({ message: 'Registration failed. Please try again.' });
+      }
     }
   };
 
@@ -1308,50 +1973,85 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     }
   };
 
-  const handleLogin = () => {
-    const TEST_EMAIL = "info@scottpauljoseph.com";
-    const TEST_PASSWORD = "Hybrid1983";
+  const handleLogin = async () => {
+    console.log('🔄 Cart handleLogin called', { 
+      loginData,
+      hasEmail: !!loginData.email,
+      hasPassword: !!loginData.password
+    });
+    
+    // Clear any previous errors and set loading state
+    setEmailError(false);
+    setPasswordError(false);
+    setIsLoggingIn(true);
 
-    if (
-      loginData.email !== TEST_EMAIL ||
-      loginData.password !== TEST_PASSWORD
-    ) {
-      if (loginData.email !== TEST_EMAIL) {
+    // Basic validation
+    if (!loginData.email || !loginData.password) {
+      console.log('❌ Validation failed:', { 
+        email: !loginData.email, 
+        password: !loginData.password 
+      });
+      if (!loginData.email) {
         setEmailError(true);
         setLoginData((prev) => ({ ...prev, email: "" }));
       }
-      if (loginData.password !== TEST_PASSWORD) {
+      if (!loginData.password) {
         setPasswordError(true);
         setLoginData((prev) => ({ ...prev, password: "" }));
       }
+      setIsLoggingIn(false);
       return;
     }
 
-    loginUser({
-      email: TEST_EMAIL,
-      password: TEST_PASSWORD,
-    });
+    try {
+      console.log('🔄 Attempting login with:', loginData.email);
+      
+      // Use the direct Supabase auth login instead of the complex wrapper
+      const { supabase } = await import('../../../lib/database/supabaseClient');
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: loginData.email,
+        password: loginData.password,
+      });
 
-    setSavedRegistrationData({
-      firstName: "Scott",
-      surname: "Joseph",
-      email: TEST_EMAIL,
-      street: "Studio 80, 1 Cardwell Terrace",
-      city: "London",
-      postcode: "N7 0NH",
-      country: "UK",
-    });
+      if (error) {
+        console.log('❌ Cart login failed:', error.message);
+        setEmailError(true);
+        setPasswordError(true);
+        setLoginData((prev) => ({ ...prev, password: "" }));
+        setIsLoggingIn(false);
+        return;
+      }
 
-    setIsAuthenticated(true);
+      if (data.user) {
+        console.log('✅ Cart login successful');
+        
+        // Get the database user record
+        const { data: dbUser, error: dbError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('auth_user_id', data.user.id)
+          .single();
+
+        if (dbError) {
+          console.error('Error fetching user record:', dbError);
+        }
+
+        // Structure the user data
+        const structuredUser = {
+          ...data.user,
+          dbData: dbUser || null
+        };
+
+        // Set the user and update state
+        setCurrentUser(structuredUser);
     setIsAuthenticatedAndPending(true);
     setShowLoginForm(false);
     setShowRegistration(false);
+        setShowUsageSelection(true);
 
     // Enable auto-scroll prevention during transition
     setPreventAutoScroll(true);
     setShouldScrollToBottom(false);
-
-    setShowUsageSelection(true);
 
     // Manual scroll to top after all other effects are done
     setTimeout(() => {
@@ -1359,6 +2059,25 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       // Re-enable auto-scroll after transition
       setPreventAutoScroll(false);
     }, 500);
+
+        // Dispatch auth event for other components
+        const authEvent = new CustomEvent("authStateChange", {
+          detail: {
+            isAuthenticated: true,
+            email: loginData.email,
+            user: structuredUser,
+          },
+        });
+        window.dispatchEvent(authEvent);
+      }
+    } catch (error) {
+      console.error('❌ Cart login error:', error);
+      setEmailError(true);
+      setPasswordError(true);
+      setLoginData((prev) => ({ ...prev, password: "" }));
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   const handleResetPasswordClick = () => {
@@ -1376,8 +2095,6 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
   };
 
   const handleBackToLogin = () => {
-    localStorage.removeItem("isCartAuthenticated");
-
     setIsResettingPassword(false);
     setResetStep("email");
     setResetData({
@@ -1404,7 +2121,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     }, 300);
   };
 
-  const handleUsageTypeChange = (value) => {
+  const handleUsageTypeChange = async (value) => {
     if (value !== selectedUsage) {
       // Reset form state when changing usage type
       if (selectedUsage === "client" && value === "personal" && eulaAccepted) {
@@ -1432,9 +2149,28 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     }
 
     setSelectedUsage(value);
+    
+    // Note: Usage type will be saved to purchase_orders table during checkout
+    // No need to update user table since this is purchase-specific data
   };
 
   const loadSavedCartState = (savedCart) => {
+    console.log('🔄 loadSavedCartState called with:', {
+      savedCartStates: {
+        showRegistration: savedCart.showRegistration,
+        showUsageSelection: savedCart.showUsageSelection,
+        showPaymentForm: savedCart.showPaymentForm,
+        isRegistrationComplete: savedCart.isRegistrationComplete,
+        selectedUsage: savedCart.selectedUsage,
+        eulaAccepted: savedCart.eulaAccepted
+      },
+      currentStates: {
+        showRegistration,
+        showUsageSelection,
+        isAuthenticatedAndPending
+      }
+    });
+    
     setWeightOption(savedCart.weightOption || "");
     setSelectedPackage(savedCart.selectedPackage || null);
     setCustomizing(savedCart.customizing || false);
@@ -1442,8 +2178,21 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     setCustomWebLicense(savedCart.customWebLicense || null);
     setCustomAppLicense(savedCart.customAppLicense || null);
     setCustomSocialLicense(savedCart.customSocialLicense || null);
+    
+    // Load the saved font
+    setCartFont(savedCart.selectedFont || null);
+    
+    // Load multi-font selection - NEW
+    setSelectedFonts(savedCart.selectedFonts || []);
+    setSelectedStyles(savedCart.selectedStyles || {});
+    // Load selectedFontIds and convert back to Set
+    setSelectedFontIds(new Set(savedCart.selectedFontIds || []));
 
-    if (!showRegistration && !showUsageSelection) {
+    // Only reset stage states if user is not currently in an active flow
+    // Don't reset if user is showing usage selection (just logged in) or registration
+    // Also don't reset if user just logged in (has currentUser but no saved auth state)
+    if (!showRegistration && !showUsageSelection && !isAuthenticatedAndPending && !currentUser) {
+      console.log('🔄 Resetting stage states in loadSavedCartState');
       setShowRegistration(false);
       setShowUsageSelection(false);
       setShowPaymentForm(false);
@@ -1454,6 +2203,8 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       if (!didReturnToStageOne) {
         setIsRegistrationComplete(false);
       }
+    } else {
+      console.log('🔄 NOT resetting stage states - user in active flow or just logged in');
     }
 
     // Check if we have selections and handle mobile scroll/padding
@@ -1485,7 +2236,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
   const handlePackageSelect = (pkg) => {
     const isDeselecting = selectedPackage === pkg;
 
-    if (isAuthenticated && (showUsageSelection || isRegistrationComplete)) {
+    if (currentUser && (showUsageSelection || isRegistrationComplete)) {
       const wasAtLaterStage = isRegistrationComplete || didReturnToStageOne;
 
       setRequireProceedClick(true);
@@ -1613,7 +2364,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     // If clicking the same value, we're deselecting
     const newValue = currentValue === value ? null : value;
 
-    if (isAuthenticated && (showUsageSelection || isRegistrationComplete)) {
+    if (currentUser && (showUsageSelection || isRegistrationComplete)) {
       setRequireProceedClick(true);
       setIsAuthenticatedAndPending(false);
       setShowUsageSelection(false);
@@ -1758,7 +2509,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       const wasAtLaterStage = isRegistrationComplete || didReturnToStageOne;
       const hadPackageSelected = !!selectedPackage;
 
-      if (isAuthenticated && (showUsageSelection || isRegistrationComplete)) {
+      if (currentUser && (showUsageSelection || isRegistrationComplete)) {
         setRequireProceedClick(true);
         setIsAuthenticatedAndPending(false);
         setShowUsageSelection(false);
@@ -1819,12 +2570,15 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     }
   };
 
-  const handleEulaChange = (checked) => {
+  const handleEulaChange = async (checked) => {
     setEulaAccepted(checked);
 
     if (!checked && isRegistrationComplete) {
       setIsRegistrationComplete(false);
     }
+
+    // Note: EULA acceptance will be saved to purchase_orders table during checkout
+    // No need to update user table since this is purchase-specific data
 
     // Desktop scrolling when EULA is checked with any usage type selected
     if (checked && selectedUsage) {
@@ -1902,9 +2656,49 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       selectedUsage === "personal" ||
       (selectedUsage === "client" && isClientDataValid())
     ) {
+      // REQUIRED: User must be authenticated to proceed to payment
+      if (!currentUser) {
+        setError({ message: "You must be logged in to purchase fonts. Please register or sign in." });
+        return;
+      }
+      
+      const userEmail = currentUser.email || currentUser.dbData?.email;
+      if (!userEmail) {
+        setError({ message: "Valid user account required. Please ensure you're properly logged in." });
+        return;
+      }
+
+      console.log('🔄 handleUsageComplete: Enabling Proceed button, keeping usage form visible');
+      
       setIsRegistrationComplete(true);
       setIsAuthenticatedAndPending(false);
       setViewPreference(selectedUsage);
+      
+      // CRITICAL: Keep usage form visible, just enable the Proceed button
+      // setShowUsageSelection remains true to keep usage form visible
+      setShowPaymentForm(false); // Ensure payment form is not shown
+      setShowRegistration(false);
+
+      // Save the updated cart state - keep usage selection visible
+      saveCartState({
+        weightOption,
+        selectedPackage,
+        customizing,
+        customPrintLicense,
+        customWebLicense,
+        customAppLicense,
+        customSocialLicense,
+        showRegistration: false,
+        showUsageSelection: true, // Keep usage form visible
+        showPaymentForm: false, // CRITICAL: Ensure payment form is false
+        isRegistrationComplete: true,
+        selectedUsage,
+        eulaAccepted,
+        isAuthenticatedAndPending: false,
+        selectedFont: cartFont,
+        selectedFonts,
+        selectedStyles,
+      });
 
       setTimeout(() => {
         if (cartPanelRef.current) {
@@ -1933,6 +2727,142 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     setRequireProceedClick(true);
   };
 
+  // NEW: Multi-font pricing calculation
+  const calculateTotalPrice = () => {
+    if (!Array.isArray(selectedFonts) || selectedFonts.length === 0) {
+      // Fallback to original single-font pricing
+      return selectedPackage
+        ? packages[selectedPackage].price || 0
+        : calculateCustomTotal();
+    }
+
+    const licenseType = selectedPackage ? "package" : "custom";
+    const customLicenseData = {
+      customPrintLicense,
+      customWebLicense,
+      customAppLicense,
+      customSocialLicense,
+    };
+
+    try {
+      return calculateMultiFontPrice(
+        selectedFonts,
+        selectedStyles || {},
+        licenseType,
+        selectedPackage,
+        customLicenseData
+      );
+    } catch (error) {
+      console.error('Error calculating multi-font price:', error);
+      return 0;
+    }
+  };
+
+  // NEW: Get pricing breakdown for display
+  const getPricingBreakdownData = () => {
+    if (!Array.isArray(selectedFonts) || selectedFonts.length === 0) {
+      return {
+        fonts: [],
+        subtotal: 0,
+        discount: 0,
+        total: 0,
+        discountPercentage: 0,
+        fontCount: 0
+      };
+    }
+
+    const licenseType = selectedPackage ? "package" : "custom";
+    const customLicenseData = {
+      customPrintLicense,
+      customWebLicense,
+      customAppLicense,
+      customSocialLicense,
+    };
+
+    try {
+      return getPricingBreakdown(
+        selectedFonts,
+        selectedStyles || {},
+        licenseType,
+        selectedPackage,
+        customLicenseData
+      );
+    } catch (error) {
+      console.error('Error getting pricing breakdown:', error);
+      return {
+        fonts: [],
+        subtotal: 0,
+        discount: 0,
+        total: 0,
+        discountPercentage: 0,
+        fontCount: 0
+      };
+    }
+  };
+
+  // NEW: Handle font updates
+  const handleUpdateFonts = (fonts) => {
+    setSelectedFonts(Array.isArray(fonts) ? fonts : []);
+    
+    // Update cart state
+    const cartState = {
+      weightOption,
+      selectedPackage,
+      customizing,
+      customPrintLicense,
+      customWebLicense,
+      customAppLicense,
+      customSocialLicense,
+      selectedFont: cartFont,
+      selectedFonts: Array.isArray(fonts) ? fonts : [],
+      selectedStyles,
+      selectedFontIds: Array.from(selectedFontIds),
+    };
+    saveCartState(cartState);
+  };
+
+  // NEW: Handle style updates
+  const handleUpdateStyles = (styles) => {
+    setSelectedStyles(styles || {});
+    
+    // Update cart state
+    const cartState = {
+      weightOption,
+      selectedPackage,
+      customizing,
+      customPrintLicense,
+      customWebLicense,
+      customAppLicense,
+      customSocialLicense,
+      selectedFont: cartFont,
+      selectedFonts,
+      selectedStyles: styles || {},
+      selectedFontIds: Array.from(selectedFontIds),
+    };
+    saveCartState(cartState);
+  };
+
+  const handleWeightSelect = (newWeightOption) => {
+    setWeightOption(newWeightOption);
+    // The useEffect will handle persistence, but we can also do it immediately for responsiveness
+    const cartState = {
+      weightOption: newWeightOption,
+      selectedPackage,
+      customizing,
+      customPrintLicense,
+      customWebLicense,
+      customAppLicense,
+      customSocialLicense,
+      selectedFont: cartFont,
+      selectedFonts,
+      selectedStyles,
+      selectedFontIds: Array.from(selectedFontIds),
+    };
+    if (newWeightOption || selectedPackage || customizing || cartFont) {
+      saveCartState(cartState);
+    }
+  };
+
   const value = {
     // All state values
     isLicenceOpen,
@@ -1946,7 +2876,6 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     showLoginForm,
     isResettingPassword,
     resetStep,
-    isAuthenticated,
     isAuthenticatedAndPending,
     showUsageSelection,
     eulaAccepted,
@@ -1957,6 +2886,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     resetData,
     clientData,
     showPaymentForm,
+    isTransitioningToPayment,
     selectedPaymentMethod,
     isMobileDevice,
     paymentConfirmed,
@@ -1973,9 +2903,11 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     selectedUsage,
     viewPreference,
     error,
+    isLoggingIn,
     hasProceedBeenClicked,
     summaryModifiedAfterTab,
     savedRegistrationData,
+    currentUser,
     didReturnToStageOne,
     weightOption,
     selectedPackage,
@@ -1984,6 +2916,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     customWebLicense,
     customAppLicense,
     customSocialLicense,
+    cartFont,
 
     // All refs
     totalSectionRef,
@@ -2007,7 +2940,6 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     setShowLoginForm,
     setIsResettingPassword,
     setResetStep,
-    setIsAuthenticated,
     setIsAuthenticatedAndPending,
     setShowUsageSelection,
     setEulaAccepted,
@@ -2018,6 +2950,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     setResetData,
     setClientData,
     setShowPaymentForm,
+    setIsTransitioningToPayment,
     setSelectedPaymentMethod,
     setIsMobileDevice,
     setPaymentConfirmed,
@@ -2034,6 +2967,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     setSelectedUsage,
     setViewPreference,
     setError,
+    setIsLoggingIn,
     setHasProceedBeenClicked,
     setSummaryModifiedAfterTab,
     setSavedRegistrationData,
@@ -2045,6 +2979,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     setCustomWebLicense,
     setCustomAppLicense,
     setCustomSocialLicense,
+    setCartFont,
 
     // All handlers and utility functions
     handleNavigateHome,
@@ -2082,7 +3017,6 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     handleRemoveLicense,
     handleRemovePackage,
     handleAddLicense,
-    handlePayment,
     handlePaymentComplete,
     handleRegistrationInput,
     scrollToRef,
@@ -2106,6 +3040,18 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     // Constants and external references
     stripePromise,
     router,
+
+    // NEW: Multi-font values
+    selectedFonts,
+    selectedStyles,
+    selectedFontIds,
+    setSelectedFontIds,
+    handleUpdateFonts,
+    handleUpdateStyles,
+    calculateTotalPrice,
+    getPricingBreakdownData,
+    handleWeightSelect,
+    debugLogout,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

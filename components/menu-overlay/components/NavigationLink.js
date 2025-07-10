@@ -44,8 +44,8 @@ const NavigationLink = ({ href, label, underline = false, onClick = null }) => {
           color: "white",
           textDecorationLine: underline ? "underline" : "none",
           textDecorationColor: "#39ff14",
-          textDecorationThickness: "2px",
-          textUnderlineOffset: "3px",
+          textDecorationThickness: underline ? "2px" : "0px",
+          textUnderlineOffset: underline ? "3px" : "0px",
         },
         hover: {
           color: "white",

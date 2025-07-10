@@ -16,10 +16,10 @@ const Container = styled(motion.div)`
   padding: 12px;
   position: relative;
 
-  @media (max-width: 768px) {
-    position: sticky;
-    padding-left: 0px;
-  }
+   @media (max-width: 768px) {
+   position: sticky;
+ padding-left: 0px;
+ }
 `;
 
 const Header = styled.div`
@@ -27,7 +27,7 @@ const Header = styled.div`
   margin-right: -12px;
   padding-bottom: 12px;
   border-bottom: 1px solid rgb(16, 12, 8);
-
+  
   @media (min-width: 768px) and (max-width: 1366px) and (orientation: portrait) {
     /* iPad portrait: Extend border to full width */
     margin-left: -12px;
@@ -46,27 +46,27 @@ const Title = styled.span`
 `;
 
 const SectionName = styled.div`
-  font-size: 12px;
-  line-height: 14px;
-  letter-spacing: 0.6px;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  text-decoration-thickness: 1px;
-  color: rgb(16, 12, 8);
-  margin-top: 0px;
-  margin-bottom: 4px;
-  font-weight: 500;
-  grid-column: 1 / -1;
+ font-size: 12px;
+ line-height: 14px;
+ letter-spacing: 0.6px;
+ text-decoration: underline;
+ text-underline-offset: 4px;
+ text-decoration-thickness: 1px;
+ color: rgb(16, 12, 8);
+ margin-top: 0px;
+ margin-bottom: 4px;
+ font-weight: 500;
+ grid-column: 1 / -1;
 
-  &:first-child {
-    margin-top: -12px;
-  }
+ &:first-child {
+   margin-top: -12px;
+ }
 
-  @media (max-width: 768px) {
-    &:first-child {
-      margin-top: -6px;
-    }
-  }
+ @media (max-width: 768px) {
+   &:first-child {
+     margin-top: -6px;
+   }
+ }
 `;
 
 const GridWrapper = styled.div`
@@ -101,15 +101,15 @@ const GridWrapper = styled.div`
     z-index: 1;
   }
 
-  &::before {
-    top: 0;
+&::before {
+  top: 0;
     background: linear-gradient(to bottom, #f3f3f3 0%, transparent 100%);
-  }
+}
 
-  &::after {
-    bottom: 0;
+&::after {
+  bottom: 0;
     background: linear-gradient(to top, #f3f3f3 0%, transparent 100%);
-  }
+}
 `;
 
 const Grid = styled.div`
@@ -121,7 +121,7 @@ const Grid = styled.div`
   overflow-y: scroll;
   scrollbar-width: none;
   -ms-overflow-style: none;
-
+  
   &::-webkit-scrollbar {
     display: none;
   }
@@ -173,7 +173,7 @@ const GlyphCard = styled.button`
   padding: 0px;
   position: relative;
   transition: background 0.1s ease, border-color 0.1s ease;
-
+  
   &:hover {
     cursor: pointer;
     background: rgb(16, 12, 8);
@@ -227,35 +227,35 @@ const GlyphCanvas = ({
     if (!canvas || !font?.opentype || !char) return;
 
     const ctx = canvas.getContext("2d");
-
+    
     // Get canvas dimensions from styled component size
     const rect = canvas.getBoundingClientRect();
-
+    
     // If canvas has no size yet, try again after a small delay
     if (rect.width === 0 || rect.height === 0) {
       setTimeout(drawGlyph, 10);
       return;
     }
-
+    
     // Add high-DPI support like HighlightedGlyph
     const dpr = window.devicePixelRatio || 1;
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
-
+    
     // Clear canvas
     ctx.clearRect(0, 0, rect.width, rect.height);
-
+    
     // Check if this character is hovered (managed by parent)
     const isHovered = hoveredGlyph === char;
-
+    
     // TEMP DEBUG: Add visual indicator for debugging
     if (isHovered || selected) {
       console.log(
         `Rendering ${char} as ${isHovered ? "hovered" : "selected"} - should be white`,
       );
     }
-
+    
     // Get OpenType.js glyph
     const opentypeGlyph = font.opentype.charToGlyph(char);
     if (!opentypeGlyph) {
@@ -275,30 +275,30 @@ const GlyphCanvas = ({
     const cellMarginTop = 4;
     const cellMarginBottom = 8;
     const cellMarginLeftRight = 2;
-
+    
     // Calculate dimensions like the official example
     const w = cellWidth - cellMarginLeftRight * 2;
     const h = cellHeight - cellMarginTop - cellMarginBottom;
     const head = font.opentype.tables.head;
     const maxHeight = head.yMax - head.yMin;
-
+    
     // Calculate scale and font size
     const fontScale = Math.min(w / (head.xMax - head.xMin), h / maxHeight);
     const fontSize = fontScale * font.opentype.unitsPerEm;
     const fontBaseline = cellMarginTop + (h * head.yMax) / maxHeight;
-
+    
     // Calculate glyph positioning
     const glyphWidth = opentypeGlyph.advanceWidth * fontScale;
     const xmin = (cellWidth - glyphWidth) / 2;
     const x0 = xmin;
-
+    
     // Use white color when hovered or selected, black otherwise
     ctx.fillStyle = isHovered || selected ? "#f9f9f9" : "rgb(16, 12, 8)";
-
+    
     try {
       // Use manual path rendering for full color control instead of opentypeGlyph.draw()
       const path = opentypeGlyph.getPath(x0, fontBaseline, fontSize);
-
+      
       if (path && path.commands && path.commands.length > 0) {
         ctx.beginPath();
         for (const cmd of path.commands) {
@@ -377,107 +377,107 @@ export const CharacterMap = forwardRef(
     { font = {}, onGlyphSelect, onGlyphHover, selectedGlyph, hoveredGlyph },
     ref,
   ) => {
-    const gridRef = useRef(null);
+  const gridRef = useRef(null);
 
-    const fadeVariants = {
-      initial: {
+  const fadeVariants = {
+    initial: {
         opacity: 0,
-      },
-      animate: {
-        opacity: 1,
-        transition: {
+    },
+    animate: {
+      opacity: 1,
+      transition: {
           duration: 0.05,
           ease: "easeOut",
         },
-      },
-      exit: {
-        opacity: 0,
-        transition: {
+    },
+    exit: {
+      opacity: 0,
+      transition: {
           duration: 0.05,
           ease: "easeIn",
         },
       },
-    };
+  };
 
-    const scrollToCharacter = (char) => {
-      if (gridRef.current) {
-        const element = gridRef.current.querySelector(`[data-char="${char}"]`);
-        if (element) {
-          const gridRect = gridRef.current.getBoundingClientRect();
-          const elementRect = element.getBoundingClientRect();
-
+  const scrollToCharacter = (char) => {
+    if (gridRef.current) {
+      const element = gridRef.current.querySelector(`[data-char="${char}"]`);
+      if (element) {
+        const gridRect = gridRef.current.getBoundingClientRect();
+        const elementRect = element.getBoundingClientRect();
+        
           const scrollTop =
             gridRef.current.scrollTop +
-            (elementRect.top - gridRect.top) -
+          (elementRect.top - gridRect.top) - 
             gridRect.height / 2 +
             elementRect.height / 2;
-
-          gridRef.current.scrollTo({
-            top: scrollTop,
+        
+        gridRef.current.scrollTo({
+          top: scrollTop,
             behavior: "smooth",
-          });
-        }
+        });
       }
-    };
+    }
+  };
 
-    React.useImperativeHandle(ref, () => ({
+  React.useImperativeHandle(ref, () => ({
       scrollToCharacter,
-    }));
+  }));
 
-    const renderCharacterSets = () => {
-      if (!font.characterSets) return null;
+  const renderCharacterSets = () => {
+    if (!font.characterSets) return null;
 
-      return Object.entries(font.characterSets).map(([setName, setInfo]) => {
-        let glyphs = [];
-
-        if (setInfo.ranges) {
-          // Handle multiple ranges
+    return Object.entries(font.characterSets).map(([setName, setInfo]) => {
+      let glyphs = [];
+      
+      if (setInfo.ranges) {
+        // Handle multiple ranges
           setInfo.ranges.forEach((range) => {
             glyphs = glyphs.concat(
               generateCharacterRange(range.start, range.end),
             );
-          });
-        } else {
-          // Handle single range
-          glyphs = generateCharacterRange(setInfo.start, setInfo.end);
-        }
+        });
+      } else {
+        // Handle single range
+        glyphs = generateCharacterRange(setInfo.start, setInfo.end);
+      }
 
-        return (
-          <React.Fragment key={setName}>
-            <SectionName>{setName}</SectionName>
-            {glyphs.map((char, index) => (
-              <GlyphCanvas
-                key={`${setName}-${index}`}
-                char={char === " " ? " " : char}
-                font={font}
-                selected={char === selectedGlyph}
-                hoveredGlyph={hoveredGlyph}
-                onSelect={onGlyphSelect}
-                onHover={onGlyphHover}
-                onHoverEnd={onGlyphHover}
-              />
-            ))}
-          </React.Fragment>
-        );
-      });
-    };
+      return (
+        <React.Fragment key={setName}>
+          <SectionName>{setName}</SectionName>
+          {glyphs.map((char, index) => (
+            <GlyphCanvas
+              key={`${setName}-${index}`}
+              char={char === " " ? " " : char}
+              font={font}
+              selected={char === selectedGlyph}
+              hoveredGlyph={hoveredGlyph}
+              onSelect={onGlyphSelect}
+              onHover={onGlyphHover}
+              onHoverEnd={onGlyphHover}
+            />
+          ))}
+        </React.Fragment>
+      );
+    });
+  };
 
-    return (
-      <Container
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        variants={fadeVariants}
-      >
-        <Header>
-          <Title>Glyph Map</Title>
-        </Header>
+  return (
+    <Container
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={fadeVariants}
+    >
+      <Header>
+        <Title>Glyph Map</Title>
+      </Header>
 
-        <GridWrapper>
+      <GridWrapper>
           <Grid ref={gridRef}>{renderCharacterSets()}</Grid>
-        </GridWrapper>
-      </Container>
-    );
+      </GridWrapper>
+    </Container>
+  );
   },
 );
 

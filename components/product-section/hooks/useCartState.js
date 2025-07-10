@@ -1,7 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { getCartState } from "../../cart/Utils/authUtils";
+import { getCartState, saveCartState } from "../../cart/Utils/authUtils";
+import { useFontSelection } from "../../../context/FontSelectionContext";
 
 export const useCartState = () => {
+  // Get selected font from context
+  const { selectedFont } = useFontSelection();
+  
   // Add refs for cart details
   const cartDetailsRef = useRef(null);
   const cartCountRef = useRef(null);
@@ -21,6 +25,13 @@ export const useCartState = () => {
   const [customWebLicense, setCustomWebLicense] = useState(null);
   const [customAppLicense, setCustomAppLicense] = useState(null);
   const [customSocialLicense, setCustomSocialLicense] = useState(null);
+
+  // Font selection state
+  const [cartSelectedFont, setCartSelectedFont] = useState(null);
+  
+  // Multi-font selection state
+  const [selectedFonts, setSelectedFonts] = useState([]);
+  const [selectedStyles, setSelectedStyles] = useState({});
 
   // Add useEffect for outside click handling
   useEffect(() => {
@@ -42,8 +53,19 @@ export const useCartState = () => {
   useEffect(() => {
     const savedCart = getCartState();
     if (savedCart) {
-      setCartItems(1);
-      setIsInCart(true);
+      // Count only the fonts that are actually selected (checked)
+      let totalFonts = 0;
+      
+      if (savedCart.selectedFontIds && savedCart.selectedFontIds.length > 0) {
+        totalFonts = savedCart.selectedFontIds.length;
+      } else if (savedCart.selectedFont) {
+        // Fallback for legacy cart state - if selectedFont exists but no selectedFontIds
+        totalFonts = 1;
+      }
+      
+      setCartItems(totalFonts);
+      setIsInCart(totalFonts > 0);
+      
       setWeightOption(savedCart.weightOption || "");
       setSelectedPackage(savedCart.selectedPackage || null);
       setCustomizing(savedCart.customizing || false);
@@ -51,12 +73,95 @@ export const useCartState = () => {
       setCustomWebLicense(savedCart.customWebLicense || null);
       setCustomAppLicense(savedCart.customAppLicense || null);
       setCustomSocialLicense(savedCart.customSocialLicense || null);
+      setCartSelectedFont(savedCart.selectedFont || null);
+      setSelectedFonts(savedCart.selectedFonts || []);
+      setSelectedStyles(savedCart.selectedStyles || {});
     }
   }, []);
+
+  // Listen for cart state changes (not just localStorage changes)
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      const savedCart = getCartState();
+      if (savedCart) {
+        // Count only the fonts that are actually selected (checked)
+        let totalFonts = 0;
+        
+        if (savedCart.selectedFontIds && savedCart.selectedFontIds.length > 0) {
+          totalFonts = savedCart.selectedFontIds.length;
+        } else if (savedCart.selectedFont) {
+          // Fallback for legacy cart state - if selectedFont exists but no selectedFontIds
+          totalFonts = 1;
+        }
+        
+        setCartItems(totalFonts);
+        setIsInCart(totalFonts > 0);
+        
+        setWeightOption(savedCart.weightOption || "");
+        setSelectedPackage(savedCart.selectedPackage || null);
+        setCustomizing(savedCart.customizing || false);
+        setCustomPrintLicense(savedCart.customPrintLicense || null);
+        setCustomWebLicense(savedCart.customWebLicense || null);
+        setCustomAppLicense(savedCart.customAppLicense || null);
+        setCustomSocialLicense(savedCart.customSocialLicense || null);
+        setCartSelectedFont(savedCart.selectedFont || null);
+        setSelectedFonts(savedCart.selectedFonts || []);
+        setSelectedStyles(savedCart.selectedStyles || {});
+      }
+    };
+
+    const handleCartCleared = () => {
+      setCartItems(0);
+      setIsInCart(false);
+      setWeightOption("");
+      setSelectedPackage(null);
+      setCustomizing(false);
+      setCustomPrintLicense(null);
+      setCustomWebLicense(null);
+      setCustomAppLicense(null);
+      setCustomSocialLicense(null);
+      setCartSelectedFont(null);
+      setSelectedFonts([]);
+      setSelectedStyles({});
+    };
+
+    // Listen for custom cart update events
+    window.addEventListener('cartStateChanged', handleCartUpdate);
+    window.addEventListener('cartCleared', handleCartCleared);
+    
+    return () => {
+      window.removeEventListener('cartStateChanged', handleCartUpdate);
+      window.removeEventListener('cartCleared', handleCartCleared);
+    };
+  }, []);
+
+  // Sync cart selected font with current font selection if no cart state exists
+  useEffect(() => {
+    if (selectedFont && !cartSelectedFont && cartItems === 0) {
+      setCartSelectedFont(selectedFont);
+    }
+  }, [selectedFont, cartSelectedFont, cartItems]);
 
   const handleAddToCart = () => {
     setCartItems((prev) => prev + 1);
     setIsInCart(true);
+    // Save the currently selected font to cart state
+    setCartSelectedFont(selectedFont);
+    
+    // Save cart state using the proper saveCartState function
+    const cartState = {
+      weightOption,
+      selectedPackage,
+      customizing,
+      customPrintLicense,
+      customWebLicense,
+      customAppLicense,
+      customSocialLicense,
+      selectedFont: selectedFont, // Save the selected font
+      selectedFonts,
+      selectedStyles
+    };
+    saveCartState(cartState);
   };
 
   const handleCartClose = () => {
@@ -88,7 +193,15 @@ export const useCartState = () => {
     setCustomWebLicense(null);
     setCustomAppLicense(null);
     setCustomSocialLicense(null);
+    setCartSelectedFont(null);
+    setSelectedFonts([]);
+    setSelectedStyles({});
     localStorage.removeItem("cartState");
+    
+    // Notify other components that cart was cleared
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cartCleared'));
+    }
   };
 
   const handleGoToCart = () => {
@@ -121,6 +234,9 @@ export const useCartState = () => {
       customWebLicense,
       customAppLicense,
       customSocialLicense,
+      cartSelectedFont,
+      selectedFonts,
+      selectedStyles,
     },
     setters: {
       setCartItems,
@@ -135,6 +251,9 @@ export const useCartState = () => {
       setCustomWebLicense,
       setCustomAppLicense,
       setCustomSocialLicense,
+      setCartSelectedFont,
+      setSelectedFonts,
+      setSelectedStyles,
     },
     handlers: {
       handleAddToCart,

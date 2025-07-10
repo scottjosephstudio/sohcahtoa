@@ -10,6 +10,7 @@ const PaymentProcessor = ({
   onError,
   setIsProcessing,
   savedRegistrationData,
+  currentUser,
   clientSecret,
   addressData,
   children,
@@ -78,6 +79,21 @@ const PaymentProcessor = ({
       return;
     }
 
+    // REQUIRED: User must be authenticated to purchase fonts
+    if (!currentUser) {
+      onError(new Error("You must be logged in to purchase fonts"));
+      setIsProcessing(false);
+      return;
+    }
+
+    // REQUIRED: User must have a valid email
+    const userEmail = currentUser?.email || currentUser?.dbData?.email || savedRegistrationData?.email;
+    if (!userEmail) {
+      onError(new Error("Valid user account required for font purchases"));
+      setIsProcessing(false);
+      return;
+    }
+
     if (!addressData?.country || !addressData?.postcode) {
       onError(new Error("Please provide both country and postcode"));
       setIsProcessing(false);
@@ -93,15 +109,29 @@ const PaymentProcessor = ({
         throw new Error("Card element not found");
       }
 
+      // Get user data from the best available source
+      const userEmail = currentUser?.email || currentUser?.dbData?.email || savedRegistrationData?.email;
+      const firstName = currentUser?.dbData?.first_name || savedRegistrationData?.firstName || '';
+      const lastName = currentUser?.dbData?.last_name || savedRegistrationData?.surname || '';
+      const street = currentUser?.dbData?.street_address || savedRegistrationData?.street || '';
+      const city = currentUser?.dbData?.city || savedRegistrationData?.city || '';
+
+      console.log('💳 Processing payment with user data:', {
+        email: userEmail,
+        name: `${firstName} ${lastName}`.trim(),
+        hasCurrentUser: !!currentUser,
+        hasSavedData: !!savedRegistrationData
+      });
+
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: cardElement,
           billing_details: {
-            name: `${savedRegistrationData?.firstName} ${savedRegistrationData?.surname}`.trim(),
-            email: savedRegistrationData?.email,
+            name: `${firstName} ${lastName}`.trim(),
+            email: userEmail,
             address: {
-              line1: savedRegistrationData?.street,
-              city: savedRegistrationData?.city,
+              line1: street,
+              city: city,
               postal_code: addressData.postcode,
               country: addressData.country,
             },

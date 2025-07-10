@@ -4,7 +4,9 @@ import {
   isUserAuthenticated,
   loginUser,
   logoutUser,
+  getCurrentUser,
 } from "../../cart/Utils/authUtils";
+import { supabase } from "../../../lib/database/supabaseClient";
 
 export const useAuthState = () => {
   // Authentication states
@@ -16,6 +18,11 @@ export const useAuthState = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // Current user data
+  const [currentUser, setCurrentUser] = useState(null);
 
   // Password Reset states
   const [isResetPassword, setIsResetPassword] = useState(false);
@@ -27,6 +34,10 @@ export const useAuthState = () => {
   const [resetEmailError, setResetEmailError] = useState(false);
   const [newPasswordError, setNewPasswordError] = useState(false);
   const [isSuccessTimeout, setIsSuccessTimeout] = useState(false);
+
+  // Email verification states
+  const [isResendingVerification, setIsResendingVerification] = useState(false);
+  const [showResendVerification, setShowResendVerification] = useState(false);
 
   // Dashboard states
   const [$isSaving, set$isSaving] = useState(false);
@@ -41,51 +52,118 @@ export const useAuthState = () => {
   });
 
   // Centralized authentication check and setup
-  const checkAndSetupAuthentication = useCallback(() => {
-    const wasAuthenticated = isUserAuthenticated();
-    setIsAuthenticated(wasAuthenticated);
-    setIsLoggedIn(wasAuthenticated);
+  const checkAndSetupAuthentication = useCallback(async () => {
+    try {
+      const user = await getCurrentUser();
+      const isAuth = !!user;
+      
+      setIsAuthenticated(isAuth);
+      setIsLoggedIn(isAuth);
+      setCurrentUser(user);
 
-    if (wasAuthenticated && typeof window !== "undefined") {
-      const savedEmail = localStorage.getItem("userEmail");
-      const savedPassword = localStorage.getItem("userPassword");
-
-      if (savedEmail && savedPassword) {
-        setUserEmail(savedEmail);
-        setUserPassword(savedPassword);
+      if (user) {
+        setUserEmail(user.email);
       }
+    } catch (error) {
+      console.error('Auth check error:', error);
+      setIsAuthenticated(false);
+      setIsLoggedIn(false);
+      setCurrentUser(null);
     }
   }, []);
 
   // Initial authentication check
   useEffect(() => {
-    checkAndSetupAuthentication();
+    // Clear any invalid tokens before checking authentication
+    const clearInvalidTokens = async () => {
+      try {
+        // Try to get the current user - this will trigger the refresh token error if tokens are invalid
+        const { data: { user }, error } = await supabase.auth.getUser();
+        
+        if (error && error.message && error.message.includes('Invalid Refresh Token')) {
+          // Clear the invalid session
+          await supabase.auth.signOut();
+          
+          // Clear any remaining token data from localStorage
+          if (typeof window !== 'undefined') {
+            // Clear Supabase auth tokens
+            Object.keys(localStorage).forEach(key => {
+              if (key.startsWith('supabase.auth.token') || key.startsWith('sb-')) {
+                localStorage.removeItem(key);
+              }
+            });
+            
+            // Clear session storage as well
+            Object.keys(sessionStorage).forEach(key => {
+              if (key.startsWith('supabase.auth.token') || key.startsWith('sb-')) {
+                sessionStorage.removeItem(key);
+              }
+            });
+          }
+        }
+      } catch (error) {
+        // If there's any error during token clearing, just continue
+        console.warn('Error clearing invalid tokens:', error);
+      }
+    };
+    
+    clearInvalidTokens().then(() => {
+      checkAndSetupAuthentication();
+    });
   }, [checkAndSetupAuthentication]);
 
-  // Authentication state change listener
+  // Listen to Supabase auth changes
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        const user = session?.user ?? null;
+        const isAuth = !!user;
 
-    const handleAuthChange = (event) => {
-      const { isAuthenticated, email, password } = event.detail;
+        setIsAuthenticated(isAuth);
+        setIsLoggedIn(isAuth);
+        setCurrentUser(user);
 
-      setIsAuthenticated(isAuthenticated);
-      setIsLoggedIn(isAuthenticated);
-
-      if (isAuthenticated) {
-        setUserEmail(email);
-        setUserPassword(password);
-        setIsLoginModalOpen(false);
+        if (user) {
+          setUserEmail(user.email);
       } else {
         setUserEmail("");
         setUserPassword("");
-        setIsLoginModalOpen(false);
+        }
+
+        // Dispatch custom event for other components
+        const authEvent = new CustomEvent("authStateChange", {
+          detail: { 
+            isAuthenticated: isAuth, 
+            email: user?.email,
+            user: user 
+          },
+        });
+        window.dispatchEvent(authEvent);
       }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Listen for userLoggedOut event from payment confirmation
+  useEffect(() => {
+    const handleUserLoggedOut = () => {
+      setIsAuthenticated(false);
+      setIsLoggedIn(false);
+      setCurrentUser(null);
+      setUserEmail("");
+      setUserPassword("");
+      setIsLoginModalOpen(false);
+      
+      // Clear Supabase session
+      supabase.auth.signOut();
     };
 
-    window.addEventListener("authStateChange", handleAuthChange);
-    return () =>
-      window.removeEventListener("authStateChange", handleAuthChange);
+    window.addEventListener('userLoggedOut', handleUserLoggedOut);
+
+    return () => {
+      window.removeEventListener('userLoggedOut', handleUserLoggedOut);
+    };
   }, []);
 
   // Load saved billing and newsletter details
@@ -107,9 +185,11 @@ export const useAuthState = () => {
     switch (inputType) {
       case "email":
         setEmailError(false);
+        setLoginError("");
         break;
       case "password":
         setPasswordError(false);
+        setLoginError("");
         break;
       case "resetEmail":
         setResetEmailError(false);
@@ -120,46 +200,145 @@ export const useAuthState = () => {
     }
   };
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    const isEmailValid = userEmail === "info@scottpauljoseph.com";
-    const isPasswordValid = userPassword === "Hybrid1983";
+    setIsLoggingIn(true);
+    setLoginError("");
+    setEmailError(false);
+    setPasswordError(false);
 
-    if (!isEmailValid) {
+    if (!userEmail) {
       setEmailError(true);
-      setUserEmail("");
+      setIsLoggingIn(false);
+      return;
     }
-    if (!isPasswordValid) {
+    if (!userPassword) {
       setPasswordError(true);
-      setUserPassword("");
+      setIsLoggingIn(false);
+      return;
     }
 
-    if (isEmailValid && isPasswordValid && typeof window !== "undefined") {
-      loginUser({ email: userEmail });
-      setIsLoggedIn(true);
-      setIsLoginModalOpen(false);
-      setIsAuthenticated(true);
-      setUserEmail("info@scottpauljoseph.com");
-      setUserPassword("Hybrid1983");
-      localStorage.setItem("userEmail", "info@scottpauljoseph.com");
-      localStorage.setItem("userPassword", "Hybrid1983");
+    try {
+      const result = await loginUser({ 
+        email: userEmail, 
+        password: userPassword 
+      });
+
+      if (result.success) {
+        setIsLoggedIn(true);
+        setIsLoginModalOpen(false);
+        setIsAuthenticated(true);
+        setCurrentUser(result.user);
+        // Password will be cleared by auth state change
+      } else {
+        // Handle specific error cases
+        if (result.error && result.error.includes('Email not confirmed')) {
+          setLoginError("Please check your email and click the verification link before logging in. Check your spam folder if you don't see it.");
+          setShowResendVerification(true);
+        } else if (result.error && result.error.includes('Invalid login credentials')) {
+          setLoginError("Invalid email or password. Please check your credentials and try again.");
+          setShowResendVerification(false);
+        } else {
+          setLoginError(result.error || "Login failed. Please try again.");
+          setShowResendVerification(false);
+        }
+        setUserPassword("");
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      
+      // Handle specific error cases from the caught error
+      if (error.message && error.message.includes('Email not confirmed')) {
+        setLoginError("Please check your email and click the verification link before logging in. Check your spam folder if you don't see it.");
+        setShowResendVerification(true);
+      } else {
+        setLoginError("Login failed. Please try again.");
+        setShowResendVerification(false);
+      }
+      setUserPassword("");
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!userEmail) {
+      setLoginError("Please enter your email address first.");
+      return;
+    }
+
+    setIsResendingVerification(true);
+    
+    try {
+      const response = await fetch('/api/send-verification-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: userEmail,
+          verificationToken: crypto.randomUUID()
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setLoginError("Verification email sent! Please check your inbox and spam folder.");
+        setShowResendVerification(false);
+      } else {
+        setLoginError("Failed to send verification email. Please try again.");
+      }
+    } catch (error) {
+      console.error('Resend verification error:', error);
+      setLoginError("Failed to send verification email. Please try again.");
+    } finally {
+      setIsResendingVerification(false);
     }
   };
 
   const handleLoginClick = () => {
     setIsLoginModalOpen(!isLoginModalOpen);
+    // Clear any previous errors when opening modal
+    if (!isLoginModalOpen) {
+      setLoginError("");
+      setEmailError(false);
+      setPasswordError(false);
+    }
   };
 
-  const handleResetPassword = (e) => {
+  const handleResetPassword = async (e) => {
     e.preventDefault();
-    const isResetEmailValid = resetEmail === "info@scottpauljoseph.com";
 
-    if (!isResetEmailValid) {
+    if (!resetEmail) {
+      setResetEmailError(true);
+      return;
+    }
+
+    try {
+      setIsResetting(true);
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail);
+      
+      if (error) {
+        setResetEmailError(true);
+        setResetEmail("");
+      } else {
+        setShowSuccessMessage(true);
+      setResetEmailError(false);
+        
+        setTimeout(() => {
+          setShowSuccessMessage(false);
+          setIsResetting(false);
+          setIsResetPassword(false);
+          setResetEmail("");
+          setIsLoginModalOpen(false);
+        }, 3000);
+      }
+    } catch (error) {
       setResetEmailError(true);
       setResetEmail("");
-    } else {
-      setIsResetting(true);
-      setResetEmailError(false);
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -196,110 +375,161 @@ export const useAuthState = () => {
     }
   };
 
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
     setIsLoggedIn(false);
-    setIsLoginModalOpen(false);
+      setIsAuthenticated(false);
+      setCurrentUser(null);
+      setUserEmail("");
     setUserPassword("");
-    setIsAuthenticated(false);
-
-    if (isEditMode && typeof window !== "undefined") {
-      const savedDetails = localStorage.getItem("billingDetails");
-      const savedNewsletter = localStorage.getItem("newsletterPreference");
-
-      if (savedDetails) {
-        setBillingDetails(JSON.parse(savedDetails));
+    } catch (error) {
+      console.error('Logout error:', error);
       }
-      if (savedNewsletter) {
-        setNewsletter(JSON.parse(savedNewsletter));
-      }
-    }
-    setIsEditMode(false);
   };
 
-  const handleSaveChanges = () => {
-    if (isEditMode && typeof window !== "undefined") {
-      set$isSaving(true);
-      localStorage.setItem("billingDetails", JSON.stringify(billingDetails));
-      localStorage.setItem("newsletterPreference", JSON.stringify(newsletter));
-      setIsEditMode(false);
-      set$isSaving(false);
-    } else {
-      setIsEditMode(true);
+  const handleSaveChanges = async () => {
+    set$isSaving(true);
+    
+    try {
+      // Get current user auth data
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        // Update database via API endpoint
+        const response = await fetch('/api/update-user-data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            auth_user_id: user.id,
+            email: userEmail,
+            street_address: billingDetails.street,
+            city: billingDetails.city,
+            postal_code: billingDetails.postcode,
+            country: billingDetails.country,
+            newsletter_subscribed: newsletter
+          })
+        });
+
+        if (response.ok) {
+          // Update localStorage for cart compatibility
+          localStorage.setItem("billingDetails", JSON.stringify(billingDetails));
+          localStorage.setItem("newsletterPreference", JSON.stringify(newsletter));
+          
+          // Update savedRegistrationData format for cart Personal Details
+          const registrationData = {
+            firstName: user.user_metadata?.first_name || 'Scott',
+            surname: user.user_metadata?.last_name || 'Joseph',
+            email: userEmail,
+            street: billingDetails.street,
+            streetAddress: billingDetails.street, // Alternative key for compatibility
+            city: billingDetails.city,
+            postcode: billingDetails.postcode,
+            postalCode: billingDetails.postcode, // Alternative key for compatibility
+            country: billingDetails.country,
+            newsletter: newsletter
+          };
+          localStorage.setItem("savedRegistrationData", JSON.stringify(registrationData));
+          
+          console.log('User data updated successfully in database and localStorage');
+        } else {
+          const errorData = await response.json();
+          console.error('Failed to update user data:', errorData);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating user data:', error);
     }
+    
+    setTimeout(() => {
+      set$isSaving(false);
+      setIsEditMode(false);
+    }, 1000);
   };
 
   const handleUpdateBillingDetailsFromRegistration = (registrationData) => {
-    const newBillingDetails = {
-      street: registrationData.street,
-      city: registrationData.city,
-      postcode: registrationData.postcode,
-      country: registrationData.country,
-    };
-    setBillingDetails(newBillingDetails);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("billingDetails", JSON.stringify(newBillingDetails));
-    }
+    setBillingDetails({
+      street: registrationData.streetAddress || "",
+      city: registrationData.city || "",
+      postcode: registrationData.postalCode || "",
+      country: registrationData.country || "",
+    });
+    setNewsletter(registrationData.newsletter || false);
   };
 
   return {
-    state: {
+    // Authentication states
       isLoginModalOpen,
+    setIsLoginModalOpen,
       isLoggedIn,
+    setIsLoggedIn,
       isAuthenticated,
+    setIsAuthenticated,
       userEmail,
+    setUserEmail,
       userPassword,
+    setUserPassword,
       showPassword,
+    setShowPassword,
       emailError,
+    setEmailError,
       passwordError,
+    setPasswordError,
+    loginError,
+    isLoggingIn,
+    currentUser,
+
+    // Password Reset states
       isResetPassword,
+    setIsResetPassword,
       isResetting,
+    setIsResetting,
       resetEmail,
+    setResetEmail,
       newPassword,
+    setNewPassword,
       showNewPassword,
+    setShowNewPassword,
       showSuccessMessage,
+    setShowSuccessMessage,
       resetEmailError,
+    setResetEmailError,
       newPasswordError,
+    setNewPasswordError,
       isSuccessTimeout,
+    setIsSuccessTimeout,
+
+    // Email verification states
+      isResendingVerification,
+    setIsResendingVerification,
+      showResendVerification,
+    setShowResendVerification,
+
+    // Dashboard states
       $isSaving,
+    set$isSaving,
       isEditMode,
+    setIsEditMode,
       newsletter,
+    setNewsletter,
       hasPurchases,
+    setHasPurchases,
       billingDetails,
-    },
-    setters: {
-      setIsLoginModalOpen,
-      setIsLoggedIn,
-      setUserEmail,
-      setUserPassword,
-      setShowPassword,
-      setEmailError,
-      setPasswordError,
-      setIsResetPassword,
-      setIsResetting,
-      setResetEmail,
-      setNewPassword,
-      setShowNewPassword,
-      setShowSuccessMessage,
-      setResetEmailError,
-      setNewPasswordError,
-      setIsSuccessTimeout,
-      set$isSaving,
-      setIsEditMode,
-      setNewsletter,
-      setHasPurchases,
       setBillingDetails,
-    },
-    handlers: {
+
+    // Handlers
       handleInputFocus,
+    handleLoginSubmit,
       handleLoginClick,
-      handleLoginSubmit,
       handleResetPassword,
       handleBackToLogin,
       handleSubmitNewPassword,
       handleLogout,
       handleSaveChanges,
       handleUpdateBillingDetailsFromRegistration,
-    },
+    checkAndSetupAuthentication,
+    handleResendVerification,
   };
 };

@@ -4,6 +4,7 @@ import React, { useMemo, Suspense, useEffect } from "react";
 import dynamic from "next/dynamic";
 import styled from "styled-components";
 import { motion } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 import TransitionWrapper from "../../components/providers/TransitionWrapper";
 import { usePortal } from "../../context/PortalContext";
 import { useMenuOverlay } from "../../components/menu-overlay/MenuOverlayContext";
@@ -52,27 +53,90 @@ const HeaderContainer = styled(motion.header)`
 `;
 
 export default function TypefacesContent() {
-  const authState = useAuthState();
+  const searchParams = useSearchParams();
+  const authStateFlat = useAuthState();
   const formState = useFormState();
   const uiState = useUIState();
   const { setIsModalOpen } = usePortal();
   const { setIsLoginModalOpen } = useMenuOverlay();
 
+  // Handle completed payment redirect
+  useEffect(() => {
+    const completedPayment = searchParams.get('completed_payment');
+    const securityToken = searchParams.get('security_token');
+    
+    if (completedPayment === 'true' && securityToken) {
+      // Check if user is actually logged out (they should be after payment)
+      const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+      
+      if (!isAuthenticated || !authStateFlat.isLoggedIn) {
+        // User is logged out as expected - show login modal
+        authStateFlat.setIsLoginModalOpen(true);
+      } else {
+        // User is still logged in - force logout first, then show login modal
+        if (authStateFlat.handleLogout) {
+          authStateFlat.handleLogout();
+        }
+        
+        // Show login modal after a brief delay to allow logout to complete
+        setTimeout(() => {
+          authStateFlat.setIsLoginModalOpen(true);
+        }, 500);
+      }
+      
+      // Clean up URL parameters
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.delete('completed_payment');
+      newUrl.searchParams.delete('security_token');
+      window.history.replaceState({}, '', newUrl.toString());
+    }
+  }, [searchParams, authStateFlat.setIsLoginModalOpen, authStateFlat.isLoggedIn, authStateFlat.handleLogout]);
+
+  // Structure authState for AuthenticationWrapper
+  const authState = {
+    state: {
+      isLoginModalOpen: authStateFlat.isLoginModalOpen,
+      isLoggedIn: authStateFlat.isLoggedIn,
+      userEmail: authStateFlat.userEmail,
+      userPassword: authStateFlat.userPassword,
+      emailError: authStateFlat.emailError,
+      passwordError: authStateFlat.passwordError,
+      billingDetails: authStateFlat.billingDetails,
+      newsletter: authStateFlat.newsletter,
+      isEditMode: authStateFlat.isEditMode,
+      currentUser: authStateFlat.currentUser,
+    },
+    setters: {
+      setIsLoginModalOpen: authStateFlat.setIsLoginModalOpen,
+      setUserEmail: authStateFlat.setUserEmail,
+      setUserPassword: authStateFlat.setUserPassword,
+      setBillingDetails: authStateFlat.setBillingDetails,
+      setNewsletter: authStateFlat.setNewsletter,
+      setIsEditMode: authStateFlat.setIsEditMode,
+    },
+    handlers: {
+      handleLoginSubmit: authStateFlat.handleLoginSubmit,
+      handleInputFocus: authStateFlat.handleInputFocus,
+      handleSaveChanges: authStateFlat.handleSaveChanges,
+      handleLogout: authStateFlat.handleLogout,
+    },
+  };
+
   // Sync login modal state with portal context and menu overlay context
   useEffect(() => {
-    setIsModalOpen(authState.state.isLoginModalOpen);
-    setIsLoginModalOpen(authState.state.isLoginModalOpen);
-  }, [authState.state.isLoginModalOpen, setIsModalOpen, setIsLoginModalOpen]);
+    setIsModalOpen(authStateFlat.isLoginModalOpen);
+    setIsLoginModalOpen(authStateFlat.isLoginModalOpen);
+  }, [authStateFlat.isLoginModalOpen, setIsModalOpen, setIsLoginModalOpen]);
 
   const MemoizedLoginButton = useMemo(
     () => (
       <LoginButton
-        isLoggedIn={authState.state.isLoggedIn}
-        handleLoginClick={authState.handlers.handleLoginClick}
+        isLoggedIn={authStateFlat.isLoggedIn}
+        handleLoginClick={() => authStateFlat.setIsLoginModalOpen(!authStateFlat.isLoginModalOpen)}
         isNavigatingHome={false}
       />
     ),
-    [authState.state.isLoggedIn, authState.handlers.handleLoginClick],
+    [authStateFlat.isLoggedIn, authStateFlat.setIsLoginModalOpen, authStateFlat.isLoginModalOpen],
   );
 
   return (

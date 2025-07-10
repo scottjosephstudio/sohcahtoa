@@ -5,7 +5,8 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Enable Row Level Security
-ALTER DATABASE postgres SET "app.jwt_secret" TO 'your-jwt-secret-here';
+-- Note: Custom configuration parameters are not allowed in hosted Supabase
+-- We'll use a different approach for secure token generation
 
 -- =============================================
 -- USERS & AUTHENTICATION
@@ -38,6 +39,11 @@ CREATE TABLE public.users (
     -- Preferences
     newsletter_subscribed BOOLEAN DEFAULT FALSE,
     marketing_emails BOOLEAN DEFAULT FALSE,
+    
+    -- Email verification
+    email_verified BOOLEAN DEFAULT FALSE,
+    email_verification_token TEXT,
+    email_verification_sent_at TIMESTAMP WITH TIME ZONE,
     
     -- Metadata
     last_login TIMESTAMP WITH TIME ZONE,
@@ -552,13 +558,13 @@ INSERT INTO package_license_tiers (package_id, license_tier_id) VALUES
 ((SELECT id FROM license_packages WHERE slug = 'large'), (SELECT id FROM license_tiers WHERE license_type_id = (SELECT id FROM license_types WHERE slug = 'app') AND slug = 'large')),
 ((SELECT id FROM license_packages WHERE slug = 'large'), (SELECT id FROM license_tiers WHERE license_type_id = (SELECT id FROM license_types WHERE slug = 'social') AND slug = 'large'));
 
--- Insert sample font family
-INSERT INTO font_families (name, slug, description, designer, foundry, character_sets) VALUES
-('Soh Cah Toa', 'soh-cah-toa', 'A modern display typeface', 'Scott Joseph', 'Your Foundry', '{"latin": {"start": 32, "end": 126}, "latin_extended": {"start": 160, "end": 255}}');
+-- Insert JANT font family
+INSERT INTO font_families (name, slug, description, designer, foundry, release_date, featured, sort_order, character_sets, opentype_features, preview_text) VALUES
+('JANT', 'jant', 'A modern typeface with distinctive character and versatility.', 'Scott Paul Joseph', 'Scott Paul Joseph Studio', '2024-01-01', true, 1, '{"latin": true, "extended_latin": true}', '["kern", "liga", "clig"]', 'The quick brown fox jumps over the lazy dog');
 
--- Insert font styles
-INSERT INTO font_styles (font_family_id, name, slug, weight, font_files, glyph_count) VALUES
-((SELECT id FROM font_families WHERE slug = 'soh-cah-toa'), 'Display', 'display', 400, '{"woff2": "/fonts/soh-cah-toa-display.woff2", "woff": "/fonts/soh-cah-toa-display.woff", "ttf": "/fonts/soh-cah-toa-display.ttf"}', 256);
+-- Insert JANT font style
+INSERT INTO font_styles (font_family_id, name, slug, weight, style, font_files, metrics, glyph_count, supported_languages) VALUES
+((SELECT id FROM font_families WHERE slug = 'jant'), 'Regular', 'regular', 400, 'normal', '{"otf": "/fonts/JANTReg.otf", "ttf": "/fonts/JANTReg.ttf", "woff": "/fonts/JANTReg.woff", "woff2": "/fonts/JANTReg.woff2"}', '{"units_per_em": 1000, "ascender": 800, "descender": -200, "line_gap": 0, "cap_height": 700, "x_height": 500}', 256, '["en", "es", "fr", "de", "it", "pt", "nl", "da", "sv", "no"]');
 
 -- Insert system configuration
 INSERT INTO system_config (key, value, description) VALUES

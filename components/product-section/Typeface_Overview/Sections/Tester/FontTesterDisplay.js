@@ -67,6 +67,9 @@ export const FontTesterDisplay = ({
     }
   }, [text, isTyping]);
 
+  // Get font family from selected font
+  const fontFamily = selectedFont?.name ? `"${selectedFont.name}", sans-serif` : '"Jant", sans-serif';
+
   return (
     <AnimatePresence mode="wait">
       {!isNavigatingHome && (
@@ -91,6 +94,7 @@ export const FontTesterDisplay = ({
                 onInput={handleInput}
                 onBlur={handleInput}
                 $isTyping={isTyping}
+                fontFamily={fontFamily}
                 style={{
                   fontSize: `${settings?.fontSize}px`,
                   lineHeight: settings?.lineHeight,

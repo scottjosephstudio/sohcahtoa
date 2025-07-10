@@ -6,7 +6,7 @@ import ResponsiveHeader from "../ResponsiveHeader/ResponsiveHeader";
 import TypefaceOverview from "../Typeface_Overview/TabMenu/TypefaceOverview";
 import LoginModal from "../Elements/Auth/LoginModal";
 import ResetPassword from "../Elements/Auth/ResetPassword";
-import UserDashboard from "../Elements/Auth/UserDashboard";
+import EnhancedUserDashboard from "../Elements/Auth/EnhancedUserDashboard";
 import CartPanel from "../../cart/Controller/CartPanel";
 import ModalOverlay from "./ModalOverlay";
 import ResponsiveFooter from "../ResponsiveFooter/ResponsiveFooter";
@@ -14,6 +14,7 @@ import { useCartState } from "../hooks/useCartState";
 import { useAuthState } from "../hooks/useAuthState";
 import { useFormState } from "../hooks/useFormState";
 import { useUIState } from "../hooks/useUIState";
+import { useFontSelection } from "../../../context/FontSelectionContext";
 import ClientOnly from "./ClientOnly";
 import { PageContainer } from "./ProductPage_Styles";
 import { calculateDefaultFontSize } from "../Typeface_Overview/Sections/Tester/LetterSpacingUtils";
@@ -30,6 +31,9 @@ const ProductPage = () => {
   const [isMounted, setIsMounted] = useState(false);
   const typefaceOverviewRef = useRef(null);
 
+  // Get selected font from slot machine
+  const { selectedFont, loading: fontsLoading } = useFontSelection();
+
   // Search handler function
   const handleSearch = (query) => {
     if (typefaceOverviewRef.current?.handleSearch) {
@@ -42,13 +46,13 @@ const ProductPage = () => {
     setIsMounted(true);
 
     // Preload font for glyphs tab to prevent FOUT when switching tabs
-    if (typeof window !== "undefined" && document.fonts) {
+    if (typeof window !== "undefined" && document.fonts && selectedFont) {
       // Use requestIdleCallback for better performance, fallback to setTimeout
       const preloadFont = async () => {
         try {
           await document.fonts.ready;
           // Check if font is already loaded to avoid re-triggering font load
-          const fontFace = "100px Jant";
+          const fontFace = `100px ${selectedFont.name}`;
           if (!document.fonts.check(fontFace)) {
             await document.fonts.load(fontFace);
           }
@@ -65,7 +69,7 @@ const ProductPage = () => {
         setTimeout(preloadFont, 1000);
       }
     }
-  }, []);
+  }, [selectedFont]);
 
   // Initialize hooks with conditional loading for better performance
   const cartState = useCartState();
@@ -86,9 +90,29 @@ const ProductPage = () => {
     uiState.handlers.handleTabExit(activeTab, newTab, setActiveTab);
   };
 
-  // Early return for client-side only rendering
-  if (!isMounted) {
+  // Early return for client-side only rendering or while fonts are loading
+  if (!isMounted || fontsLoading) {
     return null;
+  }
+
+  // Show fallback if no font is selected
+  if (!selectedFont) {
+    return (
+      <ClientOnly>
+        <PageContainer>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            height: '100vh',
+            fontSize: '18px',
+            color: '#666'
+          }}>
+            Please select a font from the Typefaces page
+          </div>
+        </PageContainer>
+      </ClientOnly>
+    );
   }
 
   const {
@@ -104,6 +128,7 @@ const ProductPage = () => {
       cartItems,
       isInCart,
       isCartDetailsOpen,
+      cartSelectedFont,
     },
     setters: cartSetters,
     handlers: cartHandlers,
@@ -111,7 +136,6 @@ const ProductPage = () => {
   } = cartState;
 
   const {
-    state: {
       isLoginModalOpen,
       isLoggedIn,
       userEmail,
@@ -121,9 +145,24 @@ const ProductPage = () => {
       billingDetails,
       newsletter,
       isEditMode,
-    },
-    setters: authSetters,
-    handlers: authHandlers,
+    setUserEmail,
+    setUserPassword,
+    setBillingDetails,
+    setNewsletter,
+    setIsEditMode,
+    setIsLoginModalOpen,
+    setIsLoggedIn,
+    handleLoginSubmit,
+    handleInputFocus,
+    handleSaveChanges,
+    handleLogout,
+    handleUpdateBillingDetailsFromRegistration,
+    loginError,
+    isLoggingIn,
+    currentUser,
+    showResendVerification,
+    isResendingVerification,
+    handleResendVerification,
   } = authState;
 
   const {
@@ -149,11 +188,12 @@ const ProductPage = () => {
             isCartDetailsOpen,
             cartDetailsRef,
             cartCountRef,
+            cartSelectedFont,
             handlers: cartHandlers,
           }}
           authState={{
             isLoggedIn,
-            handlers: authHandlers,
+            handleLoginClick: () => setIsLoginModalOpen(!isLoginModalOpen),
           }}
           uiHandlers={uiHandlers}
         />
@@ -165,6 +205,7 @@ const ProductPage = () => {
           fontSettings={fontSettings}
           isTestExiting={isTestExiting}
           isGlyphsExiting={isGlyphsExiting}
+          selectedFont={selectedFont}
           ref={typefaceOverviewRef}
         />
 
@@ -194,27 +235,32 @@ const ProductPage = () => {
           (!isResetPassword ? (
             <LoginModal
               userEmail={userEmail}
-              setUserEmail={authSetters.setUserEmail}
+              setUserEmail={setUserEmail}
               userPassword={userPassword}
-              setUserPassword={authSetters.setUserPassword}
+              setUserPassword={setUserPassword}
               emailError={emailError}
               passwordError={passwordError}
-              handleLoginSubmit={authHandlers.handleLoginSubmit}
-              handleInputFocus={authHandlers.handleInputFocus}
+              loginError={loginError}
+              isLoggingIn={isLoggingIn}
+              showResendVerification={showResendVerification}
+              isResendingVerification={isResendingVerification}
+              handleResendVerification={handleResendVerification}
+              handleLoginSubmit={handleLoginSubmit}
+              handleInputFocus={handleInputFocus}
               handleModalClick={uiHandlers.handleModalClick}
-              handleClose={() => authSetters.setIsLoginModalOpen(false)}
+              handleClose={() => setIsLoginModalOpen(false)}
               formSetters={formSetters}
               formState={formState.state}
             />
           ) : (
             <LoginModal
               handleModalClick={uiHandlers.handleModalClick}
-              handleClose={() => authSetters.setIsLoginModalOpen(false)}
+              handleClose={() => setIsLoginModalOpen(false)}
               formSetters={formSetters}
               formState={formState.state}
             >
               <ResetPassword
-                setIsLoginModalOpen={authSetters.setIsLoginModalOpen}
+                setIsLoginModalOpen={setIsLoginModalOpen}
                 resetEmail={formState.state.resetEmail}
                 setResetEmail={formSetters.setResetEmail}
                 newPassword={formState.state.newPassword}
@@ -224,7 +270,7 @@ const ProductPage = () => {
                 showSuccessMessage={formState.state.showSuccessMessage}
                 resetEmailError={formState.state.resetEmailError}
                 newPasswordError={formState.state.newPasswordError}
-                handleInputFocus={authHandlers.handleInputFocus}
+                handleInputFocus={handleInputFocus}
                 handleResetPassword={formHandlers.handleResetPassword}
                 handleBackToLogin={() => formSetters.setIsResetPassword(false)}
                 handleSubmitNewPassword={formHandlers.handleSubmitNewPassword}
@@ -237,28 +283,28 @@ const ProductPage = () => {
           {isLoggedIn && isLoginModalOpen && (
             <>
               <ModalOverlay
-                onClick={() => authSetters.setIsLoginModalOpen(false)}
+                onClick={() => setIsLoginModalOpen(false)}
                 zIndex={60}
               />
-              <UserDashboard
+              <EnhancedUserDashboard
                 userEmail={userEmail}
-                setUserEmail={authSetters.setUserEmail}
+                setUserEmail={setUserEmail}
                 userPassword={userPassword}
-                setUserPassword={authSetters.setUserPassword}
+                setUserPassword={setUserPassword}
                 showPassword={showPassword}
                 setShowPassword={formSetters.setShowPassword}
                 billingDetails={billingDetails}
-                setBillingDetails={authSetters.setBillingDetails}
+                setBillingDetails={setBillingDetails}
                 newsletter={newsletter}
-                setNewsletter={authSetters.setNewsletter}
+                setNewsletter={setNewsletter}
                 isEditMode={isEditMode}
-                setIsEditMode={authSetters.setIsEditMode}
-                handleSaveChanges={authHandlers.handleSaveChanges}
-                handleLogout={authHandlers.handleLogout}
+                setIsEditMode={setIsEditMode}
+                handleSaveChanges={handleSaveChanges}
+                handleLogout={handleLogout}
                 handleModalClick={uiHandlers.handleModalClick}
-                setIsLoginModalOpen={authSetters.setIsLoginModalOpen}
+                setIsLoginModalOpen={setIsLoginModalOpen}
                 $isSaving={$isSaving}
-                hasPurchases={false}
+                userId={currentUser?.id || null}
               />
             </>
           )}
@@ -274,7 +320,7 @@ const ProductPage = () => {
               key="cart-panel"
               isOpen={isFullCartOpen}
               onClose={cartHandlers.handleCartClose}
-              setIsLoggedIn={authSetters.setIsLoggedIn}
+              setIsLoggedIn={setIsLoggedIn}
               onNavigateHome={uiHandlers.handleHomeClick}
               weightOption={weightOption}
               setWeightOption={cartSetters.setWeightOption}
@@ -290,9 +336,7 @@ const ProductPage = () => {
               setCustomAppLicense={cartSetters.setCustomAppLicense}
               customSocialLicense={customSocialLicense}
               setCustomSocialLicense={cartSetters.setCustomSocialLicense}
-              onUpdateBillingDetails={
-                authHandlers.handleUpdateBillingDetailsFromRegistration
-              }
+              onUpdateBillingDetails={handleUpdateBillingDetailsFromRegistration}
             />
           </>
         )}

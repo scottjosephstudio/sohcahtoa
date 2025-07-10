@@ -71,6 +71,7 @@ export const EditableText = styled.p`
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
+  font-family: ${props => props.fontFamily || '"Jant", sans-serif'};
   /* Safari-specific fixes for text cut-off during typing animation */
   -webkit-transform: translateZ(0);
   transform: translateZ(0);

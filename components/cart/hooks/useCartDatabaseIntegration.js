@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { cartIntegrationService } from '../../../lib/database/fontService';
-import { createUser, getUserByAuthId, updateUser } from '../../../lib/database/supabaseClient';
+import { createUser, getUserByAuthId, updateUser, updateUserCartPreferences as updateUserCartPrefsInDB } from '../../../lib/database/supabaseClient';
 
 export const useCartDatabaseIntegration = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -164,6 +164,50 @@ export const useCartDatabaseIntegration = () => {
     }
   }, []);
 
+  // Update user cart preferences (usage type and EULA)
+  const updateUserCartPreferences = useCallback(async (userId, preferences) => {
+    try {
+      setProcessingError(null);
+
+      const { data, error } = await updateUserCartPrefsInDB(userId, preferences);
+
+      if (error) {
+        console.error('Error updating user cart preferences:', error);
+        setProcessingError('Failed to save preferences');
+        return { success: false, error };
+      }
+
+      return { success: true, data };
+
+    } catch (err) {
+      console.error('Error updating user cart preferences:', err);
+      setProcessingError('Preferences update error: ' + err.message);
+      return { success: false, error: err };
+    }
+  }, []);
+
+  // Validate cart for payment (usage type and EULA must be set)
+  const validateCartForPayment = useCallback((cartData, userPreferences) => {
+    const errors = [];
+
+    if (!cartData.selectedUsage) {
+      errors.push('Usage type must be selected');
+    }
+
+    if (!cartData.eulaAccepted) {
+      errors.push('EULA must be accepted');
+    }
+
+    if (!cartData.selectedPackage && !cartData.customLicenses) {
+      errors.push('License package must be selected');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }, []);
+
   // Calculate cart totals with database pricing
   const calculateCartTotals = useCallback((cartData) => {
     let subtotal_cents = 0;
@@ -253,6 +297,8 @@ export const useCartDatabaseIntegration = () => {
     ensureUserInDatabase,
     processCartCheckout,
     updateUserInformation,
+    updateUserCartPreferences,
+    validateCartForPayment,
     calculateCartTotals,
     getCartSummary,
     clearCartState,

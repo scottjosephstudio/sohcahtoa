@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 const MenuOverlayContext = createContext();
@@ -19,6 +19,24 @@ export const MenuOverlayProvider = ({ children }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const pathname = usePathname();
 
+  // Use refs to track current state for event handlers
+  const isMenuOpenRef = useRef(isMenuOpen);
+  const openDropdownRef = useRef(openDropdown);
+  const isLoginModalOpenRef = useRef(isLoginModalOpen);
+
+  // Update refs when state changes
+  useEffect(() => {
+    isMenuOpenRef.current = isMenuOpen;
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    openDropdownRef.current = openDropdown;
+  }, [openDropdown]);
+
+  useEffect(() => {
+    isLoginModalOpenRef.current = isLoginModalOpen;
+  }, [isLoginModalOpen]);
+
   // Close menu on navigation to prevent overlay from flashing during transitions
   useEffect(() => {
     // Close menu whenever the route changes
@@ -33,30 +51,30 @@ export const MenuOverlayProvider = ({ children }) => {
     if (isLoginModalOpen) {
       setIsLoginModalOpen(false);
     }
-  }, [pathname]); // Only depend on pathname, not isMenuOpen to avoid infinite loops
+  }, [pathname]); // Only depend on pathname, not state values
 
-  // Handle beforeunload as a backup
+  // Handle beforeunload and popstate events - using refs to avoid dependencies
   useEffect(() => {
     const handleBeforeUnload = () => {
-      if (isMenuOpen) {
+      if (isMenuOpenRef.current) {
         setIsMenuOpen(false);
       }
-      if (openDropdown) {
+      if (openDropdownRef.current) {
         setOpenDropdown(null);
       }
-      if (isLoginModalOpen) {
+      if (isLoginModalOpenRef.current) {
         setIsLoginModalOpen(false);
       }
     };
 
     const handlePopState = () => {
-      if (isMenuOpen) {
+      if (isMenuOpenRef.current) {
         setIsMenuOpen(false);
       }
-      if (openDropdown) {
+      if (openDropdownRef.current) {
         setOpenDropdown(null);
       }
-      if (isLoginModalOpen) {
+      if (isLoginModalOpenRef.current) {
         setIsLoginModalOpen(false);
       }
     };
@@ -68,7 +86,7 @@ export const MenuOverlayProvider = ({ children }) => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("popstate", handlePopState);
     };
-  }, [isMenuOpen, openDropdown, isLoginModalOpen]);
+  }, []); // Empty dependencies array - event handlers are stable
 
   return (
     <MenuOverlayContext.Provider

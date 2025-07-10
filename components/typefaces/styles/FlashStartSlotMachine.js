@@ -95,7 +95,6 @@ export const SlotMachineContainer = styled.div`
     linear-gradient(135deg, rgba(255, 255, 255, 0.4) 40%, transparent 40%),
     linear-gradient(rgba(255, 255, 255, 0.4) 40%, transparent 40%);
   background-size: 6px 6px;
-  overflow: hidden;
 
   /* Desktop (including narrow desktop windows) - ensure full height coverage */
   @media (hover: hover) and (pointer: fine) {
@@ -274,5 +273,102 @@ export const LetterShadow = styled.div`
 `;
 
 export const SlotMachineCursor = styled.div`
-  cursor: all-scroll;
+  cursor: pointer;
+`;
+
+// Font info styled components
+export const FontInfoDisplay = styled.div`
+  position: absolute;
+  bottom: 29px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: left;
+  color: rgba(255, 255, 255);
+  opacity: 0.9;
+  pointer-events: none;
+  background: rgb(16, 12, 8, 0.95);
+  padding: 16px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(16, 12, 8, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 12px;
+  align-items: start;
+  white-space: nowrap;
+  width: max-content;
+
+  /* Mobile: Switch to 3 rows, position right */
+  @media (max-width: 768px) {
+    right: 20px;
+    left: auto;
+    transform: none;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 8px;
+    white-space: normal;
+    width: auto;
+  }
+`;
+
+export const FontName = styled.div`
+  font-size: 12px;
+  font-weight: normal;
+  letter-spacing: 0.8px;
+  line-height: 6px;
+  grid-column: 1;
+  margin-bottom: 0;
+  
+  /* Mobile: First row */
+  @media (max-width: 768px) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+`;
+
+export const FontDetails = styled.div`
+  display: none;
+`;
+
+export const FontInstructions = styled.div`
+  font-size: 12px;
+  font-weight: normal;
+  letter-spacing: 0.8px;
+  line-height: 6px;
+  grid-column: 2 / 4;
+  white-space: pre-line;
+  
+  /* Split into separate columns on desktop */
+  @media (min-width: 769px) {
+    display: contents;
+  }
+`;
+
+export const ScrollInstruction = styled.div`
+  font-size: 12px;
+  font-weight: normal;
+  letter-spacing: 0.8px;
+  line-height: 6px;
+  grid-column: 2;
+  
+  /* Mobile: Second row */
+  @media (max-width: 768px) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+`;
+
+export const ClickInstruction = styled.div`
+  font-size: 12px;
+  font-weight: normal;
+  letter-spacing: 0.8px;
+  line-height: 6px;
+  grid-column: 3;
+  
+  /* Mobile: Third row */
+  @media (max-width: 768px) {
+    grid-column: 1;
+    grid-row: 3;
+  }
 `;

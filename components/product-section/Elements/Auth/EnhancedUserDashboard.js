@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Portal from "../../../providers/Portal";
 import { usePortal } from "../../../../context/PortalContext";
 import styled from "styled-components";
-import { 
-  getUserLicenses, 
-  getUserPurchases, 
-  getUserDownloads,
-  fontDownloadService 
-} from "../../../../lib/database/supabaseClient";
+import { supabase } from "../../../../lib/database/supabaseClient";
+import { fontDownloadService } from "../../../../lib/database/fontService";
 import {
   UserDashboard as UserDashboardContainer,
   LoginModalOverlay as BaseOverlay,
@@ -40,8 +36,6 @@ import {
   DashboardModalHeader,
   DashboardLabel,
   InputWrapper,
-  PasswordContainer,
-  TogglePasswordButton,
   dashboardVariants,
   contentVariants,
   headerElementsVariants,
@@ -50,7 +44,6 @@ import {
   checkboxVariants,
   dashboardCheckboxVariants,
   saveButtonVariants,
-  togglePasswordVariants,
 } from "../../Controller/ProductPage_Styles";
 
 // Enhanced overlay without backdrop filter if not on Typefaces path
@@ -63,7 +56,7 @@ const EnhancedOverlay = styled(BaseOverlay)`
   z-index: ${(props) => props.$zIndex};
 `;
 
-// New styled components for enhanced functionality
+// Enhanced styled components for purchase history
 const PurchaseHistorySection = styled(Section)`
   grid-column: 1 / -1;
   margin-top: 24px;
@@ -180,70 +173,9 @@ const FormatButton = styled(motion.button)`
   }
 `;
 
-const DownloadHistory = styled.div`
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(16, 12, 8, 0.1);
-`;
-
-const DownloadHistoryTitle = styled.h4`
-  font-size: 14px;
-  font-weight: 600;
-  color: rgb(16, 12, 8);
-  margin-bottom: 12px;
-  letter-spacing: 0.6px;
-`;
-
-const DownloadRecord = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  font-size: 12px;
-  color: rgb(16, 12, 8);
-  opacity: 0.7;
-`;
-
-const LoadingSpinner = styled(motion.div)`
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(16, 12, 8, 0.1);
-  border-top: 2px solid rgb(16, 12, 8);
-  border-radius: 50%;
-  margin: 20px auto;
-`;
-
-const ErrorMessage = styled.div`
-  color: #ff0000;
-  font-size: 12px;
-  margin-top: 8px;
-  text-align: center;
-`;
-
-const EmptyState = styled.div`
-  text-align: center;
-  padding: 40px 20px;
-  color: rgb(16, 12, 8);
-  opacity: 0.6;
-`;
-
-// Animation variants
-const purchaseItemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.3, ease: "easeOut" }
-  }
-};
-
 const EnhancedUserDashboard = ({
   userEmail,
   setUserEmail,
-  userPassword,
-  setUserPassword,
-  showPassword,
-  setShowPassword,
   billingDetails,
   setBillingDetails,
   newsletter,
@@ -255,18 +187,15 @@ const EnhancedUserDashboard = ({
   handleModalClick,
   setIsLoginModalOpen,
   $isSaving,
-  userId, // Add userId prop
+  userId,
 }) => {
+  // Enhanced state for purchase history
+  const [purchases, setPurchases] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [downloadHistory, setDownloadHistory] = useState({});
+
   // Use the portal context
   const { setIsModalOpen, isTypefacesPath, zIndex } = usePortal();
-  
-  // State for purchase data
-  const [purchases, setPurchases] = useState([]);
-  const [licenses, setLicenses] = useState([]);
-  const [downloads, setDownloads] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [downloadingFormats, setDownloadingFormats] = useState(new Set());
 
   // Update modal state on mount/unmount
   useEffect(() => {
@@ -274,46 +203,190 @@ const EnhancedUserDashboard = ({
     return () => setIsModalOpen(false);
   }, [setIsModalOpen]);
 
-  // Load user data when dashboard opens
-  useEffect(() => {
-    if (userId) {
-      loadUserData();
+  // Enhanced data fetching
+  const fetchUserData = async () => {
+    if (!userId) return;
+
+    try {
+      setIsLoading(true);
+
+      // First, get the database user ID from the auth user ID
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("auth_user_id", userId)
+        .single();
+
+      if (userError) {
+        console.error("Error fetching user data:", userError);
+        return;
+      }
+
+      if (userData) {
+        const user = userData;
+        const databaseUserId = user.id; // This is the database user ID we need
+        
+        setUserEmail(user.email || "");
+        setBillingDetails({
+          street: user.street_address || "",
+          city: user.city || "",
+          postcode: user.postal_code || "",
+          country: user.country || "",
+        });
+        setNewsletter(user.newsletter_subscription || false);
+
+        // Now fetch purchase history using the database user ID
+      const { data: purchaseData, error: purchaseError } = await supabase
+          .from("purchase_orders")
+        .select(`
+          *,
+            purchase_items (
+              id,
+              font_style_id,
+              license_type,
+              license_package_id,
+              custom_licenses,
+              unit_price_cents,
+              total_price_cents,
+          font_styles (
+            id,
+            name,
+            slug,
+            font_files,
+            font_families (
+              id,
+              name,
+              slug
+            )
+              )
+            )
+          `)
+          .eq("user_id", databaseUserId)
+        .order("created_at", { ascending: false });
+
+        if (purchaseError) {
+          console.error("Error fetching purchase data:", purchaseError);
+        } else {
+          // Transform the data to match the expected format
+          const transformedData = [];
+          
+          if (purchaseData) {
+            // Also fetch user licenses for download functionality
+            const { data: userLicenses, error: licensesError } = await supabase
+              .from("user_licenses")
+              .select("id, purchase_item_id, font_style_id")
+              .eq("user_id", databaseUserId);
+
+            if (licensesError) {
+              console.error("Error fetching user licenses:", licensesError);
+            }
+
+            // Create a map of purchase_item_id to user_license_id
+            const licenseMap = {};
+            if (userLicenses) {
+              userLicenses.forEach(license => {
+                licenseMap[license.purchase_item_id] = license.id;
+              });
+            }
+            
+            purchaseData.forEach(order => {
+              if (order.purchase_items) {
+                order.purchase_items.forEach(item => {
+                  transformedData.push({
+                    id: item.id,
+                    font_style_id: item.font_style_id,
+                    user_license_id: licenseMap[item.id], // Add user license ID for downloads
+                    font_styles: item.font_styles,
+                    purchase_items: [{
+                      id: item.id,
+                      total_price_cents: item.total_price_cents,
+                      unit_price_cents: item.unit_price_cents,
+                      purchase_orders: [{
+                        id: order.id,
+                        order_number: order.order_number,
+                        created_at: order.created_at,
+                        total_cents: order.total_cents
+                      }]
+                    }]
+                  });
+                });
+              }
+            });
+          }
+          
+          setPurchases(transformedData);
+          console.log("✅ Fetched purchase data:", transformedData?.length || 0, "items");
+          // Debug: Log the actual data structure
+          if (transformedData && transformedData.length > 0) {
+            console.log("📊 Purchase data structure:", JSON.stringify(transformedData[0], null, 2));
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", {
+        message: error?.message || 'Unknown error',
+        details: error?.details || 'No details available',
+        hint: error?.hint || 'No hint available',
+        code: error?.code || 'No error code',
+        userId: userId
+      });
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchUserData();
   }, [userId]);
 
-  const loadUserData = async () => {
+  // Enhanced download functionality
+  const handleDownload = async (userLicenseId, fontStyleId, format) => {
     try {
-      setLoading(true);
-      setError(null);
+      const result = await fontDownloadService.downloadFont(
+        userLicenseId,
+        fontStyleId,
+        format
+      );
 
-      // Load purchases, licenses, and download history in parallel
-      const [purchasesResult, licensesResult, downloadsResult] = await Promise.all([
-        getUserPurchases(userId),
-        getUserLicenses(userId),
-        getUserDownloads(userId)
-      ]);
-
-      if (purchasesResult.error) {
-        throw new Error('Failed to load purchases: ' + purchasesResult.error.message);
+      if (result.success) {
+        // Update download history
+        setDownloadHistory(prev => ({
+          ...prev,
+          [`${userLicenseId}-${fontStyleId}-${format}`]: new Date().toISOString()
+        }));
+      } else {
+        console.error("Download failed:", result.error);
       }
+    } catch (error) {
+      console.error("Download error:", error);
+    }
+  };
 
-      if (licensesResult.error) {
-        throw new Error('Failed to load licenses: ' + licensesResult.error.message);
-      }
+  const formatPrice = (cents) => {
+    // Handle undefined, null, or NaN values
+    if (cents === undefined || cents === null || isNaN(cents)) {
+      return '£0.00';
+    }
+    return `£${(cents / 100).toFixed(2)}`;
+  };
 
-      if (downloadsResult.error) {
-        throw new Error('Failed to load downloads: ' + downloadsResult.error.message);
-      }
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString();
+  };
 
-      setPurchases(purchasesResult.data || []);
-      setLicenses(licensesResult.data || []);
-      setDownloads(downloadsResult.data || []);
-
-    } catch (err) {
-      console.error('Error loading user data:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  const getAvailableFormats = (fontFiles) => {
+    // fontFiles is a JSONB object like {"woff2": "path/to/file.woff2", "woff": "path/to/file.woff"}
+    // We need to extract the keys (format names)
+    if (!fontFiles || typeof fontFiles !== 'object') {
+      return ['woff2', 'woff', 'ttf', 'otf']; // Default formats if no data
+    }
+    
+    try {
+      const formats = Object.keys(fontFiles).filter(Boolean);
+      return formats.length > 0 ? formats : ['woff2', 'woff', 'ttf', 'otf']; // Fallback to default formats
+    } catch (error) {
+      console.error('Error processing font files:', error);
+      return ['woff2', 'woff', 'ttf', 'otf']; // Fallback on error
     }
   };
 
@@ -321,85 +394,6 @@ const EnhancedUserDashboard = ({
     if (setIsLoginModalOpen) {
       setIsLoginModalOpen(false);
     }
-  };
-
-  const handleDownload = async (userLicenseId, fontStyleId, format) => {
-    try {
-      const downloadKey = `${userLicenseId}-${format}`;
-      setDownloadingFormats(prev => new Set([...prev, downloadKey]));
-
-      // Get client info
-      const clientInfo = {
-        ip_address: 'client', // This would be populated server-side
-        user_agent: navigator.userAgent
-      };
-
-      // Generate download link
-      const result = await fontDownloadService.generateDownloadLink(
-        userId,
-        userLicenseId,
-        fontStyleId,
-        format,
-        clientInfo
-      );
-
-      if (!result.success) {
-        throw new Error(result.error);
-      }
-
-      // Trigger download
-      const link = document.createElement('a');
-      link.href = result.data.download_url;
-      link.download = ''; // Let the server set the filename
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Refresh download history
-      await loadUserData();
-
-    } catch (err) {
-      console.error('Download error:', err);
-      setError('Failed to download font: ' + err.message);
-    } finally {
-      const downloadKey = `${userLicenseId}-${format}`;
-      setDownloadingFormats(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(downloadKey);
-        return newSet;
-      });
-    }
-  };
-
-  const formatPrice = (cents) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(cents / 100);
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const getLicenseDescription = (license) => {
-    const purchaseItem = license.purchase_items;
-    if (purchaseItem.license_type === 'package') {
-      return `${purchaseItem.license_package_id} Package License`;
-    } else if (purchaseItem.license_type === 'custom') {
-      const customLicenses = purchaseItem.custom_licenses;
-      return Object.keys(customLicenses).join(', ') + ' Custom License';
-    }
-    return 'License';
-  };
-
-  const getAvailableFormats = (fontStyle) => {
-    if (!fontStyle?.font_files) return [];
-    return Object.keys(fontStyle.font_files);
   };
 
   const dashboardContent = (
@@ -440,10 +434,10 @@ const EnhancedUserDashboard = ({
         <DashboardContent>
           <DashboardHeader
             variants={headerElementsVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
             <CloseButton
               onClick={() => setIsLoginModalOpen(false)}
               variants={headerElementsVariants}
@@ -469,21 +463,20 @@ const EnhancedUserDashboard = ({
 
             <DashboardModalHeader>
               <ModalTitleUserDashboard>Account Details</ModalTitleUserDashboard>
-            </DashboardModalHeader>
+          </DashboardModalHeader>
 
             <LogoutButton onClick={handleLogout}>
               <span>Logout</span>
             </LogoutButton>
           </DashboardHeader>
 
-          <ContentWrapper>
+            <ContentWrapper>
             <DashboardGrid
               variants={contentVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
             >
-              {/* Account Information Section */}
               <UserInfoSection
                 variants={contentVariants}
                 initial="hidden"
@@ -491,7 +484,7 @@ const EnhancedUserDashboard = ({
                 exit="exit"
               >
                 <SectionTitleBilling>Login Information</SectionTitleBilling>
-                <FormRow>
+                  <FormRow>
                   <motion.div
                     variants={contentVariants}
                     initial="hidden"
@@ -500,177 +493,274 @@ const EnhancedUserDashboard = ({
                   >
                     <FormGroup className="email-group">
                       <DashboardLabel>Email</DashboardLabel>
-                      <InputDashboard
-                        type="email"
-                        value={userEmail}
-                        onChange={(e) => setUserEmail(e.target.value)}
-                        disabled={!isEditMode}
+                        <InputDashboard
+                          type="email"
+                          value={userEmail}
+                          onChange={(e) => setUserEmail(e.target.value)}
+                          disabled={!isEditMode}
                         $isSaving={$isSaving}
                         variants={inputVariants}
                         initial="initial"
-                        animate={isEditMode ? "enabled" : "disabled"}
-                        whileHover={isEditMode ? "hover" : {}}
+                        whileHover={!isEditMode ? undefined : "hover"}
+                        whileFocus={!isEditMode ? undefined : "focus"}
                       />
                     </FormGroup>
                   </motion.div>
                 </FormRow>
 
-                <FormRow>
-                  <motion.div
+                <motion.div
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <AddressSection>
+                    <SectionTitleBilling>Billing Address</SectionTitleBilling>
+
+                    <FormRow>
+                      <FormGroup className="street-address-group">
+                        <DashboardLabel>Street Address</DashboardLabel>
+                        <InputWrapper>
+                          <InputDashboard
+                            type="text"
+                            value={billingDetails.street}
+                            onChange={(e) =>
+                              setBillingDetails((prev) => ({
+                                ...prev,
+                                street: e.target.value,
+                              }))
+                            }
+                            placeholder="Enter your street address"
+                            disabled={!isEditMode}
+                            $isSaving={$isSaving}
+                            variants={inputVariants}
+                            initial="initial"
+                            whileHover={!isEditMode ? undefined : "hover"}
+                            whileFocus={!isEditMode ? undefined : "focus"}
+                          />
+                        </InputWrapper>
+                      </FormGroup>
+
+                      <FormGroup className="city-address-group">
+                        <DashboardLabel>City</DashboardLabel>
+                        <InputWrapper>
+                          <InputDashboard
+                            type="text"
+                            value={billingDetails.city}
+                            onChange={(e) =>
+                              setBillingDetails((prev) => ({
+                                ...prev,
+                                city: e.target.value,
+                              }))
+                            }
+                            placeholder="Enter your town/city"
+                            disabled={!isEditMode}
+                            $isSaving={$isSaving}
+                            variants={inputVariants}
+                            initial="initial"
+                            whileHover={!isEditMode ? undefined : "hover"}
+                            whileFocus={!isEditMode ? undefined : "focus"}
+                        />
+                      </InputWrapper>
+                    </FormGroup>
+                  </FormRow>
+
+                  <FormRow>
+                      <FormGroup className="postcode-group">
+                        <DashboardLabel>Postal Code</DashboardLabel>
+                        <InputWrapper>
+                        <InputDashboard
+                            type="text"
+                            value={billingDetails.postcode}
+                            onChange={(e) =>
+                              setBillingDetails((prev) => ({
+                                ...prev,
+                                postcode: e.target.value,
+                              }))
+                            }
+                            placeholder="Enter your postal zip/code"
+                            disabled={!isEditMode}
+                            $isSaving={$isSaving}
+                          variants={inputVariants}
+                            initial="initial"
+                            whileHover={!isEditMode ? undefined : "hover"}
+                            whileFocus={!isEditMode ? undefined : "focus"}
+                          />
+                        </InputWrapper>
+                      </FormGroup>
+
+                      <FormGroup className="country-group">
+                        <DashboardLabel>Country</DashboardLabel>
+                        <InputWrapper>
+                          <InputDashboard
+                            type="text"
+                            value={billingDetails.country}
+                            onChange={(e) =>
+                              setBillingDetails((prev) => ({
+                                ...prev,
+                                country: e.target.value,
+                              }))
+                            }
+                            placeholder="Enter your country"
+                          disabled={!isEditMode}
+                            $isSaving={$isSaving}
+                            variants={inputVariants}
+                            initial="initial"
+                            whileHover={!isEditMode ? undefined : "hover"}
+                            whileFocus={!isEditMode ? undefined : "focus"}
+                          />
+                        </InputWrapper>
+                    </FormGroup>
+                  </FormRow>
+                  </AddressSection>
+                </motion.div>
+
+                <motion.div
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <NewsletterSection>
+                    <CheckboxLabel>
+                      <Checkbox
+                        type="checkbox"
+                        checked={newsletter}
+                        onChange={(e) => setNewsletter(e.target.checked)}
+                        disabled={!isEditMode}
+                        variants={dashboardCheckboxVariants}
+                        initial="initial"
+                        whileHover={
+                          isEditMode
+                            ? newsletter
+                              ? "checkedHover"
+                              : "hover"
+                            : "initial"
+                        }
+                        animate={newsletter ? "checked" : "initial"}
+                        custom={{ isEditMode }}
+                      />
+                      <CheckboxText>Subscribe to newsletter</CheckboxText>
+                    </CheckboxLabel>
+                  </NewsletterSection>
+                  <SaveButton
+                    onClick={() => {
+                      if (isEditMode) {
+                        handleSaveChanges();
+                      } else {
+                        setIsEditMode(true);
+                      }
+                    }}
+                    variants={saveButtonVariants}
+                    initial="initial"
+                    whileHover="hover"
+                    whileTap="hover"
+                  >
+                    {isEditMode ? "Save Changes" : "Edit Details"}
+                  </SaveButton>
+                </motion.div>
+              </UserInfoSection>
+
+              <div>
+                <motion.div
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Section
                     variants={contentVariants}
                     initial="hidden"
                     animate="visible"
                     exit="exit"
                   >
-                    <FormGroup className="password-group">
-                      <DashboardLabel>Password</DashboardLabel>
-                      <PasswordContainer>
-                        <InputDashboard
-                          type={showPassword ? "text" : "password"}
-                          value={userPassword}
-                          onChange={(e) => setUserPassword(e.target.value)}
-                          disabled={!isEditMode}
-                          $isSaving={$isSaving}
-                          variants={inputVariants}
-                          initial="initial"
-                          animate={isEditMode ? "enabled" : "disabled"}
-                          whileHover={isEditMode ? "hover" : {}}
-                        />
-                        <TogglePasswordButton
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          variants={togglePasswordVariants}
-                          initial="initial"
-                          whileHover="hover"
-                          whileTap="tap"
-                          disabled={!isEditMode}
-                        >
-                          {showPassword ? "Hide" : "Show"}
-                        </TogglePasswordButton>
-                      </PasswordContainer>
-                    </FormGroup>
-                  </motion.div>
-                </FormRow>
-              </UserInfoSection>
+                    <SectionTitle>Purchase History</SectionTitle>
+                    {isLoading ? (
+                      <ListItem>
+                        <span>Loading...</span>
+                      </ListItem>
+                    ) : purchases.length > 0 ? (
+                      purchases.map((purchase) => (
+                        <div key={purchase.id}>
+                          <ListItem>
+                            <span>
+                              {purchase.font_styles?.font_families?.name || "Unknown Font"} — {purchase.font_styles?.name || "Unknown Style"}
+                            </span>
+                            <PriceText>{formatPrice(purchase.purchase_items?.[0]?.total_price_cents || 0)}</PriceText>
+                          </ListItem>
+                          <StyledHR />
+                        </div>
+                      ))
+                    ) : (
+                      <>
+                        <ListItem>
+                          <span>No purchases. Please make a purchase.</span>
+                        </ListItem>
+                        <StyledHR />
+                      </>
+                    )}
+                </Section>
 
-              {/* Purchase History Section */}
-              <PurchaseHistorySection
-                variants={contentVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-              >
-                <SectionTitle>Purchase History & Downloads</SectionTitle>
-                
-                {loading && (
-                  <LoadingSpinner
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  />
-                )}
-
-                {error && (
-                  <ErrorMessage>{error}</ErrorMessage>
-                )}
-
-                {!loading && !error && purchases.length === 0 && (
-                  <EmptyState>
-                    No purchases found. Visit the typefaces page to purchase fonts.
-                  </EmptyState>
-                )}
-
-                {!loading && !error && purchases.length > 0 && (
-                  <AnimatePresence>
-                    {purchases.map((purchase) => (
-                      <PurchaseItem
-                        key={purchase.id}
-                        variants={purchaseItemVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="hidden"
-                      >
-                        <PurchaseHeader>
-                          <OrderInfo>
-                            <OrderNumber>Order #{purchase.order_number}</OrderNumber>
-                            <OrderDate>{formatDate(purchase.created_at)}</OrderDate>
-                          </OrderInfo>
-                          <OrderTotal>{formatPrice(purchase.total_cents)}</OrderTotal>
-                        </PurchaseHeader>
-
-                        {purchase.purchase_items?.map((item) => {
-                          // Find corresponding license
-                          const userLicense = licenses.find(
-                            license => license.purchase_item_id === item.id
-                          );
-
-                          return (
-                            <FontItem key={item.id}>
-                              <FontInfo>
-                                <FontName>
-                                  {item.font_styles?.font_families?.name} - {item.font_styles?.name}
-                                </FontName>
-                                <LicenseInfo>
-                                  {getLicenseDescription(userLicense)}
-                                </LicenseInfo>
-                              </FontInfo>
-
-                              {userLicense && (
-                                <DownloadSection>
-                                  <FormatButtons>
-                                    {getAvailableFormats(item.font_styles).map((format) => {
-                                      const downloadKey = `${userLicense.id}-${format}`;
-                                      const isDownloading = downloadingFormats.has(downloadKey);
-                                      
-                                      return (
-                                        <FormatButton
-                                          key={format}
-                                          onClick={() => handleDownload(
-                                            userLicense.id,
-                                            item.font_style_id,
-                                            format
-                                          )}
-                                          disabled={isDownloading}
-                                          whileHover={{ scale: 1.05 }}
-                                          whileTap={{ scale: 0.95 }}
-                                        >
-                                          {isDownloading ? '...' : format.toUpperCase()}
-                                        </FormatButton>
-                                      );
-                                    })}
-                                  </FormatButtons>
-                                </DownloadSection>
-                              )}
-                            </FontItem>
-                          );
-                        })}
-                      </PurchaseItem>
-                    ))}
-                  </AnimatePresence>
-                )}
-
-                {/* Download History */}
-                {downloads.length > 0 && (
-                  <DownloadHistory>
-                    <DownloadHistoryTitle>Recent Downloads</DownloadHistoryTitle>
-                    {downloads.slice(0, 10).map((download) => (
-                      <DownloadRecord key={download.id}>
-                        <span>
-                          {download.font_styles?.font_families?.name} - {download.font_styles?.name} 
-                          ({download.file_format.toUpperCase()})
-                        </span>
-                        <span>{formatDate(download.downloaded_at)}</span>
-                      </DownloadRecord>
-                    ))}
-                  </DownloadHistory>
-                )}
-              </PurchaseHistorySection>
-            </DashboardGrid>
-          </ContentWrapper>
-        </DashboardContent>
-      </UserDashboardContainer>
+                  <Section
+                    variants={contentVariants}
+                          initial="hidden"
+                          animate="visible"
+                    exit="exit"
+                  >
+                    <SectionTitle>Available Typeface Downloads</SectionTitle>
+                    {isLoading ? (
+                      <ListItem>
+                        <span>Loading...</span>
+                      </ListItem>
+                    ) : purchases.length > 0 ? (
+                      purchases.map((purchase) => {
+                        const fontFiles = purchase.font_styles?.font_files || {};
+                        const availableFormats = getAvailableFormats(fontFiles);
+                        
+                        return availableFormats.map((format) => (
+                          <div key={`${purchase.id}-${format}`}>
+                            <ListItem>
+                              <span>
+                                {purchase.font_styles?.font_families?.name || "Unknown"}.{format}
+                              </span>
+                              <DownloadButton
+                                      variants={downloadButtonVariants}
+                                initial="initial"
+                                whileHover="hover"
+                                      onClick={() => handleDownload(
+                                  purchase.user_license_id,
+                                  purchase.font_style_id,
+                                        format
+                                      )}
+                                    >
+                                Download
+                              </DownloadButton>
+                            </ListItem>
+                          </div>
+                        ));
+                      })
+                    ) : (
+                      <>
+                        <ListItem>
+                          <span>
+                            No available downloads. Please make a purchase in
+                            order to download a typeface.
+                          </span>
+                        </ListItem>
+                        <StyledHR />
+                      </>
+                    )}
+                  </Section>
+                </motion.div>
+              </div>
+              </DashboardGrid>
+            </ContentWrapper>
+          </DashboardContent>
+        </UserDashboardContainer>
     </>
   );
 
+  // Use the Portal component to render into the portal-root div
   return <Portal>{dashboardContent}</Portal>;
 };
 

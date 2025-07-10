@@ -68,10 +68,11 @@ const ResponsiveHeader = ({
     isCartDetailsOpen,
     cartDetailsRef,
     cartCountRef,
+    cartSelectedFont,
     handlers: cartHandlers,
   } = cartState;
 
-  const { isLoggedIn, handlers: authHandlers } = authState;
+  const { isLoggedIn, handleLoginClick } = authState;
 
   return (
     <HeaderContainer
@@ -87,7 +88,7 @@ const ResponsiveHeader = ({
     >
       <LoginButton
         isLoggedIn={isLoggedIn}
-        handleLoginClick={authHandlers.handleLoginClick}
+        handleLoginClick={handleLoginClick}
         isNavigatingHome={isNavigatingHome}
       />
 
@@ -110,6 +111,7 @@ const ResponsiveHeader = ({
         isNavigatingHome={isNavigatingHome}
         cartDetailsRef={cartDetailsRef}
         cartCountRef={cartCountRef}
+        cartSelectedFont={cartSelectedFont}
       />
     </HeaderContainer>
   );

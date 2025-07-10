@@ -13,7 +13,8 @@ const TypefaceOverview = forwardRef(
       activeTab,
       fontSettings,
       isTestExiting,
-      isGlyphsExiting, // Add this
+      isGlyphsExiting,
+      selectedFont,
     },
     ref,
   ) => {
@@ -60,8 +61,9 @@ const TypefaceOverview = forwardRef(
                 handleHomeClick={handleHomeClick}
                 fontSettings={fontSettings}
                 isTestExiting={isTestExiting}
-                isGlyphsExiting={isGlyphsExiting} // Pass it down
+                isGlyphsExiting={isGlyphsExiting}
                 isNavigatingHome={isNavigatingHome}
+                selectedFont={selectedFont}
                 ref={typefaceContentRef}
               />
             </TypefaceOverviewContainer>

@@ -82,6 +82,7 @@ const CartPreview = ({
   isNavigatingHome,
   cartDetailsRef,
   cartCountRef,
+  cartSelectedFont,
 }) => {
   const [isRemoving, setIsRemoving] = React.useState(false);
 
@@ -106,6 +107,14 @@ const CartPreview = ({
 
     // Reset removing state
     setIsRemoving(false);
+  };
+
+  // Get the font name to display
+  const getFontName = () => {
+    if (cartSelectedFont?.name) {
+      return cartSelectedFont.name;
+    }
+    return "Font"; // Fallback if no font selected
   };
 
   return (
@@ -171,6 +180,7 @@ const CartPreview = ({
             <AnimatePresence>
               {isCartDetailsOpen && cartItems > 0 && !isRemoving && (
                 <CartDetails
+                  key={cartSelectedFont?.name || 'no-font'}
                   ref={cartDetailsRef}
                   variants={cartDetailsVariants}
                   initial="hidden"
@@ -179,7 +189,7 @@ const CartPreview = ({
                 >
                   <CartContent>
                     <TextColumn>
-                      <ProductName>Soh-Cah-Toa</ProductName>
+                      <ProductName>{getFontName()}</ProductName>
                       <motion.div
                         variants={cartCountVariants}
                         initial="visible"

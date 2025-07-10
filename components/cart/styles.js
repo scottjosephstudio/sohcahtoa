@@ -635,7 +635,7 @@ export const FormInput = styled.input`
 
 export const PlaceholderText = styled.div`
   margin-top: 0px;
-  margin-bottom: ${(props) => (props.$hasStyle ? "-24px" : "-3px")};
+  margin-bottom: ${(props) => (props.$hasStyle ? "-24px" : "-24px")};
   font-size: 20px;
   line-height: 24px;
   letter-spacing: 0.8px;
@@ -646,7 +646,7 @@ export const PlaceholderText = styled.div`
   }
 
   @media (max-width: 768px) {
-    margin-bottom: ${(props) => (props.$hasStyle ? "0px" : "-3px")};
+    margin-bottom: ${(props) => (props.$hasStyle ? "0px" : "0px")};
   }
 `;
 
@@ -718,8 +718,8 @@ export const RadioGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: -2px;
-  margin-bottom: 23px;
+  margin-top: 0px;
+  margin-bottom: 12px;
   letter-spacing: 0.8px;
 
   @media (min-width: 1420px) {
@@ -780,9 +780,9 @@ export const PackageGrid = styled.div`
 
   /* Custom license specific layout */
   &[data-custom-license] {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
 
-    @media (max-width: 1199px) {
+    @media (max-width: 1024px) {
       grid-template-columns: 1fr;
     }
   }
@@ -811,6 +811,7 @@ export const PackageTitle = styled.h4`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 12px;
 
   @media (min-width: 1420px) {
     letter-spacing: 0.8px;
@@ -1306,6 +1307,7 @@ export const EulaContainer = styled.div`
 export const EulaCheckboxWrapper = styled.div`
   flex-shrink: 0;
   width: 24px;
+  margin-top: 12px;
   margin-right: 12px;
   letter-spacing: 0.8px;
 
@@ -1330,7 +1332,7 @@ export const EulaLabel = styled.label`
   line-height: 24px;
   letter-spacing: 0.8px;
   cursor: ${(props) => (!props.$selectedUsage ? "default" : "pointer")};
-  padding-top: 2px;
+  padding-top: 12px;
   color: ${(props) => (!props.$selectedUsage ? "#999" : "rgb(16, 12, 8)")};
 
   @media (min-width: 1420px) {
@@ -1436,7 +1438,7 @@ export const SummaryHeader = styled.div`
 
 export const SummaryContentContainer = styled.div`
   @media (min-width: 769px) {
-    margin-bottom: ${(props) => (props.$showTotal ? "0" : "24px")};
+    margin-bottom: ${(props) => (props.$showTotal ? "-6px" : "24px")};
   }
 `;
 
@@ -1444,12 +1446,12 @@ export const StyleDetail = styled(motion.div)`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  padding-bottom: 24px;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
   border-bottom: 2px solid rgb(16, 12, 8);
   font-size: 20px;
   line-height: 24px;
-   letter-spacing: 0.6px
+  letter-spacing: 0.8px;
   color: rgb(16, 12, 8);
 `;
 
@@ -1473,7 +1475,6 @@ export const PriceDetail = styled.div`
 
 export const FixedTotalSection = styled.div`
   @media (min-width: 769px) {
-    margin-top: 24px;
     padding-top: 24px;
     border-top: 2px solid rgb(16, 12, 8);
   }
@@ -1519,10 +1520,10 @@ export const AddTypefacesButton = styled.button`
   width: 100%;
   font-size: 16px;
   line-height: 26px;
-   letter-spacing: 0.6px
-  opacity: 0.5;
-  cursor: default;
-  transition: opacity 0.2s;
+  letter-spacing: 0.6px;
+  opacity: ${props => props.disabled ? 0.5 : 1};
+  cursor: ${props => props.disabled ? 'default' : 'pointer'};
+  transition: opacity 0.2s, background-color 0.2s;
   margin-bottom: 0px;
   overflow: hidden;
 
@@ -1551,16 +1552,19 @@ export const AddTypefacesButton = styled.button`
   }
 
   &:disabled {
-    opacity: 1;
-cursor: default;
-    background: none;
     opacity: 0.5;
+    cursor: default;
+    background: none;
     border: 2px solid rgb(16, 12, 8);
-    pointer-events: all !important;
+    pointer-events: none;
   }
 
-  &:hover {
-    opacity: 0.5;
+  &:not(:disabled):hover {
+    background-color: rgba(16, 12, 8, 0.05);
+  }
+
+  &:not(:disabled):active {
+    background-color: rgba(16, 12, 8, 0.1);
   }
 `;
 
@@ -1955,6 +1959,8 @@ export const paymentMethodButtonVariants = {
 export const togglePasswordVariants = {
   initial: {
     textDecoration: "none",
+    textUnderlineOffset: "0px",
+    textDecorationThickness: "0px",
   },
   hover: {
     textDecoration: "underline",

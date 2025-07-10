@@ -42,7 +42,8 @@ export const useFormState = () => {
 
   const handleResetPassword = (e) => {
     e.preventDefault();
-    const isResetEmailValid = resetEmail === "info@scottpauljoseph.com";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isResetEmailValid = emailRegex.test(resetEmail);
 
     if (!isResetEmailValid) {
       setResetEmailError(true);

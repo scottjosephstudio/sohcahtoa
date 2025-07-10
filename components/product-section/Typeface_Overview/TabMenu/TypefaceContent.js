@@ -15,7 +15,8 @@ export default forwardRef(function TypefaceContent(
     fontSettings,
     isNavigatingHome,
     isTestExiting,
-    isGlyphsExiting, // Add this prop
+    isGlyphsExiting,
+    selectedFont,
   },
   ref,
 ) {
@@ -49,6 +50,7 @@ export default forwardRef(function TypefaceContent(
             <SpecimenSection
               variants={variants}
               handleHomeClick={handleHomeClick}
+              selectedFont={selectedFont}
             />
           )}
           {currentTab === "test" && (
@@ -59,6 +61,7 @@ export default forwardRef(function TypefaceContent(
               handleHomeClick={handleHomeClick}
               fontSettings={fontSettings}
               isNavigatingHome={isNavigatingHome}
+              selectedFont={selectedFont}
             />
           )}
           {currentTab === "glyphs" && (
@@ -68,6 +71,7 @@ export default forwardRef(function TypefaceContent(
               isNavigatingHome={isNavigatingHome}
               isGlyphsExiting={isGlyphsExiting}
               handleHomeClick={handleHomeClick}
+              selectedFont={selectedFont}
               ref={technicalSectionRef}
             />
           )}

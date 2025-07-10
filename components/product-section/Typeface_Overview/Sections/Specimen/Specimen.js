@@ -4,24 +4,49 @@ const Section = styled.div`
   margin-top: 2rem;
 `;
 
-const Title = styled.h2`
-  font-size: 20px;
+
+
+const FontInfo = styled.div`
   margin-bottom: 1rem;
+  padding: 1rem;
+
+`;
+
+const FontName = styled.div`
+  font-size: 20px;
+  letter-spacing: 0.8px;
+  line-height: 24px;
+  margin: 0 0 0.5rem 0;
   color: #000;
 `;
 
-const Text = styled.p`
-  font-size: 20px;
+const FontDetails = styled.p`
+    font-size: 20px;
+  letter-spacing: 0.8px;
   line-height: 24px;
-  color: #333;
+  margin: 0;
+  color: #666;
 `;
 
-export default function SpecimenSection() {
+
+export default function SpecimenSection({ selectedFont }) {
+  const fontFamily = selectedFont?.name || 'inherit';
+  const fontStyle = selectedFont?.font_styles?.[0]; // Get first style (usually Regular)
+  
   return (
     <Section>
-      <Title></Title>
-      <Text></Text>
-      {/* Add more specimen content here */}
+      {selectedFont && (
+        <FontInfo>
+          <FontName>{selectedFont.name}</FontName>
+          <FontDetails>
+            {selectedFont.designer && `Designer: ${selectedFont.designer}`}
+            {selectedFont.foundry && ` • Foundry: ${selectedFont.foundry}`}
+            {fontStyle && ` • Style: ${fontStyle.name}`}
+          </FontDetails>
+        </FontInfo>
+      )}
+      
+   
     </Section>
   );
 }
