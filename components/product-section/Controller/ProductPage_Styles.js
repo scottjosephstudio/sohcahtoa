@@ -215,6 +215,7 @@ export const DashboardGrid = styled(motion.div)`
   margin: 0 auto;
   margin-top: -26px;
   margin-bottom: -24px;
+  align-items: start;
 
   @media (min-width: 1200px) {
     grid-template-columns: 2fr 1fr;
