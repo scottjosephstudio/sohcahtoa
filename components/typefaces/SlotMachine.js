@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
+import { useNavigation } from "../../context/NavigationContext";
 import {
   SlotMachinePage,
   SlotMachineContainer,
@@ -10,6 +12,7 @@ import {
   LetterShadow,
   SlotMachineCursor,
   FontInfoDisplay,
+  FontInfoDisplayMotion,
   FontName,
   FontDetails,
   FontInstructions,
@@ -19,6 +22,7 @@ import {
 import useSlotMachineIntegration from "./hooks/useSlotMachineIntegration";
 
 export default function SlotMachine() {
+  const { $isNavigating } = useNavigation();
   const { 
     currentLetter, 
     selectedFont,
@@ -98,7 +102,23 @@ export default function SlotMachine() {
         
         {/* Font info with styled components */}
         {fontInfo && totalFonts > 0 && (
-          <FontInfoDisplay>
+          <FontInfoDisplayMotion
+            initial={{ opacity: 1 }}
+            animate={{
+              opacity: $isNavigating ? 0 : 1,
+            }}
+            exit={{
+              opacity: 0,
+              transition: {
+                duration: 0.8,
+                ease: [0.25, 0.1, 0.25, 1],
+              },
+            }}
+            transition={{
+              duration: $isNavigating ? 0.3 : 0.15,
+              ease: "easeInOut",
+            }}
+          >
             <FontName>
               Font Name: {fontInfo.name}
             </FontName>
@@ -112,7 +132,7 @@ export default function SlotMachine() {
                 `Click: More Typefaces soon`
               )}
             </ClickInstruction>
-          </FontInfoDisplay>
+          </FontInfoDisplayMotion>
         )}
       </SlotMachinePage>
     </SlotMachineCursor>

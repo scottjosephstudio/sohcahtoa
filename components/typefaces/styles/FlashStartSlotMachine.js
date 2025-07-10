@@ -1,5 +1,6 @@
 // FlashStartSlotMachineStyles.js
 import styled, { keyframes } from "styled-components";
+import { motion } from "framer-motion";
 
 const gradient = keyframes`
   0% {
@@ -278,6 +279,41 @@ export const SlotMachineCursor = styled.div`
 
 // Font info styled components
 export const FontInfoDisplay = styled.div`
+  position: absolute;
+  bottom: 29px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: left;
+  color: rgba(255, 255, 255);
+  opacity: 0.9;
+  pointer-events: none;
+  background: rgb(16, 12, 8, 0.95);
+  padding: 16px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(16, 12, 8, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 12px;
+  align-items: start;
+  white-space: nowrap;
+  width: max-content;
+
+  /* Mobile: Switch to 3 rows, position right */
+  @media (max-width: 768px) {
+    right: 20px;
+    left: auto;
+    transform: none;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 8px;
+    white-space: normal;
+    width: auto;
+  }
+`;
+
+export const FontInfoDisplayMotion = styled(motion.div)`
   position: absolute;
   bottom: 29px;
   left: 50%;

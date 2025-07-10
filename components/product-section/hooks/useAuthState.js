@@ -225,9 +225,9 @@ export const useAuthState = () => {
       });
 
       if (result.success) {
-        setIsLoggedIn(true);
-        setIsLoginModalOpen(false);
-        setIsAuthenticated(true);
+      setIsLoggedIn(true);
+      setIsLoginModalOpen(false);
+      setIsAuthenticated(true);
         setCurrentUser(result.user);
         // Password will be cleared by auth state change
       } else {
@@ -252,7 +252,7 @@ export const useAuthState = () => {
         setLoginError("Please check your email and click the verification link before logging in. Check your spam folder if you don't see it.");
         setShowResendVerification(true);
       } else {
-        setLoginError("Login failed. Please try again.");
+      setLoginError("Login failed. Please try again.");
         setShowResendVerification(false);
       }
       setUserPassword("");
@@ -378,15 +378,15 @@ export const useAuthState = () => {
   const handleLogout = async () => {
     try {
       await logoutUser();
-      setIsLoggedIn(false);
+    setIsLoggedIn(false);
       setIsAuthenticated(false);
       setCurrentUser(null);
       setUserEmail("");
-      setUserPassword("");
+    setUserPassword("");
       setIsLoginModalOpen(false); // Ensure login modal closes on logout
     } catch (error) {
       console.error('Logout error:', error);
-    }
+      }
   };
 
   const handleSaveChanges = async () => {
