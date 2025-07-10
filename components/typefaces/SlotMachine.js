@@ -1,8 +1,6 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
-import { useNavigation } from "../../context/NavigationContext";
 import {
   SlotMachinePage,
   SlotMachineContainer,
@@ -11,18 +9,10 @@ import {
   LetterOutline,
   LetterShadow,
   SlotMachineCursor,
-  FontInfoDisplay,
-  FontInfoDisplayMotion,
-  FontName,
-  FontDetails,
-  FontInstructions,
-  ScrollInstruction,
-  ClickInstruction,
 } from "./styles/FlashStartSlotMachine";
 import useSlotMachineIntegration from "./hooks/useSlotMachineIntegration";
 
 export default function SlotMachine() {
-  const { $isNavigating } = useNavigation();
   const { 
     currentLetter, 
     selectedFont,
@@ -32,12 +22,7 @@ export default function SlotMachine() {
     isLoaded, 
     isAnimating,
     fontsLoading,
-    handleClick,
-    fontInfo,
-    hasMultipleFonts,
-    currentFontIndex,
-    totalFonts,
-    canNavigate
+    handleClick
   } = useSlotMachineIntegration();
 
   return (
@@ -100,41 +85,6 @@ export default function SlotMachine() {
           </LetterContainer>
         </SlotMachineContainer>
       </SlotMachinePage>
-      
-      {/* Font info moved outside SlotMachinePage to avoid scaling effects */}
-      {fontInfo && totalFonts > 0 && (
-        <FontInfoDisplayMotion
-          initial={{ opacity: 1 }}
-          animate={{
-            opacity: $isNavigating ? 0 : 1,
-          }}
-          exit={{
-            opacity: 0,
-            transition: {
-              duration: 0.8,
-              ease: [0.25, 0.1, 0.25, 1],
-            },
-          }}
-          transition={{
-            duration: $isNavigating ? 0.3 : 0.15,
-            ease: "easeInOut",
-          }}
-        >
-          <FontName>
-            Font Name: {fontInfo.name}
-          </FontName>
-          <ScrollInstruction>
-            Scroll: Change letter
-          </ScrollInstruction>
-          <ClickInstruction>
-            {hasMultipleFonts ? (
-              `Click: Change Typeface`
-            ) : (
-              `Click: More Typefaces soon`
-            )}
-          </ClickInstruction>
-        </FontInfoDisplayMotion>
-      )}
     </SlotMachineCursor>
   );
 }

@@ -8,6 +8,8 @@ import { useSearchParams } from "next/navigation";
 import TransitionWrapper from "../../components/providers/TransitionWrapper";
 import { usePortal } from "../../context/PortalContext";
 import { useMenuOverlay } from "../../components/menu-overlay/MenuOverlayContext";
+import { useNavigation } from "../../context/NavigationContext";
+import { useFontSelection } from "../../context/FontSelectionContext";
 
 // Hooks
 import { useAuthState } from "../../components/product-section/hooks/useAuthState";
@@ -32,6 +34,14 @@ const SlotMachine = dynamic(
   { loading: () => <div></div> },
 );
 
+// Import font info styled components
+import {
+  FontInfoDisplayMotion,
+  FontName,
+  ScrollInstruction,
+  ClickInstruction,
+} from "../../components/typefaces/styles/FlashStartSlotMachine";
+
 // Styled Components
 const HeaderContainer = styled(motion.header)`
   position: fixed;
@@ -52,6 +62,8 @@ const HeaderContainer = styled(motion.header)`
   }
 `;
 
+
+
 export default function TypefacesContent() {
   const searchParams = useSearchParams();
   const authStateFlat = useAuthState();
@@ -59,6 +71,8 @@ export default function TypefacesContent() {
   const uiState = useUIState();
   const { setIsModalOpen } = usePortal();
   const { setIsLoginModalOpen } = useMenuOverlay();
+  const { $isNavigating } = useNavigation();
+  const { selectedFont, availableFonts, currentFontIndex } = useFontSelection();
 
   // Handle completed payment redirect
   useEffect(() => {
@@ -140,6 +154,18 @@ export default function TypefacesContent() {
     [authStateFlat.isLoggedIn, authStateFlat.setIsLoginModalOpen, authStateFlat.isLoginModalOpen],
   );
 
+  // Font info data
+  const fontInfo = selectedFont ? {
+    name: selectedFont.name,
+    designer: selectedFont.designer,
+    foundry: selectedFont.foundry,
+    description: selectedFont.description,
+    styles: selectedFont.font_styles || []
+  } : null;
+
+  const hasMultipleFonts = availableFonts.length > 1;
+  const totalFonts = availableFonts.length;
+
   return (
     <TransitionWrapper>
       <div className="typefaces-container">
@@ -167,6 +193,41 @@ export default function TypefacesContent() {
             uiState={uiState}
           />
         </Suspense>
+
+        {/* Font info - completely separate from SlotMachine animations */}
+        {fontInfo && totalFonts > 0 && (
+          <FontInfoDisplayMotion
+            initial={{ opacity: 1 }}
+            animate={{
+              opacity: $isNavigating ? 0 : 1,
+            }}
+            exit={{
+              opacity: 0,
+              transition: {
+                duration: 0.8,
+                ease: [0.25, 0.1, 0.25, 1],
+              },
+            }}
+            transition={{
+              duration: $isNavigating ? 0.3 : 0.15,
+              ease: "easeInOut",
+            }}
+          >
+            <FontName>
+              Font Name: {fontInfo.name}
+            </FontName>
+            <ScrollInstruction>
+              Scroll: Change letter
+            </ScrollInstruction>
+            <ClickInstruction>
+              {hasMultipleFonts ? (
+                `Click: Change Typeface`
+              ) : (
+                `Click: More Typefaces soon`
+              )}
+            </ClickInstruction>
+          </FontInfoDisplayMotion>
+        )}
       </div>
     </TransitionWrapper>
   );

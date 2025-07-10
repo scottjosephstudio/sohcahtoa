@@ -314,7 +314,7 @@ export const FontInfoDisplay = styled.div`
 `;
 
 export const FontInfoDisplayMotion = styled(motion.div)`
-  position: absolute;
+  position: fixed;
   bottom: 29px;
   left: 50%;
   transform: translateX(-50%);
@@ -327,7 +327,7 @@ export const FontInfoDisplayMotion = styled(motion.div)`
   border-radius: 10px;
   border: 1px solid rgba(16, 12, 8, 0.15);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+  z-index: 45;
   display: grid;
   grid-template-columns: auto auto auto;
   gap: 12px;
