@@ -65,6 +65,7 @@ export default function TypefacesContent() {
     const completedPayment = searchParams.get('completed_payment');
     const securityToken = searchParams.get('security_token');
     
+    // Only run this logic if we have payment completion parameters
     if (completedPayment === 'true' && securityToken) {
       // Check if user is actually logged out (they should be after payment)
       const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';

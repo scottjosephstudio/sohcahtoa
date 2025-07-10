@@ -378,14 +378,15 @@ export const useAuthState = () => {
   const handleLogout = async () => {
     try {
       await logoutUser();
-    setIsLoggedIn(false);
+      setIsLoggedIn(false);
       setIsAuthenticated(false);
       setCurrentUser(null);
       setUserEmail("");
-    setUserPassword("");
+      setUserPassword("");
+      setIsLoginModalOpen(false); // Ensure login modal closes on logout
     } catch (error) {
       console.error('Logout error:', error);
-      }
+    }
   };
 
   const handleSaveChanges = async () => {
