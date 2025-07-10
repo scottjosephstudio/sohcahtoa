@@ -58,7 +58,6 @@ const CartPanelContent = ({
     showPaymentForm,
     showUsageSelection,
     showRegistration,
-    isTransitioningToPayment,
     clientSecret,
     stripePromise,
     cartPanelRef,
@@ -479,10 +478,6 @@ const CartPanelContent = ({
                       onBackToLogin={handleBackToLogin}
                       isLoggingIn={isLoggingIn}
                     />
-                  </motion.div>
-                ) : isTransitioningToPayment ? (
-                  <motion.div key="transitioning" variants={contentVariants}>
-                    {/* Show nothing during transition to prevent flash */}
                   </motion.div>
                 ) : (
                   <motion.div key="stage1" variants={contentVariants}>

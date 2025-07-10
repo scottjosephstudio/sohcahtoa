@@ -8,7 +8,6 @@ import React, {
   useRef,
   useEffect,
 } from "react";
-import { flushSync } from "react-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   LICENSE_TYPES,
@@ -124,7 +123,6 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
 
   // Payment States
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [isTransitioningToPayment, setIsTransitioningToPayment] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
@@ -978,7 +976,6 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     });
     
     // Check if user has completed usage selection and is ready for payment
-    // NEW: Allow showUsageSelection to be true (usage form visible) but usage completed
     if (
       !showRegistration &&
       !showPaymentForm &&
@@ -989,16 +986,9 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     ) {
       console.log('✅ Proceeding to payment form');
       // User has completed usage selection, proceed to payment
-      // Use flushSync to ensure synchronous state updates and prevent any flash
-      flushSync(() => {
-        setIsTransitioningToPayment(true);
-        setShowUsageSelection(false);
-      });
-      
-      flushSync(() => {
-        setShowPaymentForm(true);
-        setIsTransitioningToPayment(false);
-      });
+      // Transition atomically to prevent flash
+      setShowUsageSelection(false);
+      setShowPaymentForm(true);
       
       // Save the updated cart state
       saveCartState({
@@ -1029,7 +1019,6 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       !showRegistration &&
       !showUsageSelection &&
       !showPaymentForm &&
-      !isTransitioningToPayment &&
       (selectedPackage || (customizing && calculateCustomTotal() > 0))
     ) {
       console.log('🔄 Calling handleInitialProceed');
@@ -2886,7 +2875,6 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     resetData,
     clientData,
     showPaymentForm,
-    isTransitioningToPayment,
     selectedPaymentMethod,
     isMobileDevice,
     paymentConfirmed,
@@ -2950,7 +2938,6 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     setResetData,
     setClientData,
     setShowPaymentForm,
-    setIsTransitioningToPayment,
     setSelectedPaymentMethod,
     setIsMobileDevice,
     setPaymentConfirmed,

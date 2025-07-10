@@ -2,14 +2,27 @@ import { NextResponse } from 'next/server';
 import FontSecurity from '../../../lib/fontSecurity';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseService = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Check if required environment variables are available
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const fontSecurity = new FontSecurity();
+let supabaseService = null;
+let fontSecurity = null;
+
+if (supabaseUrl && supabaseServiceKey) {
+  supabaseService = createClient(supabaseUrl, supabaseServiceKey);
+  fontSecurity = new FontSecurity();
+}
 
 export async function POST(request) {
+  // Check if service is available
+  if (!supabaseService || !fontSecurity) {
+    return NextResponse.json(
+      { error: 'Font security service not available - missing environment variables' },
+      { status: 503 }
+    );
+  }
+
   try {
     const { action, ...params } = await request.json();
 
@@ -266,6 +279,7 @@ export async function GET() {
   return NextResponse.json({
     message: 'Secure fonts API is working',
     timestamp: new Date().toISOString(),
+    serviceAvailable: !!(supabaseService && fontSecurity),
     endpoints: {
       'POST /api/secure-fonts': {
         actions: [
