@@ -280,7 +280,7 @@ export const SlotMachineCursor = styled.div`
 // Font info styled components
 export const FontInfoDisplay = styled.div`
   position: absolute;
-  bottom: 29px;
+  bottom: 28px;
   left: 50%;
   transform: translateX(-50%);
   text-align: left;
