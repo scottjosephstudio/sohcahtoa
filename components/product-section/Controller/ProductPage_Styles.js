@@ -362,6 +362,15 @@ export const DownloadButton = styled(motion.button)`
   border: none;
   cursor: pointer;
   font-size: 20px;
+  transition: text-decoration 0.2s;
+  transform: none;
+
+  span:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    text-decoration-color: currentColor;
+  }
 `;
 
 export const StyledHR = styled.hr`

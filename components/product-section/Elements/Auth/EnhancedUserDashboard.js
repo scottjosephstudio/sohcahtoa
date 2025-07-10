@@ -32,7 +32,6 @@ import {
   CheckboxText,
   Checkbox,
   SaveButton,
-  ModalHeader,
   DashboardModalHeader,
   DashboardLabel,
   InputWrapper,
@@ -41,7 +40,6 @@ import {
   headerElementsVariants,
   downloadButtonVariants,
   inputVariants,
-  checkboxVariants,
   dashboardCheckboxVariants,
   saveButtonVariants,
 } from "../../Controller/ProductPage_Styles";
@@ -365,9 +363,9 @@ const EnhancedUserDashboard = ({
   const formatPrice = (cents) => {
     // Handle undefined, null, or NaN values
     if (cents === undefined || cents === null || isNaN(cents)) {
-      return '£0.00';
+      return '$0.00';
     }
-    return `£${(cents / 100).toFixed(2)}`;
+    return `$${(cents / 100).toFixed(2)}`;
   };
 
   const formatDate = (dateString) => {
@@ -683,9 +681,14 @@ const EnhancedUserDashboard = ({
                       purchases.map((purchase) => (
                         <div key={purchase.id}>
                           <ListItem>
-                            <span>
-                              {purchase.font_styles?.font_families?.name || "Unknown Font"} — {purchase.font_styles?.name || "Unknown Style"}
-                            </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                              <span>
+                                {purchase.font_styles?.font_families?.name || "Unknown Font"} — {purchase.font_styles?.name || "Unknown Style"}
+                              </span>
+                              <span style={{ fontSize: '16px', color: '#666', opacity: 0.8 }}>
+                                {formatDate(purchase.purchase_items?.[0]?.purchase_orders?.[0]?.created_at)}
+                              </span>
+                            </div>
                             <PriceText>{formatPrice(purchase.purchase_items?.[0]?.total_price_cents || 0)}</PriceText>
                           </ListItem>
                           <StyledHR />
@@ -733,9 +736,10 @@ const EnhancedUserDashboard = ({
                                         format
                                       )}
                                     >
-                                Download
+                                <span>Download</span>
                               </DownloadButton>
                             </ListItem>
+                            <StyledHR />
                           </div>
                         ));
                       })
