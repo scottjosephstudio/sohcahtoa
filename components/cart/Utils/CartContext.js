@@ -2658,7 +2658,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       }
 
       console.log('🔄 handleUsageComplete: Enabling Proceed button, keeping usage form visible');
-      
+
       setIsRegistrationComplete(true);
       setIsAuthenticatedAndPending(false);
       setViewPreference(selectedUsage);

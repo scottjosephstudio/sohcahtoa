@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import TransitionWrapper from "../../components/providers/TransitionWrapper";
 import { usePortal } from "../../context/PortalContext";
-import { useMenuOverlay } from "../../components/menu-overlay/MenuOverlayContext";
+
 import { useNavigation } from "../../context/NavigationContext";
 import { useFontSelection } from "../../context/FontSelectionContext";
 
@@ -70,7 +70,6 @@ export default function TypefacesContent() {
   const formState = useFormState();
   const uiState = useUIState();
   const { setIsModalOpen } = usePortal();
-  const { setIsLoginModalOpen } = useMenuOverlay();
   const { $isNavigating } = useNavigation();
   const { selectedFont, availableFonts, currentFontIndex } = useFontSelection();
 
@@ -137,11 +136,10 @@ export default function TypefacesContent() {
     },
   };
 
-  // Sync login modal state with portal context and menu overlay context
+  // Sync login modal state with portal context only
   useEffect(() => {
     setIsModalOpen(authStateFlat.isLoginModalOpen);
-    setIsLoginModalOpen(authStateFlat.isLoginModalOpen);
-  }, [authStateFlat.isLoginModalOpen, setIsModalOpen, setIsLoginModalOpen]);
+  }, [authStateFlat.isLoginModalOpen, setIsModalOpen]);
 
   const MemoizedLoginButton = useMemo(
     () => (
