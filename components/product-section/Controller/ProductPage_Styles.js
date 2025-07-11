@@ -1430,16 +1430,15 @@ export const removeButtonVariants = {
 
 export const loginButtonVariants = {
   initial: {
-    color: "rgb(16, 12, 8)",
     textDecoration: "none",
     textDecorationThickness: "0px",
     textUnderlineOffset: "0px",
   },
   hover: {
-    color: "rgb(16, 12, 8)",
     textDecoration: "underline",
     textDecorationThickness: "2px",
     textUnderlineOffset: "3px",
+    textDecorationColor: "currentColor",
     transition: { duration: 0.2 },
   },
 };

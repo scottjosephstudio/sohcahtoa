@@ -18,12 +18,13 @@ const LoginButton = ({ isLoggedIn, handleLoginClick, isNavigatingHome }) => {
 
   const buttonStyle = isTypefaces
     ? {
-        color: "rgb(44, 255, 5)",
+        color: "#39ff14",
         textShadow:
           "0 0 20px rgb(16, 12, 8), 0 0 30px rgb(16, 12, 8), 0 0 40px rgb(16, 12, 8)",
         textDecoration: "none",
+        textDecorationColor: "#39ff14",
         transition: "background-color 0.2s, color 0.2s",
-        "--underline-color": "rgb(44, 255, 5)",
+        "--underline-color": "#39ff14",
       }
     : {};
 
