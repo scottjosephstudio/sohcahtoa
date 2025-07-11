@@ -255,8 +255,10 @@ export const ModalTitleUserDashboard = styled.span`
   ${textDecorationMixin}
   color: rgb(16, 12, 8);
   margin: 0;
+  top: 34px;
   text-align: center;
-  max-width: 80%; // Prevents text from getting too close to buttons
+  max-width: 80%;
+  position: fixed; // Prevents text from getting too close to buttons
 `;
 
 export const CloseButton = styled(motion.button)`
@@ -264,8 +266,8 @@ export const CloseButton = styled(motion.button)`
   background: none;
   border: none;
   position: fixed;
-  left: 8px;
-  top: 12px;
+  left: 12px;
+  top: 14px;
   font-size: 64px;
   cursor: pointer;
   color: rgb(16, 12, 8);
@@ -286,7 +288,7 @@ export const LogoutButton = styled(motion.button)`
   color: rgb(16, 12, 8);
   white-space: nowrap;
   overflow: visible;
-  position: absolute;
+  position: fixed;
   right: 20px;
   top: 35px;
   z-index: 2;

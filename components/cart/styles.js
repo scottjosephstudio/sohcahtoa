@@ -292,8 +292,8 @@ export const CloseButton = styled(motion.button)`
   background: none;
   border: none;
   position: fixed;
-  left: 8px;
-  top: 19px;
+  left: 12px;
+  top: 22px;
   cursor: pointer;
   color: rgb(16, 12, 8);
   padding: 8px;
