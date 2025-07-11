@@ -288,8 +288,7 @@ export const LogoutButton = styled(motion.button)`
   overflow: visible;
   position: absolute;
   right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 35px;
   z-index: 2;
 
   &:hover {
@@ -874,7 +873,7 @@ export const GoToCartButton = styled(motion.button)`
 // Login Components
 export const LoginContainer = styled(motion.div)`
   position: fixed;
-  top: 34px;
+  top: 35px;
   left: 20px;
   display: flex;
   gap: 10px;

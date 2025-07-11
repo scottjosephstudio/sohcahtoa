@@ -81,6 +81,22 @@ const NotificationBackdrop = styled(motion.div)`
   z-index: 999;
 `;
 
+// Test alignment wrapper
+const TestAlignmentWrapper = styled.div`
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: fixed;
+    top: 50px;
+    left: 0;
+    right: 0;
+    height: 0px;
+    background-color: #000;
+    z-index: 10001;
+  }
+`;
+
 // Utility to clear invalid Supabase tokens
 const clearInvalidSupabaseTokens = async () => {
   if (typeof window === 'undefined') return;
@@ -344,7 +360,9 @@ export default function ClientLayout({ children }) {
           </AnimatePresence>
 
           {/* Main Content */}
-          <main>{children}</main>
+          <TestAlignmentWrapper>
+            <main>{children}</main>
+          </TestAlignmentWrapper>
         </PortalProvider>
       </NavigationProvider>
     </MenuOverlayProvider>
