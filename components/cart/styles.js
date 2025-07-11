@@ -430,15 +430,15 @@ export const FormGroup = styled.div`
   ${(props) => {
     if (props.fieldName === "firstName") {
       return `
-      margin-top: 16px;
+      margin-top: 12px;
         @media (max-width: 1200px) {
-          margin-top: 16px;
+          margin-top: 12px;
         }
       `;
     }
     if (props.fieldName === "surname") {
       return `
-      margin-top: 16px;
+      margin-top: 12px;
         @media (max-width: 1200px) {
           margin-top: 0px;
         }
@@ -446,8 +446,21 @@ export const FormGroup = styled.div`
     }
     if (props.fieldName === "email") {
       return `
+        margin-top: 0px;
+        margin-bottom: -24px;
         @media (max-width: 1200px) {
           margin-top: 8px;
+          margin-bottom: -16px;
+        }
+      `;
+    }
+    if (props.fieldName === "password") {
+      return `
+        margin-top: 0px;
+        margin-bottom: 0px;
+        @media (max-width: 1200px) {
+          margin-top: 16px;
+          margin-bottom: 0px;
         }
       `;
     }
@@ -469,8 +482,17 @@ export const FormGroup = styled.div`
     }
     if (props.fieldName === "postcode") {
       return `
+        margin-top: 0px;
         @media (max-width: 1200px) {
           margin-top: 8px;
+        }
+      `;
+    }
+    if (props.fieldName === "country") {
+      return `
+        margin-top: 0px;
+        @media (max-width: 1200px) {
+          margin-top: 0px;
         }
       `;
     }

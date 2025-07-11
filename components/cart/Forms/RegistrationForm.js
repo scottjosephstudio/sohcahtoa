@@ -255,7 +255,7 @@ export const Registration = ({
           {chunk(section.fields, 2).map((rowFields, rowIndex) => (
             <FormRow key={rowIndex}>
               {rowFields.map((field) => (
-                <FormGroup key={field.name}>
+                <FormGroup key={field.name} fieldName={field.name}>
                   <FormLabel>{field.label}</FormLabel>
                   {field.name === "password" ? (
                     <PasswordContainer>
