@@ -17,11 +17,34 @@ export default function Hamburger() {
 
   // Handle hamburger fade animations for /Typefaces ↔ /ID navigation
   const [shouldFadeIn, setShouldFadeIn] = useState(false);
+  const [isSpinnerNavigating, setIsSpinnerNavigating] = useState(false);
 
   useEffect(() => {
-    // Set fade in effect only when coming from /ID
-    setShouldFadeIn(previousPath === "/ID");
+    // Set fade in effect only when coming from /ID to typefaces
+    setShouldFadeIn(previousPath === "/ID" && pathname === "/Typefaces");
   }, [pathname, previousPath]);
+
+  // Listen for spinner click to trigger fade out
+  useEffect(() => {
+    const handleSpinnerClick = () => {
+      setIsSpinnerNavigating(true);
+    };
+
+    // Listen for clicks on the spinner specifically
+    const spinnerElement = document.querySelector('[data-component="spinner"]');
+    if (spinnerElement) {
+      spinnerElement.addEventListener('click', handleSpinnerClick);
+      
+      return () => {
+        spinnerElement.removeEventListener('click', handleSpinnerClick);
+      };
+    }
+  }, [pathname]);
+
+  // Reset spinner navigation state when pathname changes
+  useEffect(() => {
+    setIsSpinnerNavigating(false);
+  }, [pathname]);
 
   // Don't render on ID page (after all hooks are called)
   if (pathname === "/ID") {
@@ -30,16 +53,19 @@ export default function Hamburger() {
 
   // Check if we're on Typefaces page for conditional animation
   const isTypefacesPage = pathname === "/Typefaces";
+  
+  // Only fade out when spinner is clicked (going to ID)
+  const shouldFadeOut = isTypefacesPage && isSpinnerNavigating;
 
   return (
     <>
       <motion.div
-        // Only use framer-motion animations on Typefaces page, otherwise let CSS handle transitions
+        // Only use framer-motion animations on Typefaces page for the specific transitions
         {...(isTypefacesPage
           ? {
               initial: { opacity: shouldFadeIn ? 0 : 1 },
               animate: {
-                opacity: $isNavigating ? 0 : 1,
+                opacity: shouldFadeOut ? 0 : 1,
               },
               exit: {
                 opacity: 0,
@@ -49,14 +75,14 @@ export default function Hamburger() {
                 },
               },
               transition: {
-                duration: shouldFadeIn ? 0.8 : $isNavigating ? 0.3 : 0.15,
+                duration: shouldFadeIn ? 0.8 : shouldFadeOut ? 0.3 : 0.15,
                 ease: shouldFadeIn ? [0.25, 0.1, 0.25, 1] : "easeInOut",
               },
             }
           : {
+              // On other pages, no fade animations - just persist
               style: {
-                opacity: $isNavigating ? 0 : 1,
-                transition: "opacity 0.15s ease",
+                opacity: 1,
               },
             })}
       >

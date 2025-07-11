@@ -6,6 +6,7 @@ import styled from "styled-components";
 
 import useInfiniteBanner from "./hooks/useInfiniteBanner";
 import useIOSViewport from "./hooks/useIOSViewport";
+import { useNavigation } from "../../context/NavigationContext";
 
 // Create motion components from styled-components
 const MotionBannerContainer = styled(motion.div)`
@@ -128,6 +129,7 @@ export default function InfiniteWidthBanner({
     useInfiniteBanner(bannerText);
   const bannerElementRef = useRef(null);
   const { height, isIOS, safeBannerHeight } = useIOSViewport();
+  const { $isNavigating } = useNavigation();
 
   // Enhanced iOS-specific positioning fix - mobile only
   useEffect(() => {
@@ -172,8 +174,14 @@ export default function InfiniteWidthBanner({
       }}
       aria-label="Site status banner"
       initial={{ y: "100%" }}
-      animate={{ y: "0%" }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      animate={{ 
+        y: "0%",
+        opacity: $isNavigating ? 0 : 1
+      }}
+      transition={{ 
+        duration: $isNavigating ? 0.3 : 0.5, 
+        ease: "easeOut" 
+      }}
       className="banner-container"
       style={
         isIOS && isMobile
