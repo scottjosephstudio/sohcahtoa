@@ -315,7 +315,7 @@ export const FontInfoDisplay = styled.div`
 
 export const FontInfoDisplayMotion = styled(motion.div)`
   position: fixed;
-  bottom: 29px;
+  bottom: 28px;
   left: 50%;
   transform: translateX(-50%);
   text-align: left;
@@ -323,7 +323,7 @@ export const FontInfoDisplayMotion = styled(motion.div)`
   opacity: 0.9;
   pointer-events: none;
   background: rgb(16, 12, 8, 0.95);
-  padding: 16px 16px;
+  padding: 20px 16px;
   border-radius: 10px;
   border: 1px solid rgba(16, 12, 8, 0.15);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
