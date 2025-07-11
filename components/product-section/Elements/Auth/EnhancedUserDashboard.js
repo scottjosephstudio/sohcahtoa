@@ -682,7 +682,9 @@ const EnhancedUserDashboard = ({
                     <SectionTitle>Purchase History</SectionTitle>
                     {isLoading ? (
                       <ListItem>
-                        <span>Loading...</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '24px' }}>
+                          <span>Loading...</span>
+                        </div>
                       </ListItem>
                     ) : purchases.length > 0 ? (
                       purchases.map((purchase) => (
@@ -720,7 +722,9 @@ const EnhancedUserDashboard = ({
                     <SectionTitle>Available Typeface Downloads</SectionTitle>
                     {isLoading ? (
                       <ListItem>
-                        <span>Loading...</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '30px' }}>
+                          <span>Loading...</span>
+                        </div>
                       </ListItem>
                     ) : purchases.length > 0 ? (
                       purchases.map((purchase) => {
