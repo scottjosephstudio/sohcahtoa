@@ -216,7 +216,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
         email,
         password,
       });
-
+      
       if (error) {
         return { success: false, error: error.message };
       }

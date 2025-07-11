@@ -62,8 +62,6 @@ const HeaderContainer = styled(motion.header)`
   }
 `;
 
-
-
 export default function TypefacesContent() {
   const searchParams = useSearchParams();
   const authStateFlat = useAuthState();

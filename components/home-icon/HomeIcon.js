@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useNavigation } from "../../context/NavigationContext";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import HomeIconContainer from "./HomeIconContainer";
@@ -70,80 +70,45 @@ export default function HomeIcon({
   const svgVariants = createSvgVariants(isTypefacesPage, isIDPath);
 
   // Enhanced click handler with proper transition timing and iOS scroll fix
-  const handleClick = (e) => {
-    if (onClick) {
-      e.preventDefault();
-      onClick(e);
-    } else {
-      // If on Typefaces page, trigger slot machine exit animation and fade out
-      if (isTypefacesPage) {
-        // Prevent default to handle custom animation
+  const handleClick = useCallback(
+    (e) => {
+      if (onClick) {
         e.preventDefault();
+        onClick(e);
+      } else {
+        // If on Typefaces page, trigger animations and navigation state
+        if (isTypefacesPage) {
+          // Prevent default to handle custom navigation
+          e.preventDefault();
 
-        // Trigger fade-out effect for typefaces path
-        setIsTypefacesFadingOut(true);
+          // Trigger fade-out effect for typefaces path
+          setIsTypefacesFadingOut(true);
 
-        // Coordinate all exit animations
-        gsap.to(".slot-machine-page", {
-          x: "0vw",
-          scale: 0,
-          duration: 0.25,
-          ease: "power3.in",
-        });
+          // Coordinate slot machine exit animation
+          gsap.to(".slot-machine-page", {
+            x: "0vw",
+            scale: 0,
+            duration: 0.25,
+            ease: "power3.in",
+          });
 
-        gsap.to(".banner-container", {
-          y: "100%",
-          duration: 0.3,
-          ease: "power3.in",
-        });
+          // Trigger spinner exit animation via custom event
+          const spinnerExitEvent = new CustomEvent("spinnerExit");
+          document.dispatchEvent(spinnerExitEvent);
 
-        // Fade out login button and spinner
-        gsap.to(".typefaces-container header", {
-          opacity: 0,
-          duration: 0.3,
-          ease: "power3.in",
-        });
-
-        // Trigger spinner exit animation via custom event
-        const spinnerExitEvent = new CustomEvent("spinnerExit");
-        document.dispatchEvent(spinnerExitEvent);
-
-        // Delay setting navigation state until after GSAP animations complete
-        setTimeout(() => {
-          // Now trigger navigation state for fade out transition
+          // Set navigation state to trigger fade out of other components
           set$isNavigating(true);
-        }, 300); // After the GSAP animations finish
 
-        // Wait for the transition wrapper fade out to complete, then navigate
-        setTimeout(() => {
-          router.push("/");
-
-          // Ensure scroll to top on iOS after navigation
-          // Additional timeout to ensure DOM has updated after navigation
+          // Wait for fade out to complete, then navigate
           setTimeout(() => {
-            // Multiple approaches to ensure scroll works on iOS
-            window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-            document.documentElement.scrollTop = 0;
-            document.body.scrollTop = 0;
-
-            // iOS Safari specific fix
-            if (window.webkit && window.webkit.messageHandlers) {
-              window.scrollTo(0, 0);
-            }
-
-            // Additional iOS fix using requestAnimationFrame
-            requestAnimationFrame(() => {
-              window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-            });
-
-            // Reset navigation state after scroll is handled
-            set$isNavigating(false);
-          }, 100);
-        }, 500); // Match your transition wrapper timing
+            router.push("/");
+          }, 400); // Match TransitionWrapper timing
+        }
+        // For non-Typefaces pages, let the Link handle navigation normally
       }
-      // For non-Typefaces pages, let the Link handle navigation normally (don't prevent default)
-    }
-  };
+    },
+    [onClick, isTypefacesPage, set$isNavigating, router],
+  );
 
   // If a custom position is provided, use that instead of the defaults
   const style = customPosition

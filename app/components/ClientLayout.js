@@ -256,6 +256,9 @@ export default function ClientLayout({ children }) {
           {!isPaymentConfirmation && <Hamburger />}
           {!isPaymentConfirmation && <TypefaceIcon />}
           {!isPaymentConfirmation && <ScrollToTopButton />}
+          
+          {/* Typefaces-specific navigation elements */}
+          
 
           {/* Email Verification Success Notification */}
           <AnimatePresence>
