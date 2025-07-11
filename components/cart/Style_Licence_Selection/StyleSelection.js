@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import gsap from "gsap";
+import { useNavigation } from "../../../context/NavigationContext";
 import {
   StepContainer,
   OptionHeader,
@@ -70,6 +73,8 @@ export const StyleSelection = ({
   const [hoveredFontId, setHoveredFontId] = useState(null);
   const [showFontModal, setShowFontModal] = useState(false);
   const { availableFonts } = useFontSelection();
+  const { set$isNavigating } = useNavigation();
+  const router = useRouter();
 
   // Get selectedFontIds from context instead of local state
   const { selectedFontIds, setSelectedFontIds } = useCart();
@@ -162,7 +167,30 @@ export const StyleSelection = ({
   };
 
   const handleButtonClick = () => {
+    if (isLicenceOpen) {
+      // "Back to Typefaces" - trigger animations first, then use existing navigation flow
+      
+      // Trigger fade-out effect and navigation state
+      set$isNavigating(true);
+
+      // Coordinate slot machine exit animation
+      gsap.to(".slot-machine-page", {
+        x: "0vw",
+        scale: 0,
+        duration: 0.25,
+        ease: "power3.in",
+      });
+
+      // Trigger spinner exit animation via custom event
+      const spinnerExitEvent = new CustomEvent("spinnerExit");
+      document.dispatchEvent(spinnerExitEvent);
+
+      // Let the existing cart logic handle navigation (which includes cart closing)
       onContinue();
+    } else {
+      // "Continue" - normal flow
+      onContinue();
+    }
   };
 
   // Handle adding fonts via modal
