@@ -409,7 +409,9 @@ export const StageNumber = styled(motion.span)`
   }
 `;
 
-export const FormGroup = styled.div`
+export const FormGroup = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'fieldName'
+})`
   display: flex;
   flex-direction: column;
   gap: 8px;

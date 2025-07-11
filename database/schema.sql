@@ -405,6 +405,13 @@ CREATE POLICY "Users can view own profile" ON users
 CREATE POLICY "Users can update own profile" ON users
     FOR UPDATE USING (auth.uid() = auth_user_id);
 
+CREATE POLICY "Users can insert own profile" ON users
+    FOR INSERT WITH CHECK (auth.uid() = auth_user_id);
+
+-- Service role can insert users (for API endpoints)
+CREATE POLICY "Service role can insert users" ON users
+    FOR INSERT WITH CHECK (auth.role() = 'service_role');
+
 -- Font policies (public read access)
 CREATE POLICY "Anyone can view active fonts" ON font_families
     FOR SELECT USING (is_active = TRUE);

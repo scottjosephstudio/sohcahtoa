@@ -295,20 +295,8 @@ const CartPanelContent = ({
                           letterSpacing: "0.8px",
                           marginTop: "14px",
                         },
-                        '.Label[data-reference="card_number"]': {
+                        ".Label": {
                           textTransform: "capitalize",
-                        },
-                        '.Label[data-reference="expiry"]': {
-                          textTransform: "capitalize",
-                        },
-                        '.Label[data-reference="cvc"]': {
-                          textTransform: "capitalize",
-                        },
-                        '.Label[data-reference="postal"]': {
-                          textTransform: "capitalize",
-                        },
-                        ".ScrollButton": {
-                          display: "none",
                         },
                       },
                     },

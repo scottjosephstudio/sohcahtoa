@@ -11,7 +11,7 @@ export default function Favicon() {
         name="description"
         content="Scott Joseph Studio, Typographic Design, London, UK"
       />
-      <link rel="manifest" href="/manifest.json" />
+      <link rel="manifest" href="/site.webmanifest" />
       <link
         rel="apple-touch-icon"
         sizes="60x60"
