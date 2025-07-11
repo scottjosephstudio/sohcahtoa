@@ -26,6 +26,7 @@ import {
   summaryContentVariants,
   addLicenseLinkVariants,
   buttonVariants,
+  removeLinkVariants,
 } from "../styles";
 import { useCart } from "../Utils/CartContext";
 
@@ -254,7 +255,12 @@ const CartSummary = ({
                 <LicenseDetail>
                   {font.name} {(selectedStyles[font.id] || []).length > 1 ? `(${(selectedStyles[font.id] || []).length} styles)` : (selectedStyles[font.id] || [])[0]?.name || ''}
                 </LicenseDetail>
-                <RemoveLink onClick={() => onRemoveFont(font.id)}>
+                <RemoveLink 
+                  onClick={() => onRemoveFont(font.id)}
+                  variants={removeLinkVariants}
+                  initial="initial"
+                  whileHover="hover"
+                >
                   <span>Remove</span>
                 </RemoveLink>
               </StyleDetail>
@@ -264,7 +270,12 @@ const CartSummary = ({
             weightOption && (
               <StyleDetail>
                 <LicenseDetail>{getFontDisplayName()}</LicenseDetail>
-                <RemoveLink onClick={onRemoveStyle}>
+                <RemoveLink 
+                  onClick={onRemoveStyle}
+                  variants={removeLinkVariants}
+                  initial="initial"
+                  whileHover="hover"
+                >
                   <span>Remove</span>
                 </RemoveLink>
               </StyleDetail>
@@ -407,7 +418,12 @@ const CartSummary = ({
                           </LicenseDetail>
                         ))}
                     </div>
-                    <RemoveLink onClick={onRemovePackage}>
+                    <RemoveLink 
+                      onClick={onRemovePackage}
+                      variants={removeLinkVariants}
+                      initial="initial"
+                      whileHover="hover"
+                    >
                       <span>Remove</span>
                     </RemoveLink>
                   </LicenseDetailContainer>
@@ -440,6 +456,9 @@ const CartSummary = ({
                           </div>
                           <RemoveLink
                             onClick={() => onRemoveLicense(license.type)}
+                            variants={removeLinkVariants}
+                            initial="initial"
+                            whileHover="hover"
                           >
                             <span>Remove</span>
                           </RemoveLink>

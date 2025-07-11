@@ -1602,7 +1602,7 @@ export const UsageText = styled.span`
   letter-spacing: 0.6px;
 `;
 
-export const RemoveLink = styled.button`
+export const RemoveLink = styled(motion.button)`
   background: none;
   border: none;
   color: rgb(16, 12, 8);
@@ -1614,19 +1614,12 @@ export const RemoveLink = styled.button`
   padding: 0px 0px;
   margin-left: 12px;
   margin-top: 2px;
-  transition: text-decoration 0.2s;
   white-space: nowrap;
   overflow: visible;
   text-overflow: ellipsis;
   max-width: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  span:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-  }
 `;
 
 export const AddLicenseLink = styled(motion.span)`
@@ -2075,4 +2068,21 @@ export const dashboardCheckboxVariants = {
     scale: props.isEditMode ? 1 : 1,
     transition: { duration: 0.2 },
   }),
+};
+
+export const removeLinkVariants = {
+  initial: {
+    color: "rgb(16, 12, 8)",
+    textDecoration: "none",
+    textDecorationThickness: "0px",
+    textUnderlineOffset: "0px",
+  },
+  hover: {
+    color: "rgb(16, 12, 8)",
+    textDecoration: "underline",
+    textDecorationThickness: "2px",
+    textUnderlineOffset: "3px",
+    textDecorationColor: "currentColor",
+    transition: { duration: 0.2 },
+  },
 };

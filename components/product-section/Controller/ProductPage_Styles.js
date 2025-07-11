@@ -799,12 +799,6 @@ export const RemoveButton = styled(motion.button)`
   font-family: "Jant", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  span:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-  }
 `;
 
 export const MobileRemoveButton = styled(motion.button)`
@@ -1421,9 +1415,16 @@ export const hoverButtonVariants = {
 export const removeButtonVariants = {
   initial: {
     color: "rgb(16, 12, 8)",
+    textDecoration: "none",
+    textDecorationThickness: "0px",
+    textUnderlineOffset: "0px",
   },
   hover: {
     color: "rgb(16, 12, 8)",
+    textDecoration: "underline",
+    textDecorationThickness: "2px",
+    textUnderlineOffset: "3px",
+    textDecorationColor: "currentColor",
     transition: { duration: 0.2 },
   },
 };
@@ -1446,13 +1447,24 @@ export const loginButtonVariants = {
 export const mobileRemoveButtonVariants = {
   initial: {
     color: "rgb(16, 12, 8)",
+    textDecoration: "none",
+    textDecorationThickness: "0px",
+    textUnderlineOffset: "0px",
   },
   hover: {
     color: "#006efe",
+    textDecoration: "underline",
+    textDecorationThickness: "2px",
+    textUnderlineOffset: "3px",
+    textDecorationColor: "currentColor",
     transition: { duration: 0.2 },
   },
   tap: {
     color: "#006efe",
+    textDecoration: "underline",
+    textDecorationThickness: "2px",
+    textUnderlineOffset: "3px",
+    textDecorationColor: "currentColor",
     transition: { duration: 0.2 },
   },
 };
