@@ -175,7 +175,7 @@ const ProductPage = () => {
   } = formState;
 
   const {
-    state: { isNavigatingHome, windowWidth, isTestExiting, isGlyphsExiting },
+    state: { isNavigatingHome, windowWidth, isTestExiting, isGlyphsExiting, isSpecimenExiting },
     handlers: uiHandlers,
   } = uiState;
 
@@ -208,6 +208,7 @@ const ProductPage = () => {
           fontSettings={fontSettings}
           isTestExiting={isTestExiting}
           isGlyphsExiting={isGlyphsExiting}
+          isSpecimenExiting={isSpecimenExiting}
           selectedFont={selectedFont}
           ref={typefaceOverviewRef}
         />

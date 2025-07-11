@@ -16,6 +16,7 @@ export default forwardRef(function TypefaceContent(
     isNavigatingHome,
     isTestExiting,
     isGlyphsExiting,
+    isSpecimenExiting,
     selectedFont,
   },
   ref,
@@ -51,6 +52,7 @@ export default forwardRef(function TypefaceContent(
               variants={variants}
               handleHomeClick={handleHomeClick}
               selectedFont={selectedFont}
+              isSpecimenExiting={isSpecimenExiting}
             />
           )}
           {currentTab === "test" && (

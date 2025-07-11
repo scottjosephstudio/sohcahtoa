@@ -20,6 +20,7 @@ export const useUIState = (props = {}) => {
   const [isFullCartOpen, setIsFullCartOpen] = useState(false);
   const [isTestExiting, setIsTestExiting] = useState(false);
   const [isGlyphsExiting, setIsGlyphsExiting] = useState(false);
+  const [isSpecimenExiting, setIsSpecimenExiting] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false); // Add navigation lock state
 
   // Set window width on client side only
@@ -135,6 +136,7 @@ export const useUIState = (props = {}) => {
   };
 
   const handleTabExit = (currentTab, newTab, setTab) => {
+    // All tabs should have consistent exit timing
     if (currentTab === "test") {
       setIsTestExiting(true);
       setTimeout(() => {
@@ -151,8 +153,20 @@ export const useUIState = (props = {}) => {
           setIsGlyphsExiting(false);
         }, 300);
       }, 200);
+    } else if (currentTab === "specimen") {
+      // Add exit animation for specimen tab to match other tabs
+      setIsSpecimenExiting(true);
+      setTimeout(() => {
+        setTab(newTab.toLowerCase());
+        setTimeout(() => {
+          setIsSpecimenExiting(false);
+        }, 300);
+      }, 200); // Same 200ms delay as other tabs
     } else {
-      setTab(newTab.toLowerCase());
+      // Fallback for any other tabs
+      setTimeout(() => {
+        setTab(newTab.toLowerCase());
+      }, 200);
     }
   };
 
@@ -166,6 +180,7 @@ export const useUIState = (props = {}) => {
       isLoginModalOpen,
       isTestExiting,
       isGlyphsExiting,
+      isSpecimenExiting,
     },
     setters: {
       setIsNavigatingHome,
@@ -175,6 +190,7 @@ export const useUIState = (props = {}) => {
       setIsLoginModalOpen,
       setIsTestExiting,
       setIsGlyphsExiting,
+      setIsSpecimenExiting,
     },
     handlers: {
       handleHomeClick,

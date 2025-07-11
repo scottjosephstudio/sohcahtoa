@@ -131,6 +131,28 @@ const fadeVariants = {
   },
 };
 
+// SearchContainer variants with consistent delay to match tab transition timing
+const searchContainerVariants = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+      delay: 0.2, // Match the 200ms delay from tab transitions
+      ease: "easeOut",
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeIn",
+    },
+  },
+};
+
 export const GlyphMapGrid = forwardRef(
   (
     {
@@ -242,7 +264,7 @@ export const GlyphMapGrid = forwardRef(
             initial="initial"
             animate="animate"
             exit="exit"
-            variants={fadeVariants}
+            variants={searchContainerVariants}
           ></SearchContainer>
         </Container>
       );
@@ -287,7 +309,7 @@ export const GlyphMapGrid = forwardRef(
             initial="initial"
             animate="animate"
             exit="exit"
-            variants={fadeVariants}
+            variants={searchContainerVariants}
           ></SearchContainer>
         </Container>
       );
@@ -339,7 +361,7 @@ export const GlyphMapGrid = forwardRef(
           initial="initial"
           animate="animate"
           exit="exit"
-          variants={fadeVariants}
+          variants={searchContainerVariants}
         ></SearchContainer>
       </Container>
     );

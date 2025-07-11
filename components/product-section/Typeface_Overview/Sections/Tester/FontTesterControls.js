@@ -24,6 +24,7 @@ const slideVariants = {
     opacity: 1,
     transition: {
       duration: 0.3,
+      delay: 0.2, // Match the 200ms delay from tab transitions for consistency
       ease: [0.6, -0.05, 0.01, 0.99],
     },
   }),

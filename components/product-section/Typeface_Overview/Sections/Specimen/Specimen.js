@@ -1,9 +1,30 @@
 import styled from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Section = styled.div`
   margin-top: 2rem;
 `;
 
+// Fade variants for consistent animations
+const fadeVariants = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeIn",
+    },
+  },
+};
 
 
 const FontInfo = styled.div`
@@ -29,24 +50,33 @@ const FontDetails = styled.p`
 `;
 
 
-export default function SpecimenSection({ selectedFont }) {
+export default function SpecimenSection({ selectedFont, isSpecimenExiting, isNavigatingHome }) {
   const fontFamily = selectedFont?.name || 'inherit';
   const fontStyle = selectedFont?.font_styles?.[0]; // Get first style (usually Regular)
   
   return (
-    <Section>
-      {selectedFont && (
-        <FontInfo>
-          <FontName>{selectedFont.name}</FontName>
-          <FontDetails>
-            {selectedFont.designer && `Designer: ${selectedFont.designer}`}
-            {selectedFont.foundry && ` • Foundry: ${selectedFont.foundry}`}
-            {fontStyle && ` • Style: ${fontStyle.name}`}
-          </FontDetails>
-        </FontInfo>
+    <AnimatePresence mode="wait">
+      {!isNavigatingHome && !isSpecimenExiting && (
+        <motion.div
+          variants={fadeVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          <Section>
+            {selectedFont && (
+              <FontInfo>
+                <FontName>{selectedFont.name}</FontName>
+                <FontDetails>
+                  {selectedFont.designer && `Designer: ${selectedFont.designer}`}
+                  {selectedFont.foundry && ` • Foundry: ${selectedFont.foundry}`}
+                  {fontStyle && ` • Style: ${fontStyle.name}`}
+                </FontDetails>
+              </FontInfo>
+            )}
+          </Section>
+        </motion.div>
       )}
-      
-   
-    </Section>
+    </AnimatePresence>
   );
 }

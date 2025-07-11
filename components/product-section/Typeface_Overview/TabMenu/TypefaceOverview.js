@@ -14,6 +14,7 @@ const TypefaceOverview = forwardRef(
       fontSettings,
       isTestExiting,
       isGlyphsExiting,
+      isSpecimenExiting,
       selectedFont,
     },
     ref,
@@ -62,6 +63,7 @@ const TypefaceOverview = forwardRef(
                 fontSettings={fontSettings}
                 isTestExiting={isTestExiting}
                 isGlyphsExiting={isGlyphsExiting}
+                isSpecimenExiting={isSpecimenExiting}
                 isNavigatingHome={isNavigatingHome}
                 selectedFont={selectedFont}
                 ref={typefaceContentRef}
