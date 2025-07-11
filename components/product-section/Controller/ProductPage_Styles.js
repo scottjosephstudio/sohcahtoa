@@ -284,7 +284,6 @@ export const LogoutButton = styled(motion.button)`
   cursor: pointer;
   font-size: 20px;
   color: rgb(16, 12, 8);
-  transition: text-decoration 0.2s;
   white-space: nowrap;
   overflow: visible;
   position: absolute;
@@ -303,13 +302,6 @@ export const LogoutButton = styled(motion.button)`
       2px 0 0 #e0e0e0,
       0 -2px 0 #e0e0e0,
       0 2px 0 #e0e0e0;
-  }
-
-  span:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-    text-decoration-color: currentColor;
   }
 `;
 
@@ -899,13 +891,6 @@ export const LoginButtonStyled = styled(motion.button)`
   white-space: nowrap;
   overflow: visible;
   position: relative;
-
-  span:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-    text-decoration-color: currentColor;
-  }
 `;
 
 export const LoginModal = styled(motion.div)`
@@ -1037,12 +1022,6 @@ export const ResetPasswordLink = styled(motion.button)`
   width: 100%;
   text-align: center;
   ${textDecorationNone}
-
-  span:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-  }
 `;
 
 export const glowing = keyframes`
@@ -1452,9 +1431,15 @@ export const removeButtonVariants = {
 export const loginButtonVariants = {
   initial: {
     color: "rgb(16, 12, 8)",
+    textDecoration: "none",
+    textDecorationThickness: "0px",
+    textUnderlineOffset: "0px",
   },
   hover: {
     color: "rgb(16, 12, 8)",
+    textDecoration: "underline",
+    textDecorationThickness: "2px",
+    textUnderlineOffset: "3px",
     transition: { duration: 0.2 },
   },
 };
@@ -1596,4 +1581,36 @@ export const svgIconVariants = {
     color: props.$isTypefacePath ? "#006efe" : "rgb(169, 169, 169)",
     transition: { duration: 0.2 },
   }),
+};
+
+export const logoutButtonVariants = {
+  initial: {
+    color: "rgb(16, 12, 8)",
+    textDecoration: "none",
+    textDecorationThickness: "0px",
+    textUnderlineOffset: "0px",
+  },
+  hover: {
+    color: "rgb(16, 12, 8)",
+    textDecoration: "underline",
+    textDecorationThickness: "2px",
+    textUnderlineOffset: "3px",
+    transition: { duration: 0.2 },
+  },
+};
+
+export const resetPasswordLinkVariants = {
+  initial: {
+    color: "#f9f9f9",
+    textDecoration: "none",
+    textDecorationThickness: "0px",
+    textUnderlineOffset: "0px",
+  },
+  hover: {
+    color: "#f9f9f9",
+    textDecoration: "underline",
+    textDecorationThickness: "2px",
+    textUnderlineOffset: "3px",
+    transition: { duration: 0.2 },
+  },
 };

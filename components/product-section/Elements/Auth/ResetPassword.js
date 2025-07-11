@@ -14,6 +14,7 @@ import {
   TogglePasswordButton,
   formContentVariants,
   togglePasswordVariants,
+  resetPasswordLinkVariants,
 } from "../../Controller/ProductPage_Styles";
 
 const ResetPassword = ({
@@ -62,6 +63,9 @@ const ResetPassword = ({
               e.stopPropagation();
               handleBackToLogin();
             }}
+            variants={resetPasswordLinkVariants}
+            initial="initial"
+            whileHover="hover"
           >
             <span>Back to Login</span>
           </ResetPasswordLink>
@@ -144,6 +148,9 @@ const ResetPassword = ({
             e.stopPropagation();
             handleBackToLogin();
           }}
+          variants={resetPasswordLinkVariants}
+          initial="initial"
+          whileHover="hover"
         >
           <span>Back to Login</span>
         </ResetPasswordLink>

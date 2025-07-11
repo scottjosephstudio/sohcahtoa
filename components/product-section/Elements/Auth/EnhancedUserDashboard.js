@@ -39,6 +39,7 @@ import {
   contentVariants,
   headerElementsVariants,
   downloadButtonVariants,
+  logoutButtonVariants,
   inputVariants,
   dashboardCheckboxVariants,
   saveButtonVariants,
@@ -470,7 +471,12 @@ const EnhancedUserDashboard = ({
               <ModalTitleUserDashboard>Account Details</ModalTitleUserDashboard>
           </DashboardModalHeader>
 
-            <LogoutButton onClick={handleLogout}>
+            <LogoutButton 
+              onClick={handleLogout}
+              variants={logoutButtonVariants}
+              initial="initial"
+              whileHover="hover"
+            >
               <span>Logout</span>
             </LogoutButton>
           </DashboardHeader>

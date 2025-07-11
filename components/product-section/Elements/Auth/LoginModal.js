@@ -14,6 +14,7 @@ import {
   loginPanelVariants,
   formContentVariants,
   togglePasswordVariants,
+  resetPasswordLinkVariants,
 } from "../../Controller/ProductPage_Styles";
 import styled from "styled-components";
 
@@ -385,6 +386,9 @@ const LoginModal = ({
                     e.stopPropagation();
                     formSetters.setIsResetPassword(true);
                   }}
+                  variants={resetPasswordLinkVariants}
+                  initial="initial"
+                  whileHover="hover"
                 >
                   <span>Reset Password</span>
                 </CustomResetPasswordLink>

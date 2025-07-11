@@ -5,7 +5,7 @@ import { useNavigation } from "../../../../context/NavigationContext";
 import {
   LoginContainer,
   LoginButtonStyled,
-  buttonVariants,
+  loginButtonVariants,
 } from "../../Controller/ProductPage_Styles";
 
 const LoginButton = ({ isLoggedIn, handleLoginClick, isNavigatingHome }) => {
@@ -45,10 +45,9 @@ const LoginButton = ({ isLoggedIn, handleLoginClick, isNavigatingHome }) => {
         >
           <LoginButtonStyled
             onClick={handleLoginClick}
-            variants={buttonVariants}
+            variants={loginButtonVariants}
             initial="initial"
             whileHover="hover"
-            whileTap="tap"
             style={buttonStyle}
           >
             <span>{!isLoggedIn ? "Log In" : "Account"}</span>
