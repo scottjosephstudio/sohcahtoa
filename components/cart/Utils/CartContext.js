@@ -15,12 +15,14 @@ import {
   licenseOptions,
 } from "../Constants/constants";
 import { useFontSelection } from "../../../context/FontSelectionContext";
+import { useNavigation } from "../../../context/NavigationContext";
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   calculateMultiFontPrice, 
   getPricingBreakdown,
   addFontToSelection 
 } from './multiFontPricing';
+import gsap from 'gsap';
 
 export const CartContext = createContext();
 
@@ -58,6 +60,9 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
 
   // Get selected font from context (for fallback)
   const { selectedFont } = useFontSelection();
+
+  // Get navigation context
+  const { set$isNavigating } = useNavigation();
 
   // State Management
   const [isFullCartOpen, setIsFullCartOpen] = useState(false);
@@ -1317,7 +1322,20 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
     if (event) {
       event.preventDefault();
     }
-    router.push(path);
+    
+    // Special handling for navigation from ID path to Typefaces - use the same event system as typefaces icon
+    if (path === "/Typefaces" && pathname === "/ID") {
+      // Dispatch the same event that the typefaces icon uses
+      const pageTransitionEvent = new CustomEvent("pageTransitionStart", {
+        detail: {
+          isNavigatingToTypefaces: true,
+        },
+      });
+      window.dispatchEvent(pageTransitionEvent);
+    } else {
+      // Normal navigation for other paths
+      router.push(path);
+    }
   };
 
   // Modify your handleContinue function
@@ -1332,14 +1350,9 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn }) => {
       }
       scrollToTop();
     } else {
-      // If license selection is open, close cart and navigate
-      setTimeout(() => {
-        onClose(); // This should set isFullCartOpen to false in ProductPage
-        setTimeout(() => {
-          // Wait for overlay animation to complete before navigating
-          handleNavigateHome(null, "/Typefaces");
-        }, 300); // Additional delay for overlay animation
-      }, 300);
+      // If license selection is open, close cart and navigate immediately
+      onClose(); // Close cart immediately
+      handleNavigateHome(null, "/Typefaces"); // Navigate immediately
     }
   };
 
