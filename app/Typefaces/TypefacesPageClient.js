@@ -219,9 +219,9 @@ export default function TypefacesContent() {
             </ScrollInstruction>
             <ClickInstruction>
               {hasMultipleFonts ? (
-                `Click: Change Typeface`
+                `Click: Change typeface`
               ) : (
-                `Click: More Typefaces soon`
+                `Click: More typefaces soon`
               )}
             </ClickInstruction>
           </FontInfoDisplayMotion>
