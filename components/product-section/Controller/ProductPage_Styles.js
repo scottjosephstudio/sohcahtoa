@@ -503,6 +503,19 @@ export const CheckboxLabel = styled.label`
     opacity: 0.7;
     pointer-events: all !important;
   }
+
+  /* Trigger hover state on checkbox when hovering label */
+  &:hover input:not(:disabled) {
+    background-color: rgb(16, 12, 8);
+    border-color: #006efe;
+    transform: scale(1.05);
+    transition: all 0.2s ease;
+  }
+
+  &:hover input:checked:not(:disabled) {
+    background-color: #0056cc;
+    border-color: #0056cc;
+  }
 `;
 
 export const CheckboxText = styled.span`
@@ -517,6 +530,8 @@ export const Checkbox = styled(motion.input)`
   cursor: pointer;
   background-color: rgb(16, 12, 8);
   border-radius: 5px;
+  position: relative;
+  border: 2px solid rgb(16, 12, 8);
 
   &:has(input:disabled) {
     cursor: normal;
@@ -1501,14 +1516,22 @@ export const checkboxVariants = {
 
 export const dashboardCheckboxVariants = {
   initial: (props) => ({
-    backgroundColor: props.isEditMode ? "rgba(255, 255, 255, 0.5)" : "#006efe",
-    borderColor: props.isEditMode ? "rgb(169, 169, 169)" : "#006efe",
+    backgroundColor: props.isEditMode 
+      ? (props.checked ? "#006efe" : "rgb(16, 12, 8)")
+      : "#006efe",
+    borderColor: props.isEditMode 
+      ? (props.checked ? "#006efe" : "rgb(16, 12, 8)")
+      : "#006efe",
     opacity: props.isEditMode ? 1 : 0.5,
     scale: 1,
   }),
   hover: (props) => ({
-    backgroundColor: props.isEditMode ? "rgb(16, 12, 8)" : "#006efe",
-    borderColor: props.isEditMode ? "rgb(16, 12, 8)" : "#006efe",
+    backgroundColor: props.isEditMode 
+      ? (props.checked ? "#0056cc" : "rgb(16, 12, 8)")
+      : "#006efe",
+    borderColor: props.isEditMode 
+      ? (props.checked ? "#0056cc" : "#006efe")
+      : "#006efe",
     opacity: props.isEditMode ? 1 : 0.5,
     scale: props.isEditMode ? 1.05 : 1,
     transition: { duration: 0.2 },

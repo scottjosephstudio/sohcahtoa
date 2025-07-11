@@ -633,7 +633,14 @@ const EnhancedUserDashboard = ({
                   exit="exit"
                 >
                   <NewsletterSection>
-                    <CheckboxLabel>
+                    <CheckboxLabel
+                      onMouseEnter={() => {
+                        // Trigger checkbox hover when hovering label
+                        if (isEditMode) {
+                          // This will be handled by CSS hover in CheckboxLabel
+                        }
+                      }}
+                    >
                       <Checkbox
                         type="checkbox"
                         checked={newsletter}
@@ -649,7 +656,7 @@ const EnhancedUserDashboard = ({
                             : "initial"
                         }
                         animate={newsletter ? "checked" : "initial"}
-                        custom={{ isEditMode }}
+                        custom={{ isEditMode, checked: newsletter }}
                       />
                       <CheckboxText>Subscribe to newsletter</CheckboxText>
                     </CheckboxLabel>
