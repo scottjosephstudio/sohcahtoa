@@ -88,7 +88,7 @@ const TestAlignmentWrapper = styled.div`
   &::before {
     content: '';
     position: fixed;
-    top: 50px;
+    top: 109px;
     left: 0;
     right: 0;
     height: 0px;

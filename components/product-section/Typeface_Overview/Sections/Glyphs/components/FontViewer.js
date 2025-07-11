@@ -206,6 +206,7 @@ const FontViewer = forwardRef(
               justifyContent: 'center',
               height: '100%',
               width: '100%',
+              marginTop: '54px',
               fontSize: '16px',
               letterSpacing: '0.8px',
               color: 'rgb(16, 12, 8)'

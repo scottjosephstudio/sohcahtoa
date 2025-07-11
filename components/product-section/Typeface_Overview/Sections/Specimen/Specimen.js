@@ -28,25 +28,24 @@ const fadeVariants = {
 
 
 const FontInfo = styled.div`
-  margin-bottom: 1rem;
-  padding: 1rem;
+  margin-bottom: 12px;
+  padding: 15px;
 
 `;
 
 const FontName = styled.div`
-  font-size: 20px;
+  font-size: 16px;
   letter-spacing: 0.8px;
-  line-height: 24px;
-  margin: 0 0 0.5rem 0;
-  color: #000;
+  line-height: 20px;
+  color: rgb(16, 12, 8);
 `;
 
 const FontDetails = styled.p`
-    font-size: 20px;
+    font-size: 16px;
   letter-spacing: 0.8px;
-  line-height: 24px;
+  line-height: 20px;
   margin: 0;
-  color: #666;
+  color: rgb(16, 12, 8);
 `;
 
 
