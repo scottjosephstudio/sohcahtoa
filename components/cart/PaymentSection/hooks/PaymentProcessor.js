@@ -101,6 +101,14 @@ const PaymentProcessor = ({
       return;
     }
 
+    console.log('🔍 Address validation:', {
+      hasAddressData: !!addressData,
+      country: addressData?.country,
+      postcode: addressData?.postcode,
+      countryValid: !!(addressData?.country?.trim()),
+      postcodeValid: !!(addressData?.postcode?.trim())
+    });
+
     if (!addressData?.country?.trim() || !addressData?.postcode?.trim()) {
       onError(new Error("Please provide both country and postcode"));
       setIsProcessing(false);
@@ -127,7 +135,23 @@ const PaymentProcessor = ({
         email: userEmail,
         name: `${firstName} ${lastName}`.trim(),
         hasCurrentUser: !!currentUser,
-        hasSavedData: !!savedRegistrationData
+        hasSavedData: !!savedRegistrationData,
+        addressData,
+        clientSecret: clientSecret ? 'present' : 'missing'
+      });
+
+      console.log('🔍 Payment confirmation details:', {
+        hasCardElement: !!cardElement,
+        billingDetails: {
+          name: `${firstName} ${lastName}`.trim(),
+          email: userEmail,
+          address: {
+            line1: street,
+            city: city,
+            postal_code: addressData.postcode,
+            country: addressData.country,
+          },
+        }
       });
 
       const result = await stripe.confirmCardPayment(clientSecret, {
@@ -148,7 +172,13 @@ const PaymentProcessor = ({
       });
 
       if (result.error) {
-        console.error("Payment error:", result.error);
+        console.error("Payment error:", {
+          type: result.error.type,
+          code: result.error.code,
+          message: result.error.message,
+          decline_code: result.error.decline_code,
+          param: result.error.param
+        });
         onError(result.error);
         setIsProcessing(false);
         return;
