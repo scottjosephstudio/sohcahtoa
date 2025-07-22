@@ -60,6 +60,12 @@ export const useCartState = () => {
         } else if (savedCart.selectedFont) {
           totalFonts = 1;
         }
+        console.log('🔄 useCartState: Initial cart state loaded:', {
+          selectedFontIds: savedCart.selectedFontIds,
+          selectedFont: savedCart.selectedFont,
+          totalFonts,
+          isInCart: totalFonts > 0
+        });
         setCartItems(totalFonts);
         setIsInCart(totalFonts > 0);
         setWeightOption(savedCart.weightOption || "");
@@ -72,6 +78,11 @@ export const useCartState = () => {
         setCartSelectedFont(savedCart.selectedFont || null);
         setSelectedFonts(savedCart.selectedFonts || []);
         setSelectedStyles(savedCart.selectedStyles || {});
+      } else {
+        // Ensure cart is empty if no saved state
+        console.log('🔄 useCartState: No initial cart state, setting empty cart');
+        setCartItems(0);
+        setIsInCart(false);
       }
     })();
   }, []);
@@ -92,7 +103,8 @@ export const useCartState = () => {
           selectedFontIds: savedCart.selectedFontIds,
           selectedFont: savedCart.selectedFont,
           totalFonts,
-          cartItems: totalFonts
+          cartItems: totalFonts,
+          isInCart: totalFonts > 0
         });
         setCartItems(totalFonts);
         setIsInCart(totalFonts > 0);
@@ -106,6 +118,21 @@ export const useCartState = () => {
         setCartSelectedFont(savedCart.selectedFont || null);
         setSelectedFonts(savedCart.selectedFonts || []);
         setSelectedStyles(savedCart.selectedStyles || {});
+      } else {
+        // If no saved cart state, ensure cart is empty
+        console.log('🔄 useCartState: No saved cart state, setting cart to empty');
+        setCartItems(0);
+        setIsInCart(false);
+        setWeightOption("");
+        setSelectedPackage(null);
+        setCustomizing(false);
+        setCustomPrintLicense(null);
+        setCustomWebLicense(null);
+        setCustomAppLicense(null);
+        setCustomSocialLicense(null);
+        setCartSelectedFont(null);
+        setSelectedFonts([]);
+        setSelectedStyles({});
       }
     };
 
