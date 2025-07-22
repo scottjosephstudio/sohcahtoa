@@ -341,7 +341,7 @@ export const ListItem = styled.div`
   &:not(:last-child) {
     margin-top: 24px;
     border-top: 2px solid rgb(16, 12, 8);
-    border-bottom: 0px solid rgb(16, 12, 8);
+    border-bottom: 2px solid rgb(16, 12, 8);
   }
 `;
 
@@ -361,9 +361,9 @@ export const DownloadButton = styled(motion.button)`
 
 export const StyledHR = styled.hr`
   border: none;
-  border-top: 2px solid rgb(16, 12, 8);
+  border-top: 0px solid rgb(16, 12, 8);
   margin: 0px 0;
-  margin-bottom: 9px; /* Add margin-bottom here */
+  margin-bottom: 12px; /* Add margin-bottom here */
 `;
 
 export const InputDashboard = styled(motion.input)`

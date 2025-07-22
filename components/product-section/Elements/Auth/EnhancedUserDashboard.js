@@ -823,14 +823,14 @@ const EnhancedUserDashboard = ({
                     ) : purchases.length > 0 ? (
                       purchases.map((purchase) => (
                         <div key={purchase.id}>
-                          <ListItem>
+                          <ListItem style={{ padding: '12px 0' }}>
                             <span>
                               {purchase.font_styles?.font_families?.name || "Unknown Font"} — {purchase.font_styles?.name || "Unknown Style"}
                             </span>
                             <PriceText>{formatPrice(purchase.purchase_items?.[0]?.total_price_cents || 0)}</PriceText>
                           </ListItem>
                           {purchase.purchase_items?.[0]?.purchase_orders?.[0]?.usage_type && (
-                            <ListItem>
+                            <ListItem style={{ padding: '12px 0' }}>
                               <span style={{ fontSize: '20px', color: '#666', opacity: 1 }}>
                                 Usage: {purchase.purchase_items?.[0]?.purchase_orders?.[0]?.usage_type}
                               </span>
@@ -839,7 +839,7 @@ const EnhancedUserDashboard = ({
                               </span>
                             </ListItem>
                           )}
-                          <StyledHR />
+                          <StyledHR style={{ marginBottom: '12px' }} />
                         </div>
                       ))
                     ) : (
