@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 import ResponsiveHeader from "../ResponsiveHeader/ResponsiveHeader";
 import TypefaceOverview from "../Typeface_Overview/TabMenu/TypefaceOverview";
 import LoginModal from "../Elements/Auth/LoginModal";
@@ -18,8 +19,9 @@ import { useFontSelection } from "../../../context/FontSelectionContext";
 import ClientOnly from "./ClientOnly";
 import { PageContainer } from "./ProductPage_Styles";
 import { calculateDefaultFontSize } from "../Typeface_Overview/Sections/Tester/LetterSpacingUtils";
+import { useNavigation } from "../../../context/NavigationContext";
 
-const ProductPage = () => {
+const ProductPage = ({ currentUser: prefetchedUser, databaseDataLoaded: prefetchedDatabaseDataLoaded }) => {
   // IMPORTANT: Keep ALL hooks at the top level and in the same order on every render
   const [activeTab, setActiveTab] = useState("specimen");
   const [fontSettings, setFontSettings] = useState({
@@ -30,9 +32,13 @@ const ProductPage = () => {
   });
   const [isMounted, setIsMounted] = useState(false);
   const typefaceOverviewRef = useRef(null);
+  const searchParams = useSearchParams();
 
   // Get selected font from slot machine
   const { selectedFont, loading: fontsLoading } = useFontSelection();
+  
+  // Get navigation context for password reset mode
+  const { isPasswordResetMode } = useNavigation();
 
   // Search handler function
   const handleSearch = (query) => {
@@ -73,9 +79,88 @@ const ProductPage = () => {
 
   // Initialize hooks with conditional loading for better performance
   const cartState = useCartState();
-  const authState = useAuthState();
+  const authState = useAuthState(prefetchedUser, prefetchedDatabaseDataLoaded);
   const formState = useFormState();
   const uiState = useUIState({ activeTab });
+
+  // Memoize userId to prevent unnecessary dashboard re-renders
+  const memoizedUserId = useMemo(() => {
+    const authCurrentUser = authState.currentUser;
+    return authCurrentUser?.id || authCurrentUser?.dbData?.auth_user_id || null;
+  }, [authState.currentUser?.id, authState.currentUser?.dbData?.auth_user_id]);
+
+  // Handle openCart URL parameter
+  useEffect(() => {
+    if (searchParams.get('openCart') === 'true' && cartState.setIsFullCartOpen) {
+      console.log('🔗 Opening cart from URL parameter');
+      cartState.setIsFullCartOpen(true);
+      
+      // Clear the URL parameter after opening the cart
+      if (typeof window !== 'undefined') {
+        const url = new URL(window.location);
+        url.searchParams.delete('openCart');
+        window.history.replaceState({}, '', url);
+      }
+    }
+  }, [searchParams, cartState.setIsFullCartOpen]);
+
+  // Refresh billing details when cart is opened
+  useEffect(() => {
+    if (cartState.state.isFullCartOpen && authState.isLoggedIn && authState.currentUser?.email_confirmed_at) {
+      console.log('🔄 Cart opened, refreshing billing details');
+      authState.refreshBillingDetails();
+    }
+  }, [cartState.state.isFullCartOpen, authState.isLoggedIn, authState.currentUser?.email_confirmed_at, authState.refreshBillingDetails]);
+
+  // Refresh billing details when dashboard is opened
+  useEffect(() => {
+    if (authState.isDashboardOpen && authState.isLoggedIn && authState.currentUser?.email_confirmed_at) {
+      console.log('🔄 Dashboard opened, refreshing billing details');
+      authState.refreshBillingDetails();
+    }
+  }, [authState.isDashboardOpen, authState.isLoggedIn, authState.currentUser?.email_confirmed_at, authState.refreshBillingDetails]);
+
+  // Listen for auth state changes to refresh billing details
+  useEffect(() => {
+    const handleAuthStateChange = (event) => {
+      if (event.detail?.verified && event.detail?.user?.email_confirmed_at) {
+        console.log('🔄 Auth state change - user verified, refreshing billing details');
+        authState.refreshBillingDetails();
+      }
+    };
+
+    window.addEventListener('authStateChange', handleAuthStateChange);
+    return () => window.removeEventListener('authStateChange', handleAuthStateChange);
+  }, [authState.refreshBillingDetails]);
+
+  // Listen for billing details refresh requests
+  useEffect(() => {
+    const handleRefreshBillingDetails = () => {
+      if (authState.isLoggedIn && authState.currentUser?.email_confirmed_at) {
+        console.log('🔄 Refresh billing details event received');
+        authState.refreshBillingDetails();
+      }
+    };
+
+    window.addEventListener('refreshBillingDetails', handleRefreshBillingDetails);
+    return () => window.removeEventListener('refreshBillingDetails', handleRefreshBillingDetails);
+  }, [authState.refreshBillingDetails, authState.isLoggedIn, authState.currentUser?.email_confirmed_at]);
+
+  // Specific handler for verification success
+  useEffect(() => {
+    const handleVerificationSuccess = (event) => {
+      if (event.detail?.verified && event.detail?.user?.email_confirmed_at) {
+        console.log('🎉 Verification success detected, loading billing details');
+        // Small delay to ensure auth state is updated
+        setTimeout(() => {
+          authState.refreshBillingDetails();
+        }, 500);
+      }
+    };
+
+    window.addEventListener('authStateChange', handleVerificationSuccess);
+    return () => window.removeEventListener('authStateChange', handleVerificationSuccess);
+  }, [authState.refreshBillingDetails]);
 
   // Handle tab changes
   const handleTabChange = (newTab) => {
@@ -160,13 +245,17 @@ const ProductPage = () => {
     handleLogout,
     handleLoginClick,
     handleUpdateBillingDetailsFromRegistration,
+    refreshBillingDetails,
     loginError,
     isLoggingIn,
-    currentUser,
     showResendVerification,
     isResendingVerification,
     handleResendVerification,
+    databaseDataLoaded,
   } = authState;
+
+  // Get currentUser from authState to avoid naming conflict with props
+  const { currentUser: authCurrentUser } = authState;
 
   const {
     state: { isResetPassword, showPassword, $isSaving },
@@ -178,6 +267,9 @@ const ProductPage = () => {
     state: { isNavigatingHome, windowWidth, isTestExiting, isGlyphsExiting, isSpecimenExiting },
     handlers: uiHandlers,
   } = uiState;
+
+  // Prevent dashboard access during password reset mode
+  const canAccessDashboard = isLoggedIn && isDashboardOpen && authCurrentUser?.email_confirmed_at && !isPasswordResetMode;
 
   return (
     <ClientOnly>
@@ -197,6 +289,8 @@ const ProductPage = () => {
           authState={{
             isLoggedIn,
             handleLoginClick: handleLoginClick,
+            currentUser: authCurrentUser,
+            databaseDataLoaded,
           }}
           uiHandlers={uiHandlers}
         />
@@ -284,11 +378,11 @@ const ProductPage = () => {
           ))}
 
         <AnimatePresence>
-          {isLoggedIn && isDashboardOpen && (
+          {canAccessDashboard && (
             <>
               <ModalOverlay
                 onClick={() => setIsDashboardOpen(false)}
-                zIndex={60}
+                zIndex={890}
               />
               <EnhancedUserDashboard
                 userEmail={userEmail}
@@ -308,9 +402,31 @@ const ProductPage = () => {
                 handleModalClick={uiHandlers.handleModalClick}
                 setIsLoginModalOpen={setIsDashboardOpen}
                 $isSaving={$isSaving}
-                userId={currentUser?.id || currentUser?.dbData?.auth_user_id || null}
+                userId={memoizedUserId}
               />
             </>
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {isPasswordResetMode && (
+            <ModalOverlay
+              zIndex={80}
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: '18px',
+                textAlign: 'center',
+                padding: '20px'
+              }}
+            >
+              <div>
+                <h3>Password Reset in Progress</h3>
+                <p>Please complete your password reset in the other tab before continuing.</p>
+              </div>
+            </ModalOverlay>
           )}
         </AnimatePresence>
       </PageContainer>
@@ -319,13 +435,16 @@ const ProductPage = () => {
       <AnimatePresence>
         {isFullCartOpen && (
           <>
-            <ModalOverlay onClick={cartHandlers.handleCartClose} zIndex={70} />
+            <ModalOverlay onClick={cartHandlers.handleCartClose} zIndex={9998} />
             <CartPanel
               key="cart-panel"
               isOpen={isFullCartOpen}
               onClose={cartHandlers.handleCartClose}
               setIsLoggedIn={setIsLoggedIn}
               onNavigateHome={uiHandlers.handleHomeClick}
+              billingDetails={billingDetails}
+              currentUser={authCurrentUser}
+              isLoggedIn={isLoggedIn}
               weightOption={weightOption}
               setWeightOption={cartSetters.setWeightOption}
               selectedPackage={selectedPackage}

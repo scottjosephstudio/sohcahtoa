@@ -54,34 +54,20 @@ export const baseStyles = {
     letterSpacing: "0.8px",
     color: "#006efe",
     iconColor: "#006efe",
-    cursor: "pointer",
-    backgroundColor: "transparent",
     "::placeholder": {
       color: "transparent",
-      cursor: "pointer",
     },
     ":focus": {
       color: "rgb(16, 12, 8)",
-      cursor: "pointer",
-    },
-    ":hover": {
-      cursor: "pointer",
     },
     "::selection": {
       color: "rgb(176, 38, 255)",
-      background: "rgb(51, 255, 0)",
-      cursor: "pointer",
-    },
-    "::-moz-selection": {
-      color: "rgb(176, 38, 255)",
-      background: "rgb(51, 255, 0)",
-      cursor: "pointer",
+      backgroundColor: "rgb(51, 255, 0)",
     },
   },
   invalid: {
     color: "#FF0000",
     iconColor: "#FF0000",
-    cursor: "pointer",
   },
 };
 
@@ -179,12 +165,12 @@ export const Label = styled(motion.label)`
     }
     if (["country", "postcode"].includes(props.name)) {
       return css`
-        margin-top: -12px;
+        margin-top: -30px;
         @media (max-width: 1200px) {
-          margin-top: -12px;
+          margin-top: -30px;
         }
         @media (max-width: 1024px) {
-          margin-top: -12px;
+          margin-top: -30px;
         }
       `;
     }
@@ -276,6 +262,11 @@ export const HintText = styled(motion.div)`
   letter-spacing: 0.8px;
   color: #666;
   margin-top: 12px;
+
+    @media (max-width: 1024px) {
+          margin-bottom: 18px;
+        }
+  
 `;
 
 export const ErrorText = styled(motion.div)`
@@ -295,6 +286,69 @@ export const StripeErrorMessage = styled(motion.div)`
   margin-top: 4px;
   letter-spacing: 0.8px;
   line-height: 20px;
+`;
+
+export const VerificationWarning = styled(motion.div)`
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+  font-family: "Jant";
+  font-size: 16px;
+  letter-spacing: 0.8px;
+  color: #856404;
+  line-height: 20px;
+  
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+`;
+
+export const VerificationIcon = styled.span`
+  font-size: 24px;
+  margin-top: 2px;
+  flex-shrink: 0;
+`;
+
+export const VerificationContent = styled.div`
+  flex: 1;
+`;
+
+export const VerificationTitle = styled.div`
+  font-weight: normal;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+  margin-bottom: 12px;
+  color: #856404;
+`;
+
+export const VerificationMessage = styled.div`
+  margin-bottom: 12px;
+  color: #856404;
+`;
+
+export const ResendButton = styled(motion.button)`
+  background: #856404;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-family: "Jant";
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background: #6c5003;
+  }
+  
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
 `;
 
 export const StepContainer = styled.div`

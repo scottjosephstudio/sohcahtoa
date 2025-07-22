@@ -567,7 +567,7 @@ INSERT INTO package_license_tiers (package_id, license_tier_id) VALUES
 
 -- Insert JANT font family
 INSERT INTO font_families (name, slug, description, designer, foundry, release_date, featured, sort_order, character_sets, opentype_features, preview_text) VALUES
-('JANT', 'jant', 'A modern typeface with distinctive character and versatility.', 'Scott Paul Joseph', 'Scott Paul Joseph Studio', '2024-01-01', true, 1, '{"latin": true, "extended_latin": true}', '["kern", "liga", "clig"]', 'The quick brown fox jumps over the lazy dog');
+('JANT', 'jant', 'A modern typeface with distinctive character and versatility.', 'Scott Joseph', 'Scott Joseph Studio', '2024-01-01', true, 1, '{"latin": true, "extended_latin": true}', '["kern", "liga", "clig"]', 'The quick brown fox jumps over the lazy dog');
 
 -- Insert JANT font style
 INSERT INTO font_styles (font_family_id, name, slug, weight, style, font_files, metrics, glyph_count, supported_languages) VALUES

@@ -9,10 +9,10 @@ const TypefaceIndex = dynamic(
   { ssr: false },
 );
 
-export default function TypefacesCart() {
+export default function TypefacesCart({ currentUser, databaseDataLoaded }) {
   return (
     <main>
-      <TypefaceIndex />
+      <TypefaceIndex currentUser={currentUser} databaseDataLoaded={databaseDataLoaded} />
     </main>
   );
 }

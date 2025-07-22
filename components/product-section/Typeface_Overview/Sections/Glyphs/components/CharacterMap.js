@@ -140,6 +140,7 @@ const GlyphCode = styled.span`
   color: rgb(16, 12, 8);
   margin-top: 4px;
   margin-bottom: 0px;
+  transition: color 0.1s ease;
 
   @media (max-width: 768px) {
     font-size: 10px;
@@ -149,15 +150,22 @@ const GlyphCode = styled.span`
   }
 `;
 
-const GlyphDisplay = styled.canvas`
+const GlyphDisplay = styled.div`
   width: 48px;
   height: 48px;
-  display: block;
-  transition: none; /* Prevent CSS transition from affecting canvas */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  line-height: 1;
+  color: rgb(16, 12, 8);
+  transition: color 0.1s ease;
+  font-family: inherit;
 
   @media (max-width: 768px) {
     width: 40px;
     height: 40px;
+    font-size: 28px;
   }
 `;
 
@@ -172,7 +180,7 @@ const GlyphCard = styled.button`
   border-radius: 10px;
   padding: 0px;
   position: relative;
-  transition: background 0.1s ease, border-color 0.1s ease;
+  transition: all 0.1s ease;
   
   &:hover {
     cursor: pointer;
@@ -180,7 +188,7 @@ const GlyphCard = styled.button`
     border-color: rgb(16, 12, 8);
     z-index: 1;
 
-    ${GlyphDisplay}, ${GlyphCode} {
+    ${GlyphCode}, ${GlyphDisplay} {
       color: #f9f9f9;
     }
   }
@@ -188,7 +196,7 @@ const GlyphCard = styled.button`
   ${(props) =>
     props.selected &&
     `
-    ${GlyphDisplay}, ${GlyphCode} {
+    ${GlyphCode}, ${GlyphDisplay} {
       color: #f9f9f9;
     }
   `}
@@ -211,7 +219,7 @@ const getUnicodeValue = (char) => {
   return char.codePointAt(0);
 };
 
-const GlyphCanvas = ({
+const GlyphCardComponent = ({
   char,
   font,
   selected,
@@ -220,140 +228,8 @@ const GlyphCanvas = ({
   onHover,
   onHoverEnd,
 }) => {
-  const canvasRef = useRef(null);
-
-  const drawGlyph = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !font?.opentype || !char) return;
-
-    const ctx = canvas.getContext("2d");
-    
-    // Get canvas dimensions from styled component size
-    const rect = canvas.getBoundingClientRect();
-    
-    // If canvas has no size yet, try again after a small delay
-    if (rect.width === 0 || rect.height === 0) {
-      setTimeout(drawGlyph, 10);
-      return;
-    }
-    
-    // Add high-DPI support like HighlightedGlyph
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, rect.width, rect.height);
-    
-    // Check if this character is hovered (managed by parent)
-    const isHovered = hoveredGlyph === char;
-    
-    // TEMP DEBUG: Add visual indicator for debugging
-    if (isHovered || selected) {
-      console.log(
-        `Rendering ${char} as ${isHovered ? "hovered" : "selected"} - should be white`,
-      );
-    }
-    
-    // Get OpenType.js glyph
-    const opentypeGlyph = font.opentype.charToGlyph(char);
-    if (!opentypeGlyph) {
-      // Fallback if glyph not found - use white if hovered/selected
-      ctx.fillStyle = isHovered || selected ? "#f9f9f9" : "rgb(16, 12, 8)";
-      const fontSize = Math.min(rect.width * 0.6, rect.height * 0.6);
-      ctx.font = `${fontSize}px serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(char, rect.width / 2, rect.height / 2);
-      return;
-    }
-
-    // Use OpenType.js built-in glyph drawing method (like the official examples)
-    const cellWidth = rect.width;
-    const cellHeight = rect.height;
-    const cellMarginTop = 4;
-    const cellMarginBottom = 8;
-    const cellMarginLeftRight = 2;
-    
-    // Calculate dimensions like the official example
-    const w = cellWidth - cellMarginLeftRight * 2;
-    const h = cellHeight - cellMarginTop - cellMarginBottom;
-    const head = font.opentype.tables.head;
-    const maxHeight = head.yMax - head.yMin;
-    
-    // Calculate scale and font size
-    const fontScale = Math.min(w / (head.xMax - head.xMin), h / maxHeight);
-    const fontSize = fontScale * font.opentype.unitsPerEm;
-    const fontBaseline = cellMarginTop + (h * head.yMax) / maxHeight;
-    
-    // Calculate glyph positioning
-    const glyphWidth = opentypeGlyph.advanceWidth * fontScale;
-    const xmin = (cellWidth - glyphWidth) / 2;
-    const x0 = xmin;
-    
-    // Use white color when hovered or selected, black otherwise
-    ctx.fillStyle = isHovered || selected ? "#f9f9f9" : "rgb(16, 12, 8)";
-    
-    try {
-      // Use manual path rendering for full color control instead of opentypeGlyph.draw()
-      const path = opentypeGlyph.getPath(x0, fontBaseline, fontSize);
-      
-      if (path && path.commands && path.commands.length > 0) {
-        ctx.beginPath();
-        for (const cmd of path.commands) {
-          switch (cmd.type) {
-            case "M":
-              ctx.moveTo(cmd.x, cmd.y);
-              break;
-            case "L":
-              ctx.lineTo(cmd.x, cmd.y);
-              break;
-            case "C":
-              ctx.bezierCurveTo(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y);
-              break;
-            case "Q":
-              ctx.quadraticCurveTo(cmd.x1, cmd.y1, cmd.x, cmd.y);
-              break;
-            case "Z":
-              ctx.closePath();
-              break;
-          }
-        }
-        ctx.fill();
-      } else {
-        // If no path, fallback to system font
-        const fallbackSize = Math.min(rect.width * 0.6, rect.height * 0.6);
-        ctx.font = `${fallbackSize}px serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(char, rect.width / 2, rect.height / 2);
-      }
-    } catch (error) {
-      // Fallback to system font if OpenType.js fails
-      const fallbackSize = Math.min(rect.width * 0.6, rect.height * 0.6);
-      ctx.font = `${fallbackSize}px serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(char, rect.width / 2, rect.height / 2);
-    }
-  }, [char, font, hoveredGlyph, selected]);
-
-  useEffect(() => {
-    // Draw immediately
-    drawGlyph();
-  }, [drawGlyph]); // drawGlyph already includes dependencies
-
-  // Also draw when the component mounts and canvas is available
-  useEffect(() => {
-    if (canvasRef.current) {
-      // Small delay to ensure canvas is properly sized
-      const timer = setTimeout(drawGlyph, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [drawGlyph]);
-
   const unicode = getUnicodeValue(char);
+  const fontFamily = font?.name ? `"${font.name}", sans-serif` : 'inherit';
 
   return (
     <GlyphCard
@@ -367,7 +243,9 @@ const GlyphCanvas = ({
       <GlyphCode>
         {unicode.toString(16).toUpperCase().padStart(4, "0")}
       </GlyphCode>
-      <GlyphDisplay ref={canvasRef} />
+      <GlyphDisplay style={{ fontFamily }}>
+        {char}
+      </GlyphDisplay>
     </GlyphCard>
   );
 };
@@ -446,7 +324,7 @@ export const CharacterMap = forwardRef(
         <React.Fragment key={setName}>
           <SectionName>{setName}</SectionName>
           {glyphs.map((char, index) => (
-            <GlyphCanvas
+            <GlyphCardComponent
               key={`${setName}-${index}`}
               char={char === " " ? " " : char}
               font={font}

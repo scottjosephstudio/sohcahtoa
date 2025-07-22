@@ -6,6 +6,28 @@ import { loadStripe } from "@stripe/stripe-js";
 import { motion } from "framer-motion";
 import styled from "styled-components";
 import { v4 as uuidv4 } from "uuid"; // You'll need to install this package
+import { getSupabaseClient } from '../../lib/database/supabaseClient';
+
+// Animated loading components for countdown
+const AnimatedLoading = styled(motion.div)`
+  display: inline-flex;
+  align-items: center;
+  font-size: 20px;
+  color: inherit;
+  gap: 4px;
+  margin-left: 2px;
+`;
+
+
+const LoadingDot = styled(motion.span)`
+  display: inline-block;
+  margin-top: 6px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+`;
 
 // Page background container
 const PageContainer = styled.div`
@@ -95,7 +117,7 @@ const StatusMessage = styled.p`
   overflow-wrap: break-word;
 `;
 
-const CountdownMessage = styled.p`
+const CountdownMessage = styled.div`
   font-size: 20px;
   line-height: 24px !important;
   letter-spacing: 0.8px;
@@ -197,6 +219,74 @@ function PaymentContent({ setIsExiting }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Loading animation variants
+  const dotVariants = {
+    initial: { opacity: 0, scale: 0.5 },
+    animate: { 
+      opacity: [0, 1, 1, 0],
+      scale: [0.5, 1, 1, 0.5],
+      transition: {
+        duration: 1.2,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const dot1Variants = {
+    ...dotVariants,
+    animate: {
+      ...dotVariants.animate,
+      transition: {
+        ...dotVariants.animate.transition,
+        delay: 0
+      }
+    }
+  };
+
+  const dot2Variants = {
+    ...dotVariants,
+    animate: {
+      ...dotVariants.animate,
+      transition: {
+        ...dotVariants.animate.transition,
+        delay: 0.2
+      }
+    }
+  };
+
+  const dot3Variants = {
+    ...dotVariants,
+    animate: {
+      ...dotVariants.animate,
+      transition: {
+        ...dotVariants.animate.transition,
+        delay: 0.4
+      }
+    }
+  };
+
+  // Loading component for countdown
+  const LoadingIndicator = () => (
+    <AnimatedLoading>
+      <LoadingDot 
+        initial="initial"
+        animate="animate"
+        variants={dot1Variants} 
+      />
+      <LoadingDot 
+        initial="initial"
+        animate="animate"
+        variants={dot2Variants} 
+      />
+      <LoadingDot 
+        initial="initial"
+        animate="animate"
+        variants={dot3Variants} 
+      />
+    </AnimatedLoading>
+  );
+
   const paymentIntent = searchParams.get("payment_intent");
   const clientSecret = searchParams.get("payment_intent_client_secret");
   const amount = searchParams.get("amount");
@@ -243,7 +333,7 @@ function PaymentContent({ setIsExiting }) {
 
     let countdownInterval = null;
 
-    const handlePaymentSuccess = (paymentDetails) => {
+    const handlePaymentSuccess = async (paymentDetails) => {
       // Clear cart and user data immediately
       localStorage.removeItem("cartState");
       localStorage.removeItem("isAuthenticated");
@@ -253,13 +343,30 @@ function PaymentContent({ setIsExiting }) {
       localStorage.removeItem("billingDetails");
       localStorage.removeItem("hasProceedBeenClicked");
       
-      // Clear Supabase session to ensure logout
-      if (typeof window !== 'undefined') {
-        // Clear any auth tokens
-        localStorage.removeItem('supabase-auth-token');
-        sessionStorage.removeItem('supabase-auth-token');
+      // Clear any other potential auth-related items
+      localStorage.removeItem("supabase.auth.token");
+      sessionStorage.removeItem("supabase.auth.token");
+      localStorage.removeItem("sb-mosddxlxkteqpnjubsja-auth-token");
+      sessionStorage.removeItem("sb-mosddxlxkteqpnjubsja-auth-token");
+      
+      // Properly log out user from Supabase session
+      try {
+        const supabase = getSupabaseClient();
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          console.error('Error signing out from Supabase:', error);
+        } else {
+          console.log('✅ User successfully logged out from Supabase');
+        }
         
-        // Notify other components that cart was cleared and user logged out
+        // Additional cleanup to ensure complete logout
+        await supabase.auth.refreshSession();
+      } catch (error) {
+        console.error('Error during Supabase logout:', error);
+      }
+      
+      // Notify other components that cart was cleared and user logged out
+      if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('cartCleared'));
         window.dispatchEvent(new CustomEvent('userLoggedOut'));
       }
@@ -328,7 +435,7 @@ function PaymentContent({ setIsExiting }) {
               // No need to process the purchase again here
               console.log('✅ Payment succeeded, purchase already processed by PaymentProcessor');
               
-              handlePaymentSuccess(paymentDetails);
+              await handlePaymentSuccess(paymentDetails);
               break;
             case "processing":
               checkCount++;
@@ -386,12 +493,13 @@ function PaymentContent({ setIsExiting }) {
               Your typeface(s) will be available in your account.
             </StatusMessage>
             <StatusMessage>
-              Please login to download from your account dashboard.
+              You have been logged out for security. Please log back in to download from your account dashboard.
             </StatusMessage>
             {countdown !== null && countdown > 0 && (
               <CountdownMessage>
                 Redirecting in <CountdownNumber>{countdown}</CountdownNumber>{" "}
-                seconds...
+                seconds
+                <LoadingIndicator />
               </CountdownMessage>
             )}
           </ContentWrapper>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { addSubscriber, testSupabaseConnection } from "../../supabase/Supabase";
+import { getSupabaseClient } from "../../../lib/database/supabaseClient";
 
 export const useMenuOverlayState = ($isOpen, onClose) => {
   const [isMounted, setIsMounted] = useState(false);
@@ -82,14 +82,21 @@ export const useMenuOverlayState = ($isOpen, onClose) => {
     setIsMounted(true);
 
     // Test Supabase connection when component mounts
-    testSupabaseConnection().then((isConnected) => {
+    const supabase = getSupabaseClient();
+    supabase
+      .from("test_connection")
+      .select("*")
+      .then((result) => {
+        if (isMountedRef.current) {
+          setIsSupabaseConnected(true);
+        }
+      })
+      .catch((error) => {
       if (isMountedRef.current) {
-        setIsSupabaseConnected(isConnected);
-        if (!isConnected) {
+          setIsSupabaseConnected(false);
           console.warn(
             "Supabase not connected - will use localStorage fallback",
           );
-        }
       }
     });
 
@@ -181,17 +188,26 @@ export const useMenuOverlayState = ($isOpen, onClose) => {
     }
 
     try {
-      // Use the centralized addSubscriber function
-      const result = await addSubscriber(email);
+      const supabase = getSupabaseClient();
+      const { data, error } = await supabase
+        .from("newsletter_subscribers")
+        .select("email")
+        .eq("email", email);
 
-      // Set the appropriate status based on the result
-      if (result.success) {
-        // Handle successful subscription (both new and existing)
+      if (error) {
+        throw error;
+      }
 
-        // Set the appropriate status message
-        if (result.source === "existingSubscription") {
+      if (data && data.length > 0) {
           setSubmitStatus("already-subscribed");
         } else {
+        const { error: insertError } = await supabase
+          .from("newsletter_subscribers")
+          .insert([{ email }]);
+
+        if (insertError) {
+          throw insertError;
+        }
           setSubmitStatus("success");
           // Only clear form field on new subscriptions
           setEmail("");
@@ -208,23 +224,10 @@ export const useMenuOverlayState = ($isOpen, onClose) => {
             onClose();
           }
         }, 5000); // 5 seconds to give time to see the full content
-      } else {
-        // Handle errors
-        console.error("Subscription error:", result.message);
-        setSubmitStatus("error");
-        setErrorMessage(result.message);
-
-        // Close after error display too
-        setTimeout(() => {
-          if (isMountedRef.current) {
-            onClose();
-          }
-        }, 5000);
-      }
     } catch (error) {
-      console.error("Unexpected error in handleNewsletterSubmit:", error);
+      console.error("Subscription error:", error);
       setSubmitStatus("error");
-      setErrorMessage("An unexpected error occurred. Please try again.");
+      setErrorMessage(error.message || "An unexpected error occurred. Please try again.");
 
       // Close after error display too
       setTimeout(() => {

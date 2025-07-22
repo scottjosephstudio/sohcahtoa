@@ -30,6 +30,35 @@ import {
 } from "../styles";
 import { useCart } from "../Utils/CartContext";
 
+// Animated loading component for payment button
+const AnimatedLoading = styled(motion.div)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 20px;
+  color: inherit;
+  width: 100%;
+  height: 100%;
+`;
+
+const LoadingText = styled.span`
+  font-size: 20px;
+  letter-spacing: 0.8px;
+  color: inherit;
+  font-weight: normal;
+`;
+
+const LoadingDot = styled(motion.span)`
+  display: inline-block;
+  margin-top: 6px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+`;
+
 const TotalSectionWrapper = styled(motion.div)`
   @media (min-width: 769px) {
     margin-top: 24px;
@@ -102,6 +131,8 @@ const CartSummary = ({
   isMobileLayout,
   hasSelections,
   isLoadingPayment,
+  currentUser,
+  onScrollToTop,
 }) => {
   const { 
     selectedFonts, 
@@ -148,6 +179,12 @@ const CartSummary = ({
 
   const handlePaymentClick = () => {
     if (showPaymentForm && onPayment) {
+      // Check if user is unverified - always scroll to top and return
+      if (currentUser && !currentUser.email_confirmed_at) {
+        // Scroll to top to show verification warning
+        onScrollToTop();
+        return;
+      }
       // Use the payment processor for payment processing
       onPayment();
     } else {
@@ -229,6 +266,75 @@ const CartSummary = ({
     return selectedFonts.filter(font => selectedFontIds.has(font.id)).length;
   };
 
+  // Loading animation variants
+  const dotVariants = {
+    initial: { opacity: 0, scale: 0.5 },
+    animate: { 
+      opacity: [0, 1, 1, 0],
+      scale: [0.5, 1, 1, 0.5],
+      transition: {
+        duration: 1.2,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const dot1Variants = {
+    ...dotVariants,
+    animate: {
+      ...dotVariants.animate,
+      transition: {
+        ...dotVariants.animate.transition,
+        delay: 0
+      }
+    }
+  };
+
+  const dot2Variants = {
+    ...dotVariants,
+    animate: {
+      ...dotVariants.animate,
+      transition: {
+        ...dotVariants.animate.transition,
+        delay: 0.2
+      }
+    }
+  };
+
+  const dot3Variants = {
+    ...dotVariants,
+    animate: {
+      ...dotVariants.animate,
+      transition: {
+        ...dotVariants.animate.transition,
+        delay: 0.4
+      }
+    }
+  };
+
+  // Loading component
+  const LoadingIndicator = () => (
+    <AnimatedLoading>
+      <LoadingText>Processing</LoadingText>
+      <LoadingDot 
+        initial="initial"
+        animate="animate"
+        variants={dot1Variants} 
+      />
+      <LoadingDot 
+        initial="initial"
+        animate="animate"
+        variants={dot2Variants} 
+      />
+      <LoadingDot 
+        initial="initial"
+        animate="animate"
+        variants={dot3Variants} 
+      />
+    </AnimatedLoading>
+  );
+
   return (
     <AnimatePresence mode="wait">
       <SummarySection
@@ -240,6 +346,7 @@ const CartSummary = ({
         exit="exit"
         $showTotal={hasContent}
         $isMobile={isMobileLayout}
+        data-mobile-summary
       >
         <SummaryHeader>
           <motion.div>
@@ -534,7 +641,9 @@ const CartSummary = ({
                 >
                   {showPaymentForm
                     ? isProcessing
-                      ? "Processing..."
+                      ? <LoadingIndicator />
+                      : onPayment && currentUser && !currentUser.email_confirmed_at
+                        ? "Verify Email First"
                       : "Complete Payment"
                     : "Proceed"}
                 </CheckoutButton>

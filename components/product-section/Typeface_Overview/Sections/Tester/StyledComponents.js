@@ -213,12 +213,11 @@ export const ResetButton = styled(motion.button)`
 
   span {
     display: inline-block;
-    font-size: 12px;
-    font-size: 12px;
+    font-size: 16px;
     line-height: 14px;
     letter-spacing: 0.8px;
-    font-weight: bold;
-    transform: translate(0.3px, 1.2px);
+    font-weight: normal;
+    transform: translate(0.3px, 0.2px);
   }
 `;
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { getCartState, saveCartState } from "../../cart/Utils/authUtils";
+import secureCartStorage from "../../cart/Utils/secureCartStorage";
 import { useFontSelection } from "../../../context/FontSelectionContext";
 
 export const useCartState = () => {
@@ -51,52 +51,44 @@ export const useCartState = () => {
   }, []);
 
   useEffect(() => {
-    const savedCart = getCartState();
-    if (savedCart) {
-      // Count only the fonts that are actually selected (checked)
-      let totalFonts = 0;
-      
-      if (savedCart.selectedFontIds && savedCart.selectedFontIds.length > 0) {
-        totalFonts = savedCart.selectedFontIds.length;
-      } else if (savedCart.selectedFont) {
-        // Fallback for legacy cart state - if selectedFont exists but no selectedFontIds
-        totalFonts = 1;
+    (async () => {
+      const savedCart = await secureCartStorage.getCartState();
+      if (savedCart) {
+        let totalFonts = 0;
+        if (savedCart.selectedFontIds && savedCart.selectedFontIds.length > 0) {
+          totalFonts = savedCart.selectedFontIds.length;
+        } else if (savedCart.selectedFont) {
+          totalFonts = 1;
+        }
+        setCartItems(totalFonts);
+        setIsInCart(totalFonts > 0);
+        setWeightOption(savedCart.weightOption || "");
+        setSelectedPackage(savedCart.selectedPackage || null);
+        setCustomizing(savedCart.customizing || false);
+        setCustomPrintLicense(savedCart.customPrintLicense || null);
+        setCustomWebLicense(savedCart.customWebLicense || null);
+        setCustomAppLicense(savedCart.customAppLicense || null);
+        setCustomSocialLicense(savedCart.customSocialLicense || null);
+        setCartSelectedFont(savedCart.selectedFont || null);
+        setSelectedFonts(savedCart.selectedFonts || []);
+        setSelectedStyles(savedCart.selectedStyles || {});
       }
-      
-      setCartItems(totalFonts);
-      setIsInCart(totalFonts > 0);
-      
-      setWeightOption(savedCart.weightOption || "");
-      setSelectedPackage(savedCart.selectedPackage || null);
-      setCustomizing(savedCart.customizing || false);
-      setCustomPrintLicense(savedCart.customPrintLicense || null);
-      setCustomWebLicense(savedCart.customWebLicense || null);
-      setCustomAppLicense(savedCart.customAppLicense || null);
-      setCustomSocialLicense(savedCart.customSocialLicense || null);
-      setCartSelectedFont(savedCart.selectedFont || null);
-      setSelectedFonts(savedCart.selectedFonts || []);
-      setSelectedStyles(savedCart.selectedStyles || {});
-    }
+    })();
   }, []);
 
   // Listen for cart state changes (not just localStorage changes)
   useEffect(() => {
-    const handleCartUpdate = () => {
-      const savedCart = getCartState();
+    const handleCartUpdate = async () => {
+      const savedCart = await secureCartStorage.getCartState();
       if (savedCart) {
-        // Count only the fonts that are actually selected (checked)
         let totalFonts = 0;
-        
         if (savedCart.selectedFontIds && savedCart.selectedFontIds.length > 0) {
           totalFonts = savedCart.selectedFontIds.length;
         } else if (savedCart.selectedFont) {
-          // Fallback for legacy cart state - if selectedFont exists but no selectedFontIds
           totalFonts = 1;
         }
-        
         setCartItems(totalFonts);
         setIsInCart(totalFonts > 0);
-        
         setWeightOption(savedCart.weightOption || "");
         setSelectedPackage(savedCart.selectedPackage || null);
         setCustomizing(savedCart.customizing || false);
@@ -142,10 +134,9 @@ export const useCartState = () => {
     }
   }, [selectedFont, cartSelectedFont, cartItems]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     setCartItems((prev) => prev + 1);
     setIsInCart(true);
-    // Save the currently selected font to cart state
     setCartSelectedFont(selectedFont);
     
     // Save cart state using the proper saveCartState function
@@ -161,7 +152,8 @@ export const useCartState = () => {
       selectedFonts,
       selectedStyles
     };
-    saveCartState(cartState);
+    console.log('[useCartState] handleAddToCart saving cartState:', JSON.stringify(cartState, null, 2));
+    await secureCartStorage.saveCartState(cartState);
   };
 
   const handleCartClose = () => {

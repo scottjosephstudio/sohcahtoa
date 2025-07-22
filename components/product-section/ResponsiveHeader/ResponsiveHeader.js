@@ -72,7 +72,7 @@ const ResponsiveHeader = ({
     handlers: cartHandlers,
   } = cartState;
 
-  const { isLoggedIn, handleLoginClick } = authState;
+  const { isLoggedIn, handleLoginClick, currentUser, databaseDataLoaded } = authState;
 
   return (
     <HeaderContainer
@@ -90,6 +90,8 @@ const ResponsiveHeader = ({
         isLoggedIn={isLoggedIn}
         handleLoginClick={handleLoginClick}
         isNavigatingHome={isNavigatingHome}
+        currentUser={currentUser}
+        databaseDataLoaded={databaseDataLoaded}
       />
 
       <CenterSection $hasCartCount={cartItems > 0}>

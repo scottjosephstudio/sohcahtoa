@@ -4,6 +4,33 @@ import { motion } from "framer-motion";
 import { styled } from "styled-components";
 import opentype from "opentype.js";
 
+// Animated loading components for font loading
+const AnimatedLoading = styled(motion.div)`
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: inherit;
+  color: inherit;
+  margin-left: 2px;
+`;
+
+const LoadingText = styled.span`
+  font-size: inherit;
+  letter-spacing: 0.8px;
+  color: inherit;
+  font-weight: normal;
+`;
+
+const LoadingDot = styled(motion.span)`
+  display: inline-block;
+  margin-top: 6px;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+`;
+
 const Container = styled.div`
   width: 100vw;
   padding-left: 20px;
@@ -211,7 +238,60 @@ const FontViewer = forwardRef(
               letterSpacing: '0.8px',
               color: 'rgb(16, 12, 8)'
             }}>
-              Loading {selectedFont?.name || 'font'}...
+              <AnimatedLoading>
+                <LoadingText>Loading {selectedFont?.name || 'font'}</LoadingText>
+                <LoadingDot 
+                  initial="initial"
+                  animate="animate"
+                  variants={{
+                    initial: { opacity: 0, scale: 0.5 },
+                    animate: { 
+                      opacity: [0, 1, 1, 0],
+                      scale: [0.5, 1, 1, 0.5],
+                      transition: {
+                        duration: 1.2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0
+                      }
+                    }
+                  }} 
+                />
+                <LoadingDot 
+                  initial="initial"
+                  animate="animate"
+                  variants={{
+                    initial: { opacity: 0, scale: 0.5 },
+                    animate: { 
+                      opacity: [0, 1, 1, 0],
+                      scale: [0.5, 1, 1, 0.5],
+                      transition: {
+                        duration: 1.2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.2
+                      }
+                    }
+                  }} 
+                />
+                <LoadingDot 
+                  initial="initial"
+                  animate="animate"
+                  variants={{
+                    initial: { opacity: 0, scale: 0.5 },
+                    animate: { 
+                      opacity: [0, 1, 1, 0],
+                      scale: [0.5, 1, 1, 0.5],
+                      transition: {
+                        duration: 1.2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.4
+                      }
+                    }
+                  }} 
+                />
+              </AnimatedLoading>
             </div>
           </Content>
         </Container>

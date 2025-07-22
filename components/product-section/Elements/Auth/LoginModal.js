@@ -15,8 +15,37 @@ import {
   formContentVariants,
   togglePasswordVariants,
   resetPasswordLinkVariants,
+  fontNormalization,
+  typographyBase,
+  textDecorationMixin,
 } from "../../Controller/ProductPage_Styles";
 import styled from "styled-components";
+
+// Animated loading components for login modal
+const AnimatedLoading = styled(motion.div)`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: inherit;
+  color: inherit;
+`;
+
+const LoadingText = styled.span`
+  font-size: inherit;
+  letter-spacing: 0.8px;
+  color: inherit;
+  font-weight: normal;
+`;
+
+const LoadingDot = styled(motion.span)`
+  display: inline-block;
+  margin-top: 6px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+`;
 
 // Custom styled components with bespoke spacing
 const CustomLoginForm = styled.form`
@@ -30,7 +59,7 @@ const CustomFormGroup = styled.div`
   flex-direction: column;
   position: relative;
   isolation: isolate;
-  gap: 12px;
+
 
   &.email-group {
     margin-top: -8px;
@@ -43,11 +72,11 @@ const CustomFormGroup = styled.div`
 
   &.password-group {
     margin-top: 6px;
-    margin-bottom: -16px;
+    margin-bottom: -6px;
 
     @media (max-width: 1200px) {
       margin-top: 6px;
-      margin-bottom: -16px;
+      margin-bottom: -6px;
     }
   }
 `;
@@ -56,7 +85,6 @@ const CustomInput = styled.input`
   width: 100%;
   padding: 10px 12px 8px 12px;
   border-radius: 10px;
-  margin-bottom: 0px;
   color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
   background-color: #f9f9f9;
   border: 2px solid ${(props) => (props.$hasError ? "#FF0000" : "#f9f9f9;")};
@@ -129,9 +157,14 @@ const CustomPasswordContainer = styled.div`
   width: 100%;
 `;
 
-const CustomLabel = styled(Label)`
+const CustomLabel = styled.label`
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.8px;
+  ${textDecorationMixin}
+  color: #f9f9f9;
   margin-top: 0px;
-  margin-bottom: 8px;
+  margin-bottom: 18px;
 `;
 
 const CustomLoginSubmitButton = styled(LoginSubmitButton)`
@@ -143,32 +176,42 @@ const CustomResetPasswordLink = styled(ResetPasswordLink)`
   margin-top: 0px;
 `;
 
-const ErrorMessage = styled.div`
+const ErrorMessage = styled(motion.div)`
   color: #FF0000;
   font-size: 16px;
   line-height: 20px;
   letter-spacing: 0.6px;
-  margin-top: 0px;
-  margin-bottom:0px;
+  margin-top: -6px !important;
+  margin-bottom: -6px !important;
   text-align: left;
+  overflow: hidden;
+  
+  /* Override form gap spacing */
+  position: relative;
+  z-index: 1;
 `;
 
 const ResendVerificationButton = styled(motion.button)`
-  background: #006efe;
-  color: white;
-  border: none;
-
-    padding: 12px 12px 12px 12px;
+  ${fontNormalization}
+  ${typographyBase}
+  width: 100%;
+  padding: 10px 12px 8px 12px;
   border: 2px solid #006efe;
+  color: #f9f9f9;
+  background-color: #006efe;
   border-radius: 10px;
-  font-size: 20px;
-  letter-spacing: 0.8px
-  cursor: pointer;
   margin-top: 0px;
   margin-bottom: 0px;
-  
+  cursor: pointer;
+  transition: background-color 0.2s;
+  position: relative;
+  overflow: hidden;
+
   &:hover {
-    background: #0056cc;
+    background-color: rgb(16, 12, 8);
+    border: 2px solid #006efe;
+    color: #f9f9f9;
+    cursor: pointer;
   }
   
   &:disabled {
@@ -271,6 +314,11 @@ const LoginModal = ({
               initial="hidden"
               animate={isClosing ? "exit" : "visible"}
               exit="exit"
+              layout
+              transition={{ 
+                layout: { duration: 0.3, ease: "easeInOut" },
+                ...loginPanelVariants.visible?.transition 
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 if (handleModalClick) handleModalClick(e);
@@ -294,13 +342,18 @@ const LoginModal = ({
               initial="hidden"
               animate={isClosing ? "exit" : "visible"}
               exit="exit"
+              layout
+              transition={{ 
+                layout: { duration: 0.3, ease: "easeInOut" },
+                ...loginPanelVariants.visible?.transition 
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 if (handleModalClick) handleModalClick(e);
               }}
             >
               <ModalHeader>
-                <ModalTitleLogin style={{ marginBottom: "20px" }}>
+                <ModalTitleLogin style={{ marginBottom: "24px" }}>
                   Log In
                 </ModalTitleLogin>
               </ModalHeader>
@@ -357,28 +410,144 @@ const LoginModal = ({
                   onClick={(e) => e.stopPropagation()}
                   disabled={isLoggingIn}
                 >
-                  {isLoggingIn ? "Logging in..." : "Log In"}
+                  {isLoggingIn ? (
+                    <AnimatedLoading>
+                      <LoadingText>Logging in</LoadingText>
+                      <LoadingDot 
+                        initial="initial"
+                        animate="animate"
+                        variants={{
+                          initial: { opacity: 0, scale: 0.5 },
+                          animate: { 
+                            opacity: [0, 1, 1, 0],
+                            scale: [0.5, 1, 1, 0.5],
+                            transition: {
+                              duration: 1.2,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                              delay: 0
+                            }
+                          }
+                        }} 
+                      />
+                      <LoadingDot 
+                        initial="initial"
+                        animate="animate"
+                        variants={{
+                          initial: { opacity: 0, scale: 0.5 },
+                          animate: { 
+                            opacity: [0, 1, 1, 0],
+                            scale: [0.5, 1, 1, 0.5],
+                            transition: {
+                              duration: 1.2,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                              delay: 0.2
+                            }
+                          }
+                        }} 
+                      />
+                      <LoadingDot 
+                        initial="initial"
+                        animate="animate"
+                        variants={{
+                          initial: { opacity: 0, scale: 0.5 },
+                          animate: { 
+                            opacity: [0, 1, 1, 0],
+                            scale: [0.5, 1, 1, 0.5],
+                            transition: {
+                              duration: 1.2,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                              delay: 0.4
+                            }
+                          }
+                        }} 
+                      />
+                    </AnimatedLoading>
+                  ) : (
+                    "Log In"
+                  )}
                 </CustomLoginSubmitButton>
                 
+                <AnimatePresence mode="wait">
                 {loginError && (
-                  <ErrorMessage>{loginError}</ErrorMessage>
+                    <ErrorMessage
+                      key="error-message"
+                      initial={{ 
+                        opacity: 0, 
+                        height: 0, 
+                        marginTop: 0,
+                        marginBottom: 0 
+                      }}
+                      animate={{ 
+                        opacity: 1, 
+                        height: "auto", 
+                        marginTop: 0,
+                        marginBottom: 0
+                      }}
+                      exit={{ 
+                        opacity: 0, 
+                        height: 0, 
+                        marginTop: 0,
+                        marginBottom: 0 
+                      }}
+                      transition={{ 
+                        duration: 0.3, 
+                        ease: "easeInOut",
+                        height: { duration: 0.3 },
+                        opacity: { duration: 0.2 }
+                      }}
+                      layout
+                    >
+                      {loginError}
+                    </ErrorMessage>
                 )}
+                </AnimatePresence>
                 
+                <AnimatePresence mode="wait">
                 {showResendVerification && (
                   <ResendVerificationButton
+                      key="resend-button"
                     type="button"
+                      initial={{ 
+                        opacity: 0, 
+                        height: 0, 
+                        marginTop: 0,
+                        marginBottom: 0 
+                      }}
+                      animate={{ 
+                        opacity: 1, 
+                        height: "auto", 
+                        marginTop: 0,
+                        marginBottom: 0
+                      }}
+                      exit={{ 
+                        opacity: 0, 
+                        height: 0, 
+                        marginTop: 0,
+                        marginBottom: 0 
+                      }}
+                      transition={{ 
+                        duration: 0.3, 
+                        ease: "easeInOut",
+                        height: { duration: 0.3 },
+                        opacity: { duration: 0.2 }
+                      }}
+                      layout
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       handleResendVerification();
                     }}
                     disabled={isResendingVerification}
-                    whileHover={{ scale: isResendingVerification ? 1 : 1.02 }}
-                    whileTap={{ scale: isResendingVerification ? 1 : 0.98 }}
+                    whileHover={{ scale: isResendingVerification ? 1 : 1 }}
+                    whileTap={{ scale: isResendingVerification ? 1 : 1 }}
                   >
                     {isResendingVerification ? "Sending..." : "Resend Verification Email"}
                   </ResendVerificationButton>
                 )}
+                </AnimatePresence>
                 
                 <CustomResetPasswordLink
                   onClick={(e) => {

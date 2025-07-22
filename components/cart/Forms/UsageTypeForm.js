@@ -1,7 +1,8 @@
 // src/components/cart/UsageSelection.js
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
+import { CartContext } from "../Utils/CartContext";
 import {
   StepContainer,
   OptionHeader,
@@ -20,6 +21,7 @@ import {
   FormGroup,
   FormLabel,
   FormInput,
+  HiddenSpacer,
   Button as RegisterButton,
   radioInputVariants,
   buttonVariants,
@@ -43,10 +45,42 @@ export const UsageSelection = ({
   onUsageComplete,
   isClientDataValid,
   usageTypeButtonRef,
+  billingDetails,
 }) => {
+  const { cartBillingDetails } = useContext(CartContext);
   const [isPersonalRadioHovered, setIsPersonalRadioHovered] = useState(false);
   const [isClientRadioHovered, setIsClientRadioHovered] = useState(false);
   const [isEulaHovered, setIsEulaHovered] = useState(false);
+
+  console.log('🔍 UsageSelection received:', {
+    billingDetails,
+    cartBillingDetails,
+    currentUser: currentUser?.email || 'no user',
+    savedRegistrationData: savedRegistrationData?.email || 'no saved data'
+  });
+
+  // Fallback: If no billing details are available but user is verified, trigger refresh
+  useEffect(() => {
+    if (currentUser?.email_confirmed_at && 
+        !cartBillingDetails?.street && 
+        !billingDetails?.street && 
+        !savedRegistrationData?.street) {
+      console.log('🔄 No billing details found, triggering refresh');
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('refreshBillingDetails'));
+      }
+    }
+  }, [currentUser?.email_confirmed_at, cartBillingDetails?.street, billingDetails?.street, savedRegistrationData?.street]);
+
+  // Format address from available data sources
+  const formatAddress = () => {
+    const street = cartBillingDetails?.street || billingDetails?.street || savedRegistrationData?.street || "";
+    const city = cartBillingDetails?.city || billingDetails?.city || savedRegistrationData?.city || "";
+    const postcode = cartBillingDetails?.postcode || billingDetails?.postcode || savedRegistrationData?.postcode || "";
+    
+    const addressParts = [street, city, postcode].filter(part => part && part.trim() !== "");
+    return addressParts.join(", ");
+  };
 
   return (
     <StepContainer isUsageForm>
@@ -200,11 +234,21 @@ export const UsageSelection = ({
                           disabled
                         />
                       </FormGroup>
-                      <FormGroup style={{ marginBottom: 0 }}>
+                      <FormGroup
+                        fieldName="address"
+                        style={{ marginBottom: 10 }}
+                      >
                         <FormLabel>Address</FormLabel>
                         <FormInput
                           type="text"
-                          value={`${currentUser?.dbData?.street_address || savedRegistrationData?.street || ""}, ${currentUser?.dbData?.city || savedRegistrationData?.city || ""}, ${currentUser?.dbData?.postal_code || savedRegistrationData?.postcode || ""}`}
+                          value={(() => {
+                            const street = cartBillingDetails?.street || billingDetails?.street || savedRegistrationData?.street || "";
+                            const city = cartBillingDetails?.city || billingDetails?.city || savedRegistrationData?.city || "";
+                            const postcode = cartBillingDetails?.postcode || billingDetails?.postcode || savedRegistrationData?.postcode || "";
+                            
+                            const addressParts = [street, city, postcode].filter(part => part.trim());
+                            return addressParts.join(", ");
+                          })()}
                           disabled
                         />
                       </FormGroup>
@@ -266,7 +310,10 @@ export const UsageSelection = ({
                           }
                         />
                       </FormGroup>
-                      <FormGroup style={{ marginBottom: 0 }}>
+                      <FormGroup
+                        fieldName="contactPhone"
+                        style={{ marginBottom: 10 }}
+                      >
                         <FormLabel>Contact Phone</FormLabel>
                         <FormInput
                           type="tel"

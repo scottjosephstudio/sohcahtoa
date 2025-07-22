@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import Portal from "../../../providers/Portal";
 import { usePortal } from "../../../../context/PortalContext";
 import styled from "styled-components";
-import { supabase } from "../../../../lib/database/supabaseClient";
 import { fontDownloadService } from "../../../../lib/database/fontService";
 import {
   UserDashboard as UserDashboardContainer,
@@ -55,122 +54,46 @@ const EnhancedOverlay = styled(BaseOverlay)`
   z-index: ${(props) => props.$zIndex};
 `;
 
-// Enhanced styled components for purchase history
-const PurchaseHistorySection = styled(Section)`
-  grid-column: 1 / -1;
-  margin-top: 24px;
-`;
 
-const PurchaseItem = styled(motion.div)`
+// Animated loading component with egg timer
+const AnimatedLoading = styled(motion.div)`
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid rgb(16, 12, 8);
-  border-radius: 10px;
-  margin-bottom: 16px;
-  background: #f9f9f9;
-`;
-
-const PurchaseHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 8px;
-`;
-
-const OrderInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const OrderNumber = styled.span`
-  font-size: 14px;
-  font-weight: 600;
-  color: rgb(16, 12, 8);
-  letter-spacing: 0.6px;
-`;
-
-const OrderDate = styled.span`
-  font-size: 12px;
-  color: rgb(16, 12, 8);
-  opacity: 0.7;
-`;
-
-const OrderTotal = styled.span`
-  font-size: 16px;
-  font-weight: 600;
-  color: rgb(16, 12, 8);
-  letter-spacing: 0.8px;
-`;
-
-const FontItem = styled.div`
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
-  border-top: 1px solid rgba(16, 12, 8, 0.1);
-  
-  &:first-child {
-    border-top: none;
-    padding-top: 0;
-  }
-`;
-
-const FontInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const FontName = styled.span`
-  font-size: 14px;
-  font-weight: 500;
-  color: rgb(16, 12, 8);
-`;
-
-const LicenseInfo = styled.span`
-  font-size: 12px;
-  color: rgb(16, 12, 8);
-  opacity: 0.7;
-`;
-
-const DownloadSection = styled.div`
-  display: flex;
-  flex-direction: column;
   gap: 8px;
-  align-items: flex-end;
+  font-size: 20px;
+  color: #666;
 `;
 
-const FormatButtons = styled.div`
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+const EggTimerSVG = styled(motion.svg)`
+  width: 30px;
+  height: 20px;
+  flex-shrink: 0;
 `;
 
-const FormatButton = styled(motion.button)`
-  padding: 6px 12px;
-  border: 1px solid rgb(16, 12, 8);
-  border-radius: 6px;
-  background: transparent;
-  color: rgb(16, 12, 8);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgb(16, 12, 8);
-    color: #f9f9f9;
+// Egg timer animation variants - gestalt sand flow with spin
+const eggTimerVariants = {
+  initial: { 
+    rotate: 0,
+    scale: 1
+  },
+  animate: { 
+    rotate: 360, // 360-degree spin
+    scale: [1, 1.05, 1],
+    transition: {
+      rotate: {
+        duration: 3,
+        repeat: Infinity,
+        ease: "linear"
+      },
+      scale: {
+        duration: 2,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
   }
+};
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
 
 const EnhancedUserDashboard = ({
   userEmail,
@@ -187,11 +110,32 @@ const EnhancedUserDashboard = ({
   setIsLoginModalOpen,
   $isSaving,
   userId,
+  currentUser,
 }) => {
+  const [userName, setUserName] = useState({ first: '', last: '' });
+  const dbData = currentUser?.dbData || {};
+  const userMeta = currentUser?.user_metadata || {};
+  const firstName = dbData.first_name || userMeta.first_name || '';
+  const lastName = dbData.last_name || userMeta.last_name || '';
+  console.log('Dashboard derived names:', firstName, lastName);
+  console.log('Dashboard userName state:', userName);
+  console.log('Dashboard props:', 'firstName:', firstName, 'lastName:', lastName);
+  console.log('🔍 Dashboard received:', {
+    billingDetails,
+    userId,
+    userEmail
+  });
+
   // Enhanced state for purchase history
   const [purchases, setPurchases] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [downloadHistory, setDownloadHistory] = useState({});
+
+  // Add refs to track data fetching and prevent unnecessary calls
+  const lastFetchedUserId = useRef(null);
+  const isCurrentlyFetching = useRef(false);
+  const dataCache = useRef(null);
+  const mountTime = useRef(Date.now());
 
   // Use the portal context
   const { setIsModalOpen, isTypefacesPath, zIndex } = usePortal();
@@ -199,151 +143,230 @@ const EnhancedUserDashboard = ({
   // Update modal state on mount/unmount
   useEffect(() => {
     setIsModalOpen(true);
-    return () => setIsModalOpen(false);
+    document.body.classList.add('dashboard-open');
+    return () => {
+      setIsModalOpen(false);
+      document.body.classList.remove('dashboard-open');
+    };
   }, [setIsModalOpen]);
 
-  // Enhanced data fetching
-  const fetchUserData = useCallback(async () => {
+  // Track userId changes
+  useEffect(() => {
+    console.log('🔍 DASHBOARD userId CHANGED:', {
+      userId,
+      isLoading,
+      hasCache: !!dataCache.current,
+      lastFetchedUserId: lastFetchedUserId.current
+    });
+  }, [userId, isLoading]);
+
+  // Enhanced data fetching with caching and race condition prevention
+  const fetchUserData = useCallback(async (forceRefresh = false) => {
+    console.log('🔍 FETCH USER DATA CALLED:', {
+      userId,
+      forceRefresh,
+      isCurrentlyFetching: isCurrentlyFetching.current,
+      lastFetchedUserId: lastFetchedUserId.current,
+      hasCache: !!dataCache.current,
+      cacheAge: dataCache.current ? Date.now() - dataCache.current.timestamp : 'no cache'
+    });
+    
     if (!userId) {
+      console.log("⚠️ No userId provided, skipping data fetch");
       setIsLoading(false);
       return;
     }
 
+    // Prevent multiple simultaneous fetches
+    if (isCurrentlyFetching.current && !forceRefresh) {
+      console.log("🔄 Data fetch already in progress, skipping...");
+      return;
+    }
+
+    // Set fetching flag
+    isCurrentlyFetching.current = true;
+    
     try {
-      setIsLoading(true);
-
-      // First, get the database user ID from the auth user ID
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("*")
-        .eq("auth_user_id", userId)
-        .single();
-
-      if (userError) {
-        console.error("Error fetching user data:", userError);
+      // Check if we already have cached data for this user
+      if (dataCache.current && 
+          dataCache.current.userId === userId && 
+          !forceRefresh && 
+          Date.now() - dataCache.current.timestamp < 60000) { // 1 minute cache
+        console.log("📦 Using cached data for user:", userId);
+        setPurchases(dataCache.current.purchases);
+        setDownloadHistory(dataCache.current.downloadHistory);
         setIsLoading(false);
         return;
       }
 
-      if (userData) {
-        const user = userData;
-        const databaseUserId = user.id; // This is the database user ID we need
-        
-        setUserEmail(user.email || "");
-        setBillingDetails({
-          street: user.street_address || "",
-          city: user.city || "",
-          postcode: user.postal_code || "",
-          country: user.country || "",
-        });
-        setNewsletter(user.newsletter_subscription || false);
+      console.log("🔄 Fetching fresh data for user:", userId);
+      setIsLoading(true);
+      
+      // Fetch user data from the database
+      const response = await fetch('/api/user-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
 
-        // Now fetch purchase history using the database user ID
-      const { data: purchaseData, error: purchaseError } = await supabase
-          .from("purchase_orders")
-        .select(`
-          *,
-            purchase_items (
-              id,
-              font_style_id,
-              license_type,
-              license_package_id,
-              custom_licenses,
-              unit_price_cents,
-              total_price_cents,
-          font_styles (
-            id,
-            name,
-            slug,
-            font_files,
-            font_families (
-              id,
-              name,
-              slug
-            )
-              )
-            )
-          `)
-          .eq("user_id", databaseUserId)
-        .order("created_at", { ascending: false });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-        if (purchaseError) {
-          console.error("Error fetching purchase data:", purchaseError);
-          setIsLoading(false);
-          return;
-        } else {
-          // Transform the data to match the expected format
-          const transformedData = [];
+      const data = await response.json();
+      console.log("✅ User data fetched successfully:", data);
+      console.log("📊 Raw API response structure:", {
+        userExists: !!data.user,
+        userLicensesCount: data.userLicenses?.length || 0,
+        purchaseOrdersCount: data.purchaseOrders?.length || 0,
+        purchaseOrdersData: data.purchaseOrders
+      });
+
+      // Handle the new API response structure
+      const { user, userLicenses, purchaseOrders } = data;
+      
+      // Transform purchaseOrders to match the expected structure
+      const transformedPurchases = [];
+      (purchaseOrders || []).forEach(order => {
+        (order.purchase_items || []).forEach(item => {
+          // Find the corresponding user license for this purchase item
+          const userLicense = (userLicenses || []).find(license => 
+            license.purchase_item_id === item.id
+          );
           
-          if (purchaseData) {
-            // Also fetch user licenses for download functionality
-            const { data: userLicenses, error: licensesError } = await supabase
-              .from("user_licenses")
-              .select("id, purchase_item_id, font_style_id")
-              .eq("user_id", databaseUserId);
-
-            if (licensesError) {
-              console.error("Error fetching user licenses:", licensesError);
-            }
-
-            // Create a map of purchase_item_id to user_license_id
-            const licenseMap = {};
-            if (userLicenses) {
-              userLicenses.forEach(license => {
-                licenseMap[license.purchase_item_id] = license.id;
-              });
-            }
-            
-            purchaseData.forEach(order => {
-              if (order.purchase_items) {
-                order.purchase_items.forEach(item => {
-                  transformedData.push({
-                    id: item.id,
+          transformedPurchases.push({
+            id: `${order.id}-${item.id}`,
+            order_id: order.id,
+            purchase_item_id: item.id,
+            user_license_id: userLicense?.id,
                     font_style_id: item.font_style_id,
-                    user_license_id: licenseMap[item.id], // Add user license ID for downloads
                     font_styles: item.font_styles,
                     purchase_items: [{
-                      id: item.id,
-                      total_price_cents: item.total_price_cents,
-                      unit_price_cents: item.unit_price_cents,
-                      purchase_orders: [{
-                        id: order.id,
-                        order_number: order.order_number,
+              ...item,
+              purchase_orders: [order]
+            }],
                         created_at: order.created_at,
-                        total_cents: order.total_cents
-                      }]
-                    }]
+            total_price_cents: item.total_price_cents
+          });
                   });
                 });
-              }
-            });
-          }
-          
-          setPurchases(transformedData);
-          console.log("✅ Fetched purchase data:", transformedData?.length || 0, "items");
-          // Debug: Log the actual data structure
-          if (transformedData && transformedData.length > 0) {
-            console.log("📊 Purchase data structure:", JSON.stringify(transformedData[0], null, 2));
-          }
+      
+      // Update purchase history with transformed data
+      setPurchases(transformedPurchases);
+      
+      // Update billing details from user data
+      if (user && setBillingDetails) {
+        const newBillingDetails = {
+          street: user.street_address || '',
+          city: user.city || '',
+          postcode: user.postal_code || '',
+          country: user.country || ''
+        };
+        
+        console.log('📋 Dashboard: About to call setBillingDetails with:', newBillingDetails);
+        console.log('📋 Dashboard: setBillingDetails function type:', typeof setBillingDetails);
+        
+        setBillingDetails(newBillingDetails);
+        console.log('📋 Dashboard: setBillingDetails called successfully');
+        
+        // Trigger a refresh of the main auth state billing details
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('refreshBillingDetails'));
+          console.log('📋 Dashboard: refreshBillingDetails event dispatched');
         }
+      } else {
+        console.log('⚠️ Dashboard: Cannot update billing details - user or setBillingDetails not available:', {
+          hasUser: !!user,
+          hasSetBillingDetails: !!setBillingDetails,
+          userData: user
+        });
       }
-    } catch (error) {
-      console.error("Error fetching user data:", {
-        message: error?.message || 'Unknown error',
-        details: error?.details || 'No details available',
-        hint: error?.hint || 'No hint available',
-        code: error?.code || 'No error code',
-        userId: userId
+      
+      // Initialize download history from user licenses
+      const newDownloadHistory = {};
+      (userLicenses || []).forEach(license => {
+        newDownloadHistory[license.id] = license.download_count || 0;
       });
-      setIsLoading(false);
+      setDownloadHistory(newDownloadHistory);
+      
+      if (user) {
+        console.log('👤 Setting user name from API data:', {
+          first_name: user.first_name,
+          last_name: user.last_name,
+          full_user: user
+        });
+        setUserName({
+          first: user.first_name || '',
+          last: user.last_name || ''
+        });
+      }
+
+
+      // Cache the data
+      dataCache.current = {
+        userId,
+        purchases: transformedPurchases,
+        userLicenses: userLicenses || [],
+        downloadHistory: newDownloadHistory,
+        timestamp: Date.now()
+      };
+      
+      lastFetchedUserId.current = userId;
+      console.log("💾 Data cached successfully for user:", userId);
+    } catch (error) {
+      console.error("❌ Error fetching user data:", error);
+      setPurchases([]);
+      setDownloadHistory({});
     } finally {
       setIsLoading(false);
+      isCurrentlyFetching.current = false; // Always reset the flag
     }
   }, [userId]);
 
+  // Enhanced useEffect with better dependency management
   useEffect(() => {
+    console.log('🔄 Dashboard useEffect triggered with userId:', userId);
+    console.log('📊 Current state:', {
+      userId,
+      lastFetchedUserId: lastFetchedUserId.current,
+      hasCache: !!dataCache.current,
+      isLoading
+    });
+    
+    // Prevent duplicate processing for the same userId
+    if (userId && userId === lastFetchedUserId.current && dataCache.current && !isLoading) {
+      console.log('📦 Using cached data for userId:', userId);
+      return;
+    }
+    
+    // Only fetch if userId has changed or we don't have cached data
+    if (userId && (userId !== lastFetchedUserId.current || !dataCache.current)) {
+      console.log('✅ Fetching user data for userId:', userId);
     fetchUserData();
-  }, [fetchUserData]);
+    } else if (!userId) {
+      console.log('⚠️ No userId provided, clearing data');
+      // Clear data if no user
+      setPurchases([]);
+      setIsLoading(false);
+    }
+  }, [userId, isLoading]); // Add isLoading to dependencies for better state tracking
+
+  // Add a method to force refresh data (useful for after purchases)
+  const refreshUserData = useCallback(() => {
+    fetchUserData(true);
+  }, []); // Remove fetchUserData dependency to prevent recreation loops
+
+  // Expose refresh method via a custom event
+  useEffect(() => {
+    const handleRefreshRequest = () => {
+      refreshUserData();
+    };
+
+    window.addEventListener('refreshUserDashboard', handleRefreshRequest);
+    return () => window.removeEventListener('refreshUserDashboard', handleRefreshRequest);
+  }, [refreshUserData]);
 
   // Enhanced download functionality
   const handleDownload = async (userLicenseId, fontStyleId, format) => {
@@ -401,6 +424,93 @@ const EnhancedUserDashboard = ({
       setIsLoginModalOpen(false);
     }
   };
+
+  // Loading component with sand timer
+  const LoadingIndicator = () => (
+    <AnimatedLoading>
+      <EggTimerSVG
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        initial="initial"
+        animate="animate"
+        variants={eggTimerVariants}
+      >
+        {/* Top triangle - solid, fat, dark grey */}
+        <path
+          d="M6 2L18 2L12 10L6 2Z"
+          fill="#444"
+          opacity="0.8"
+        />
+        
+        {/* Bottom triangle - solid, fat, dark grey (mirrored) */}
+        <path
+          d="M6 22L18 22L12 14L6 22Z"
+          fill="#444"
+          opacity="0.8"
+        />
+        
+        {/* Animated sand particles flowing through center */}
+        <motion.circle
+          cx="12"
+          cy="12"
+          r="0.4"
+          fill="#444"
+          opacity="0.8"
+          initial={{ cy: 10, opacity: 0, scale: 0 }}
+          animate={{ 
+            cy: [10, 14], 
+            opacity: [0, 0.8, 0],
+            scale: [0, 1, 0]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0
+          }}
+        />
+        <motion.circle
+          cx="12"
+          cy="12"
+          r="0.3"
+          fill="#444"
+          opacity="0.6"
+          initial={{ cy: 10, opacity: 0, scale: 0 }}
+          animate={{ 
+            cy: [10, 14], 
+            opacity: [0, 0.6, 0],
+            scale: [0, 1, 0]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.4
+          }}
+        />
+        <motion.circle
+          cx="12"
+          cy="12"
+          r="0.35"
+          fill="#444"
+          opacity="0.7"
+          initial={{ cy: 10, opacity: 0, scale: 0 }}
+          animate={{ 
+            cy: [10, 14], 
+            opacity: [0, 0.7, 0],
+            scale: [0, 1, 0]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.8
+          }}
+        />
+      </EggTimerSVG>
+    </AnimatedLoading>
+  );
 
   const dashboardContent = (
     <>
@@ -468,14 +578,22 @@ const EnhancedUserDashboard = ({
             </CloseButton>
 
             <DashboardModalHeader>
-              <ModalTitleUserDashboard>Account Details</ModalTitleUserDashboard>
+              <ModalTitleUserDashboard>
+                {(() => {
+                  const nameDisplay = (userName.first || userName.last) ? ` — ${userName.first} ${userName.last}` : '';
+                  console.log('🔍 Header rendering with:', { userName, nameDisplay });
+                  return `Account Details${nameDisplay}`;
+                })()}
+              </ModalTitleUserDashboard>
           </DashboardModalHeader>
 
             <LogoutButton 
+              key={`logout-${userId}`}
               onClick={handleLogout}
               variants={logoutButtonVariants}
               initial="initial"
               whileHover="hover"
+              whileTap="initial"
             >
               <span>Logout</span>
             </LogoutButton>
@@ -694,24 +812,34 @@ const EnhancedUserDashboard = ({
                   >
                     <SectionTitle>Purchase History</SectionTitle>
                     {isLoading ? (
-                      <ListItem>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '24px' }}>
-                          <span>Loading...</span>
-                        </div>
-                      </ListItem>
+                      <>
+                        <ListItem>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <LoadingIndicator />
+                          </div>
+                        </ListItem>
+                        <StyledHR />
+                      </>
                     ) : purchases.length > 0 ? (
                       purchases.map((purchase) => (
                         <div key={purchase.id}>
                           <ListItem>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                              <span>
-                                {purchase.font_styles?.font_families?.name || "Unknown Font"} — {purchase.font_styles?.name || "Unknown Style"}
-                              </span>
-                              <span style={{ fontSize: '16px', color: '#666', opacity: 0.8 }}>
-                                {formatDate(purchase.purchase_items?.[0]?.purchase_orders?.[0]?.created_at)}
-                              </span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                <span>
+                                  {purchase.font_styles?.font_families?.name || "Unknown Font"} — {purchase.font_styles?.name || "Unknown Style"}
+                                </span>
+                                <PriceText>{formatPrice(purchase.purchase_items?.[0]?.total_price_cents || 0)}</PriceText>
+                              </div>
+                              {purchase.purchase_items?.[0]?.purchase_orders?.[0]?.usage_type && (
+                                <div style={{ display: 'flex', alignItems: 'right', gap: '12px', fontSize: '20px', color: '#666', opacity: 1 }}>
+                                  <span>Usage: {purchase.purchase_items?.[0]?.purchase_orders?.[0]?.usage_type}</span>
+                                  <span style={{ fontSize: '20px', opacity: 1 }}>
+                                    {formatDate(purchase.purchase_items?.[0]?.purchase_orders?.[0]?.created_at)}
+                                  </span>
+                                </div>
+                              )}
                             </div>
-                            <PriceText>{formatPrice(purchase.purchase_items?.[0]?.total_price_cents || 0)}</PriceText>
                           </ListItem>
                           <StyledHR />
                         </div>
@@ -734,11 +862,14 @@ const EnhancedUserDashboard = ({
                   >
                     <SectionTitle>Available Typeface Downloads</SectionTitle>
                     {isLoading ? (
-                      <ListItem>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '30px' }}>
-                          <span>Loading...</span>
-                        </div>
-                      </ListItem>
+                      <>
+                        <ListItem>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <LoadingIndicator />
+                          </div>
+                        </ListItem>
+                        <StyledHR />
+                      </>
                     ) : purchases.length > 0 ? (
                       purchases.map((purchase) => {
                         const fontFiles = purchase.font_styles?.font_files || {};

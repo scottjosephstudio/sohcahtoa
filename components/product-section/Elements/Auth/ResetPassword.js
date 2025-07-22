@@ -2,8 +2,6 @@ import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   LoginForm,
-  ModalHeader,
-  ModalTitleLogin,
   LoginSubmitButton,
   ResetPasswordLink,
   SuccessMessage,
@@ -18,7 +16,6 @@ import {
 } from "../../Controller/ProductPage_Styles";
 
 const ResetPassword = ({
-  setIsLoginModalOpen,
   resetEmail,
   setResetEmail,
   newPassword,
@@ -33,7 +30,60 @@ const ResetPassword = ({
   handleBackToLogin,
   handleSubmitNewPassword,
   isResetting,
+  resetRateLimitCountdown,
+  resetRateLimitMessage,
 }) => {
+  // Common success message component
+  const SuccessMessageComponent = ({ message }) => (
+              <SuccessMessage
+                layoutId="success-message"
+                initial={{
+                  opacity: 0,
+                  height: 0,
+                  marginTop: 0,
+                  padding: 0,
+                }}
+                animate={{
+                  opacity: 1,
+                  height: "auto",
+                  marginTop: 14,
+                  padding: "13px 24px",
+                  transition: {
+                    duration: 0.1,
+                    ease: [0.32, 0.72, 0, 1],
+                  },
+                }}
+                exit={{
+                  opacity: 0,
+                  height: 0,
+                  marginTop: 0,
+                  padding: 0,
+                  transition: {
+                    duration: 0.2,
+                    ease: [0.32, 0.72, 0, 1],
+                  },
+                }}
+              >
+      {message}
+              </SuccessMessage>
+  );
+
+  // Common back to login link component
+  const BackToLoginLink = () => (
+          <ResetPasswordLink
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleBackToLogin();
+            }}
+            variants={resetPasswordLinkVariants}
+            initial="initial"
+            whileHover="hover"
+          >
+            <span>Back to Login</span>
+          </ResetPasswordLink>
+  );
+
   if (!isResetting) {
     return (
       <motion.div
@@ -52,23 +102,41 @@ const ResetPassword = ({
               value={resetEmail}
               onChange={(e) => setResetEmail(e.target.value)}
               onFocus={() => handleInputFocus("resetEmail")}
-              hasError={resetEmailError}
+              $hasError={resetEmailError}
               required
             />
           </FormGroup>
-          <LoginSubmitButton type="submit">Reset Password</LoginSubmitButton>
-          <ResetPasswordLink
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleBackToLogin();
-            }}
-            variants={resetPasswordLinkVariants}
-            initial="initial"
-            whileHover="hover"
+          <LoginSubmitButton 
+            type="submit" 
+            disabled={resetRateLimitCountdown > 0}
           >
-            <span>Back to Login</span>
-          </ResetPasswordLink>
+            {resetRateLimitCountdown > 0 
+              ? `Wait ${resetRateLimitCountdown}s` 
+              : "Send Password Reset Email"
+            }
+          </LoginSubmitButton>
+          
+          {resetRateLimitMessage && (
+            <div style={{
+              color: '#ff6b6b',
+              fontSize: '14px',
+              textAlign: 'center',
+              marginTop: '8px',
+              padding: '8px 12px',
+              backgroundColor: 'rgba(255, 107, 107, 0.1)',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 107, 107, 0.2)'
+            }}>
+              {resetRateLimitMessage}
+            </div>
+          )}
+          
+          <AnimatePresence>
+            {showSuccessMessage && (
+              <SuccessMessageComponent message="Check your email for a password reset link. Click the link to set your new password." />
+            )}
+          </AnimatePresence>
+          <BackToLoginLink />
         </LoginForm>
       </motion.div>
     );
@@ -92,7 +160,7 @@ const ResetPassword = ({
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               onFocus={() => handleInputFocus("newPassword")}
-              hasError={newPasswordError}
+              $hasError={newPasswordError}
               required
             />
             <TogglePasswordButton
@@ -102,58 +170,17 @@ const ResetPassword = ({
               initial="initial"
               whileHover="hover"
             >
-              {showNewPassword ? "Hide" : "Show"}
+              <span>{showNewPassword ? "Hide" : "Show"}</span>
             </TogglePasswordButton>
           </PasswordContainer>
         </FormGroup>
         <LoginSubmitButton type="submit">Set New Password</LoginSubmitButton>
         <AnimatePresence>
           {showSuccessMessage && (
-            <SuccessMessage
-              layoutId="success-message"
-              initial={{
-                opacity: 0,
-                height: 0,
-                marginTop: 0,
-                padding: 0,
-              }}
-              animate={{
-                opacity: 1,
-                height: "auto",
-                marginTop: 6,
-                padding: "13px 24px",
-                transition: {
-                  duration: 0.1,
-                  ease: [0.32, 0.72, 0, 1],
-                },
-              }}
-              exit={{
-                opacity: 0,
-                height: 0,
-                marginTop: 0,
-                padding: 0,
-                transition: {
-                  duration: 0.2,
-                  ease: [0.32, 0.72, 0, 1],
-                },
-              }}
-            >
-              Password successfully reset
-            </SuccessMessage>
+            <SuccessMessageComponent message="Password successfully reset" />
           )}
         </AnimatePresence>
-        <ResetPasswordLink
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleBackToLogin();
-          }}
-          variants={resetPasswordLinkVariants}
-          initial="initial"
-          whileHover="hover"
-        >
-          <span>Back to Login</span>
-        </ResetPasswordLink>
+        <BackToLoginLink />
       </LoginForm>
     </motion.div>
   );

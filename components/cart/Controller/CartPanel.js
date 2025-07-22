@@ -32,8 +32,11 @@ const CartPanelContent = ({
   onClose,
   onNavigateHome,
   setIsLoggedIn,
+  billingDetails,
 }) => {
   const { setIsModalOpen } = usePortal();
+
+  console.log('🔍 CartPanelContent received billingDetails:', billingDetails);
 
   // Register with portal context when cart opens
   useEffect(() => {
@@ -110,6 +113,8 @@ const CartPanelContent = ({
     usageTypeButtonRef,
     registrationData,
     handleRegistrationInput,
+    handleRegistrationFocus,
+    handleLoginFocus,
     handleRegister,
     showLoginForm,
     handleLoginToggle,
@@ -133,7 +138,10 @@ const CartPanelContent = ({
     currentUser,
     addressData,
     error,
+    setError,
+    handleErrorClear,
     isLoggingIn,
+    isRegistering,
     setSelectedPaymentMethod,
     isApplePayAvailable,
     setIsStripeFormComplete,
@@ -147,6 +155,9 @@ const CartPanelContent = ({
     selectedStyles,
     handleUpdateFonts,
     handleUpdateStyles,
+    handleResendVerificationEmail,
+    clearRegistrationErrors,
+    clearLoginErrors,
   } = useCart();
 
   // Handle removing a font from multi-font selection
@@ -177,6 +188,7 @@ const CartPanelContent = ({
         key="cart-panel"
         className="cart-panel"
         ref={cartPanelRef}
+        data-cart-panel
         variants={cartPanelVariants}
         initial="hidden"
         animate={
@@ -248,10 +260,30 @@ const CartPanelContent = ({
           isScrolled={isScrolled}
         />
 
-        {showPaymentForm && clientSecret ? (
+        {showPaymentForm ? (
+          <CartContent
+            style={
+              isMobile ? { paddingBottom: `${bottomPadding}px` } : {}
+            }
+            $hasSelections={
+              !!(
+                weightOption ||
+                selectedPackage ||
+                (customizing && getActiveLicenses().length > 0)
+              )
+            }
+          >
+            <motion.div
+              key="payment-section"
+              variants={contentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              {clientSecret ? (
           <Elements
             stripe={stripePromise}
-            key={clientSecret} // Force remount when clientSecret changes
+                  key={clientSecret}
             options={{
                     clientSecret,
                     appearance: {
@@ -315,6 +347,7 @@ const CartPanelContent = ({
               onPaymentComplete={handlePaymentComplete}
               onError={(error) => {
                 console.error("Payment error:", error);
+                setError(error.message || error);
                 setIsProcessing(false);
               }}
               setIsProcessing={setIsProcessing}
@@ -323,89 +356,96 @@ const CartPanelContent = ({
               clientSecret={clientSecret}
               addressData={addressData}
             >
-              {(processPayment) => (
-                <CartContent
-                  style={
-                    isMobile ? { paddingBottom: `${bottomPadding}px` } : {}
-                  }
-                  $hasSelections={
-                    !!(
-                      weightOption ||
-                      selectedPackage ||
-                      (customizing && getActiveLicenses().length > 0)
-                    )
-                  }
-                >
-                  <motion.div
-                    key="payment-section"
-                    variants={contentVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                  >
+                    {(processPayment) => {
+                      // Store processPayment for CartSummary
+                      window.currentProcessPayment = processPayment;
+                      
+                      return (
                     <PaymentSection
                       selectedPaymentMethod={selectedPaymentMethod}
                       onPaymentMethodSelect={setSelectedPaymentMethod}
                       isApplePayAvailable={isApplePayAvailable}
                       onFormComplete={setIsStripeFormComplete}
                       error={error}
-                      insideElements={true}
                       onAddressChange={setAddressData}
                       cartPanelRef={cartPanelRef}
                       isLoading={isLoadingPayment}
                       clientSecret={clientSecret}
-                    />
-                  </motion.div>
+                      currentUser={currentUser}
 
-                  <motion.div
-                    key="payment-summary"
-                    variants={contentVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                  >
-                    <CartSummary
-                      weightOption={weightOption}
-                      selectedPackage={selectedPackage}
-                      customizing={customizing}
-                      customLicenses={{
-                        customPrintLicense,
-                        customWebLicense,
-                        customAppLicense,
-                        customSocialLicense,
-                      }}
-                      onRemoveStyle={handleRemoveStyle}
-                      onRemoveLicense={handleRemoveLicense}
-                      onRemovePackage={handleRemovePackage}
-                      onRemoveFont={handleRemoveFont}
-                      onAddLicense={handleAddLicense}
-                      showPaymentForm={showPaymentForm}
-                      selectedPaymentMethod={selectedPaymentMethod}
-                      isStripeFormComplete={isStripeFormComplete}
-                      isCheckoutDisabled={isCheckoutDisabled}
-                      onPayment={processPayment}
-                      isProcessing={isProcessing}
-                      onProceed={handleProceed}
-                      isMobileLayout={isMobile}
-                      totalSectionRef={totalSectionRef}
-                      hasSelections={
-                        !!(
-                          weightOption ||
-                          selectedPackage ||
-                          (customizing && getActiveLicenses().length > 0)
-                        )
-                      }
-                      isLoadingPayment={isLoadingPayment}
-                      currentStage={getCurrentStage()}
-                      showUsageSelection={showUsageSelection}
-                      showRegistration={showRegistration}
                     />
-                  </motion.div>
-                </CartContent>
-              )}
+                      );
+                    }}
             </PaymentProcessor>
           </Elements>
         ) : (
+                <PaymentSection
+                  selectedPaymentMethod={selectedPaymentMethod}
+                  onPaymentMethodSelect={setSelectedPaymentMethod}
+                  isApplePayAvailable={isApplePayAvailable}
+                  onFormComplete={setIsStripeFormComplete}
+                  error={error}
+                  onAddressChange={setAddressData}
+                  cartPanelRef={cartPanelRef}
+                  isLoading={true}
+                  clientSecret={clientSecret}
+                  currentUser={currentUser}
+
+                />
+              )}
+            </motion.div>
+            <motion.div
+              key="payment-summary"
+              variants={contentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <CartSummary
+                weightOption={weightOption}
+                selectedPackage={selectedPackage}
+                customizing={customizing}
+                customLicenses={{
+                  customPrintLicense,
+                  customWebLicense,
+                  customAppLicense,
+                  customSocialLicense,
+                }}
+                onRemoveStyle={handleRemoveStyle}
+                onRemoveLicense={handleRemoveLicense}
+                onRemovePackage={handleRemovePackage}
+                onRemoveFont={handleRemoveFont}
+                onAddLicense={handleAddLicense}
+                showPaymentForm={showPaymentForm}
+                selectedPaymentMethod={selectedPaymentMethod}
+                isStripeFormComplete={isStripeFormComplete}
+                isCheckoutDisabled={isCheckoutDisabled}
+                onPayment={clientSecret ? () => {
+                  if (window.currentProcessPayment) {
+                    window.currentProcessPayment();
+                  }
+                } : undefined}
+                isProcessing={isProcessing}
+                onProceed={handleProceed}
+                isMobileLayout={isMobile}
+                totalSectionRef={totalSectionRef}
+                hasSelections={
+                  !!(
+                    weightOption ||
+                    selectedPackage ||
+                    (customizing && getActiveLicenses().length > 0)
+                  )
+                }
+                isLoadingPayment={isLoadingPayment}
+                currentStage={getCurrentStage()}
+                showUsageSelection={showUsageSelection}
+                showRegistration={showRegistration}
+                currentUser={currentUser}
+                onScrollToTop={scrollToTop}
+              />
+            </motion.div>
+          </CartContent>
+        ) : showUsageSelection ? (
           <CartContent
             style={isMobile ? { paddingBottom: `${bottomPadding}px` } : {}}
             $hasSelections={
@@ -424,7 +464,6 @@ const CartPanelContent = ({
               exit="exit"
             >
               <AnimatePresence mode="wait">
-                {showUsageSelection ? (
                   <motion.div key="usage" variants={contentVariants}>
                     <UsageSelection
                       selectedUsage={selectedUsage}
@@ -438,83 +477,11 @@ const CartPanelContent = ({
                       onUsageComplete={handleUsageComplete}
                       isClientDataValid={isClientDataValid}
                       usageTypeButtonRef={usageTypeButtonRef}
+                      billingDetails={billingDetails}
                     />
                   </motion.div>
-                ) : showRegistration ? (
-                  <motion.div key="registration" variants={contentVariants}>
-                    <Registration
-                      registrationData={registrationData}
-                      onRegistrationInput={handleRegistrationInput}
-                      onRegister={handleRegister}
-                      showLoginForm={showLoginForm}
-                      onLoginToggle={handleLoginToggle}
-                      formDividerRef={formDividerRef}
-                      registerButtonRef={registerButtonRef}
-                      showPassword={showPassword}
-                      onTogglePassword={() => setShowPassword(!showPassword)}
-                      isRegistrationFormValid={isRegistrationFormValid}
-                      loginData={loginData}
-                      onLoginInput={handleLoginInput}
-                      onLogin={handleLogin}
-                      isLoginFormValid={isLoginFormValid}
-                      emailError={emailError}
-                      passwordError={passwordError}
-                      onResetPasswordClick={handleResetPasswordClick}
-                      loginButtonRef={loginButtonRef}
-                      isResettingPassword={isResettingPassword}
-                      setIsResettingPassword={setIsResettingPassword}
-                      onBackToLogin={handleBackToLogin}
-                      isLoggingIn={isLoggingIn}
-                    />
-                  </motion.div>
-                ) : (
-                  <motion.div key="stage1" variants={contentVariants}>
-                    <Stage1Container>
-                      <StyleSelection
-                        weightOption={weightOption}
-                        onWeightSelect={handleWeightSelect}
-                        isContinueClicked={isContinueClicked}
-                        isLicenceOpen={isLicenceOpen}
-                        onContinue={handleContinue}
-                        selectedPackage={selectedPackage}
-                        customizing={customizing}
-                        onNavigateHome={onNavigateHome}
-                        customLicenses={{
-                          customPrintLicense,
-                          customWebLicense,
-                          customAppLicense,
-                          customSocialLicense,
-                        }}
-                        cartFont={cartFont}
-                        selectedFonts={selectedFonts}
-                        selectedStyles={selectedStyles}
-                        onUpdateFonts={handleUpdateFonts}
-                        onUpdateStyles={handleUpdateStyles}
-                        onRemoveStyle={handleRemoveStyle}
-                      />
-
-                      <LicenseSelection
-                        isOpen={isLicenceOpen}
-                        weightOption={weightOption}
-                        selectedPackage={selectedPackage}
-                        customizing={customizing}
-                        onPackageSelect={handlePackageSelect}
-                        onCustomizeClick={handleCustomize}
-                        customLicenses={{
-                          customPrintLicense,
-                          customWebLicense,
-                          customAppLicense,
-                          customSocialLicense,
-                        }}
-                        onLicenseSelect={handleLicenseSelect}
-                        showingCustom={customizing}
-                      />
-                    </Stage1Container>
-                  </motion.div>
-                )}
               </AnimatePresence>
             </motion.div>
-
             <motion.div
               key="main-summary"
               variants={contentVariants}
@@ -552,13 +519,226 @@ const CartPanelContent = ({
                     (customizing && getActiveLicenses().length > 0)
                   )
                 }
+                isLoadingPayment={isLoadingPayment}
                 currentStage={getCurrentStage()}
                 showUsageSelection={showUsageSelection}
                 showRegistration={showRegistration}
+                currentUser={currentUser}
+                onScrollToTop={scrollToTop}
+              />
+            </motion.div>
+          </CartContent>
+                ) : showRegistration ? (
+          <CartContent
+            style={isMobile ? { paddingBottom: `${bottomPadding}px` } : {}}
+            $hasSelections={
+              !!(
+                weightOption ||
+                selectedPackage ||
+                (customizing && getActiveLicenses().length > 0)
+              )
+            }
+          >
+            <motion.div
+              key="main-content"
+              variants={contentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <AnimatePresence mode="wait">
+                  <motion.div key="registration" variants={contentVariants}>
+                    <Registration
+                      registrationData={registrationData}
+                      onRegistrationInput={handleRegistrationInput}
+                      onRegistrationFocus={handleRegistrationFocus}
+                      onRegister={handleRegister}
+                      showLoginForm={showLoginForm}
+                      onLoginToggle={handleLoginToggle}
+                      formDividerRef={formDividerRef}
+                      registerButtonRef={registerButtonRef}
+                      showPassword={showPassword}
+                      onTogglePassword={() => setShowPassword(!showPassword)}
+                      isRegistrationFormValid={isRegistrationFormValid}
+                      loginData={loginData}
+                      onLoginInput={handleLoginInput}
+                      onLoginFocus={handleLoginFocus}
+                      onLogin={handleLogin}
+                      isLoginFormValid={isLoginFormValid}
+                      emailError={emailError}
+                      passwordError={passwordError}
+                      onResetPasswordClick={handleResetPasswordClick}
+                      loginButtonRef={loginButtonRef}
+                      isResettingPassword={isResettingPassword}
+                      setIsResettingPassword={setIsResettingPassword}
+                      onBackToLogin={handleBackToLogin}
+                      isLoggingIn={isLoggingIn}
+                      isRegistering={isRegistering}
+                      error={error}
+                      onErrorClear={handleErrorClear}
+                      onClearRegistrationErrors={clearRegistrationErrors}
+                      clearLoginErrors={clearLoginErrors}
+                    />
+                  </motion.div>
+              </AnimatePresence>
+            </motion.div>
+            <motion.div
+              key="main-summary"
+              variants={contentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <CartSummary
+                weightOption={weightOption}
+                selectedPackage={selectedPackage}
+                customizing={customizing}
+                customLicenses={{
+                  customPrintLicense,
+                  customWebLicense,
+                  customAppLicense,
+                  customSocialLicense,
+                }}
+                onRemoveStyle={handleRemoveStyle}
+                onRemoveLicense={handleRemoveLicense}
+                onRemovePackage={handleRemovePackage}
+                onRemoveFont={handleRemoveFont}
+                onAddLicense={handleAddLicense}
+                showPaymentForm={showPaymentForm}
+                selectedPaymentMethod={selectedPaymentMethod}
+                isStripeFormComplete={isStripeFormComplete}
+                isCheckoutDisabled={isCheckoutDisabled}
+                isProcessing={isProcessing}
+                onProceed={handleProceed}
+                isMobileLayout={isMobile}
+                totalSectionRef={totalSectionRef}
+                hasSelections={
+                  !!(
+                    weightOption ||
+                    selectedPackage ||
+                    (customizing && getActiveLicenses().length > 0)
+                  )
+                }
+                isLoadingPayment={isLoadingPayment}
+                currentStage={getCurrentStage()}
+                showUsageSelection={showUsageSelection}
+                showRegistration={showRegistration}
+                currentUser={currentUser}
+                onScrollToTop={scrollToTop}
+              />
+            </motion.div>
+          </CartContent>
+        ) : (
+          <CartContent
+            style={isMobile ? { paddingBottom: `${bottomPadding}px` } : {}}
+            $hasSelections={
+              !!(
+                weightOption ||
+                selectedPackage ||
+                (customizing && getActiveLicenses().length > 0)
+              )
+            }
+          >
+            <motion.div
+              key="main-content"
+              variants={contentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <AnimatePresence mode="wait">
+                  <motion.div key="stage1" variants={contentVariants}>
+                    <Stage1Container>
+                      <StyleSelection
+                        weightOption={weightOption}
+                        onWeightSelect={handleWeightSelect}
+                        isContinueClicked={isContinueClicked}
+                        isLicenceOpen={isLicenceOpen}
+                        onContinue={handleContinue}
+                        selectedPackage={selectedPackage}
+                        customizing={customizing}
+                        onNavigateHome={onNavigateHome}
+                        customLicenses={{
+                          customPrintLicense,
+                          customWebLicense,
+                          customAppLicense,
+                          customSocialLicense,
+                        }}
+                        cartFont={cartFont}
+                        selectedFonts={selectedFonts}
+                        selectedStyles={selectedStyles}
+                        onUpdateFonts={handleUpdateFonts}
+                        onUpdateStyles={handleUpdateStyles}
+                        onRemoveStyle={handleRemoveStyle}
+                      />
+                      <LicenseSelection
+                        isOpen={isLicenceOpen}
+                        weightOption={weightOption}
+                        selectedPackage={selectedPackage}
+                        customizing={customizing}
+                        onPackageSelect={handlePackageSelect}
+                        onCustomizeClick={handleCustomize}
+                        customLicenses={{
+                          customPrintLicense,
+                          customWebLicense,
+                          customAppLicense,
+                          customSocialLicense,
+                        }}
+                        onLicenseSelect={handleLicenseSelect}
+                        showingCustom={customizing}
+                      />
+                    </Stage1Container>
+                  </motion.div>
+              </AnimatePresence>
+            </motion.div>
+            <motion.div
+              key="main-summary"
+              variants={contentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <CartSummary
+                weightOption={weightOption}
+                selectedPackage={selectedPackage}
+                customizing={customizing}
+                customLicenses={{
+                  customPrintLicense,
+                  customWebLicense,
+                  customAppLicense,
+                  customSocialLicense,
+                }}
+                onRemoveStyle={handleRemoveStyle}
+                onRemoveLicense={handleRemoveLicense}
+                onRemovePackage={handleRemovePackage}
+                onRemoveFont={handleRemoveFont}
+                onAddLicense={handleAddLicense}
+                showPaymentForm={showPaymentForm}
+                selectedPaymentMethod={selectedPaymentMethod}
+                isStripeFormComplete={isStripeFormComplete}
+                isCheckoutDisabled={isCheckoutDisabled}
+                isProcessing={isProcessing}
+                onProceed={handleProceed}
+                isMobileLayout={isMobile}
+                totalSectionRef={totalSectionRef}
+                hasSelections={
+                  !!(
+                    weightOption ||
+                    selectedPackage ||
+                    (customizing && getActiveLicenses().length > 0)
+                  )
+                }
+                isLoadingPayment={isLoadingPayment}
+                currentStage={getCurrentStage()}
+                showUsageSelection={showUsageSelection}
+                showRegistration={showRegistration}
+                currentUser={currentUser}
+                onScrollToTop={scrollToTop}
               />
             </motion.div>
           </CartContent>
         )}
+
       </CartPanelContainer>
 
       {router.pathname === "/Typefaces" && (
@@ -575,6 +755,9 @@ export const CartPanel = ({
   onClose,
   onNavigateHome,
   setIsLoggedIn,
+  billingDetails,
+  currentUser,
+  isLoggedIn,
 }) => {
   return (
     <CartProvider
@@ -582,12 +765,16 @@ export const CartPanel = ({
       isOpen={isOpen}
       setIsLoggedIn={setIsLoggedIn}
       onNavigateHome={onNavigateHome}
+      currentUser={currentUser}
+      billingDetails={billingDetails}
+      isLoggedIn={isLoggedIn}
     >
       <CartPanelContent
         isOpen={isOpen}
         onClose={onClose}
         onNavigateHome={onNavigateHome}
         setIsLoggedIn={setIsLoggedIn}
+        billingDetails={billingDetails}
       />
     </CartProvider>
   );

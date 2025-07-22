@@ -19,23 +19,6 @@ export const FONT_BASE_PRICES = {
       'Italic': 1.1,
       'Display': 1.3,
     }
-  },
-  // Mock fonts for testing (remove when adding real fonts)
-  'helvetica-neue': {
-    basePrice: 150, // Helvetica is more expensive
-    styleMultipliers: {
-      'Regular': 1.0,
-      'Bold': 1.2,
-      'Italic': 1.1,
-    }
-  },
-  'adobe-garamond': {
-    basePrice: 120,
-    styleMultipliers: {
-      'Regular': 1.0,
-      'Semibold': 1.3,
-      'Italic': 1.1,
-    }
   }
 };
 

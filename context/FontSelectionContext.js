@@ -36,48 +36,12 @@ export const FontSelectionProvider = ({ children }) => {
         setError(error);
         setAvailableFonts([]);
       } else {
-        // TEMPORARY: Add mock fonts for testing multi-font functionality
-        // TO REVERT: Replace this entire block with: setAvailableFonts(fonts || []);
-        const mockFonts = [
-          {
-            id: 'mock-helvetica-id',
-            name: 'Helvetica Neue',
-            slug: 'helvetica-neue',
-            description: 'A classic sans-serif typeface',
-            designer: 'Max Miedinger',
-            foundry: 'Linotype',
-            featured: true,
-            font_styles: [
-              { id: 'helvetica-regular', name: 'Regular', weight: 400, style: 'normal' },
-              { id: 'helvetica-bold', name: 'Bold', weight: 700, style: 'normal' },
-              { id: 'helvetica-italic', name: 'Italic', weight: 400, style: 'italic' }
-            ]
-          },
-          {
-            id: 'mock-garamond-id',
-            name: 'Adobe Garamond',
-            slug: 'adobe-garamond',
-            description: 'An elegant serif typeface',
-            designer: 'Robert Slimbach',
-            foundry: 'Adobe',
-            featured: true,
-            font_styles: [
-              { id: 'garamond-regular', name: 'Regular', weight: 400, style: 'normal' },
-              { id: 'garamond-semibold', name: 'Semibold', weight: 600, style: 'normal' },
-              { id: 'garamond-italic', name: 'Italic', weight: 400, style: 'italic' }
-            ]
-          }
-        ];
-
-        // Combine real fonts with mock fonts for testing
-        const allFonts = [...(fonts || []), ...mockFonts];
-        setAvailableFonts(allFonts);
+        setAvailableFonts(fonts || []);
       }
 
       // Set initial selected font
-      const allFonts = availableFonts.length > 0 ? availableFonts : (fonts || []);
-      if (allFonts && allFonts.length > 0) {
-        setSelectedFont(allFonts[0]);
+      if (fonts && fonts.length > 0) {
+        setSelectedFont(fonts[0]);
         setCurrentFontIndex(0);
       }
     } catch (err) {

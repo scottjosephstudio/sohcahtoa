@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
-import { supabase } from "../supabase/Supabase";
+import { getSupabaseClient } from "../../lib/database/supabaseClient";
 import { generateSessionId, getBrowserInfo, getClientIP } from "./utils";
 
 const CookiesPanelContext = createContext({
@@ -92,7 +92,7 @@ export function CookiesPanelProvider({
   const checkDatabaseConsent = async (currentSessionId) => {
     debugLog("Checking database consent for session:", currentSessionId);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await getSupabaseClient()
         .from("cookie_consent")
         .select("consent_given")
         .eq("session_id", currentSessionId)
@@ -132,7 +132,7 @@ export function CookiesPanelProvider({
       const {
         data: { user },
         error: userError,
-      } = await supabase.auth.getUser();
+      } = await getSupabaseClient().auth.getUser();
       if (userError) {
         debugLog("User auth error (continuing as anonymous):", userError);
       }
@@ -147,7 +147,7 @@ export function CookiesPanelProvider({
         client_ip: clientIP,
       };
       debugLog("Insert data:", insertData);
-      const { data, error } = await supabase
+      const { data, error } = await getSupabaseClient()
         .from("cookie_consent")
         .insert([insertData])
         .select();

@@ -1,5 +1,7 @@
 import React from "react";
 import { LoginForm } from "./LoginForm";
+import styled from "styled-components";
+import { motion } from "framer-motion";
 import {
   StepContainer,
   SectionWrapper,
@@ -13,8 +15,47 @@ import {
   RegisterButton,
   FormDivider,
   buttonVariants,
-  togglePasswordVariants,
+  togglePasswordButtonVariants,
 } from "../styles";
+
+// Animated loading components for registration
+const AnimatedLoading = styled(motion.div)`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: inherit;
+  color: inherit;
+`;
+
+const LoadingText = styled.span`
+  font-size: inherit;
+  letter-spacing: 0.8px;
+  color: inherit;
+  font-weight: normal;
+`;
+
+const LoadingDot = styled(motion.span)`
+  display: inline-block;
+  margin-top: 6px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+`;
+
+// Error message component
+const ErrorMessage = styled.div`
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #ffcdd2;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.8px;
+`;
 
 const countryCodeMap = {
   "united kingdom": "GB",
@@ -65,6 +106,7 @@ const validatePostcode = (value, country) => {
 export const Registration = ({
   registrationData,
   onRegistrationInput,
+  onRegistrationFocus,
   onRegister,
   showLoginForm,
   onLoginToggle,
@@ -75,6 +117,7 @@ export const Registration = ({
   isRegistrationFormValid,
   loginData,
   onLoginInput,
+  onLoginFocus,
   onLogin,
   isLoginFormValid,
   emailError,
@@ -85,6 +128,11 @@ export const Registration = ({
   isResettingPassword,
   setIsResettingPassword,
   isLoggingIn,
+  error,
+  onErrorClear,
+  isRegistering,
+  onClearRegistrationErrors,
+  clearLoginErrors,
 }) => {
   const [fieldErrors, setFieldErrors] = React.useState({
     country: "",
@@ -108,6 +156,37 @@ export const Registration = ({
     city: false,
   });
 
+  // Clear all field errors - same logic as handleInputChange but for all fields
+  const clearAllFieldErrors = () => {
+    setShowFieldErrors({
+      country: false,
+      postcode: false,
+      firstName: false,
+      surname: false,
+      email: false,
+      password: false,
+      street: false,
+      city: false,
+    });
+    setFieldErrors({
+      country: "",
+      postcode: "",
+      firstName: "",
+      surname: "",
+      email: "",
+      password: "",
+      street: "",
+      city: "",
+    });
+  };
+
+  // Clear field errors when switching to login
+  React.useEffect(() => {
+    if (onClearRegistrationErrors) {
+      clearAllFieldErrors();
+    }
+  }, [onClearRegistrationErrors]);
+
   const handleInputChange = (fieldName, value) => {
     // Clear error display when typing
     setShowFieldErrors((prev) => ({
@@ -119,6 +198,11 @@ export const Registration = ({
       ...prev,
       [fieldName]: "",
     }));
+
+    // Clear registration error when user starts typing
+    if (error && error.message && onErrorClear) {
+      onErrorClear();
+    }
 
     onRegistrationInput(fieldName, value);
   };
@@ -240,8 +324,48 @@ export const Registration = ({
     return chunked;
   };
 
+  React.useEffect(() => {
+    // Scroll to top when registration form first appears
+    const cartPanel = document.querySelector('[data-cart-panel]');
+    if (cartPanel) {
+      cartPanel.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    } else {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  }, []); // Empty dependency array - runs once on mount
+
+  React.useEffect(() => {
+    if (error && error.message) {
+      // Scroll to top of the cart panel when error appears
+      const cartPanel = document.querySelector('[data-cart-panel]');
+      if (cartPanel) {
+        cartPanel.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      } else {
+        // Fallback to window scroll if cart panel not found
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [error]);
+
   return (
     <StepContainer $isRegistration>
+      {error && error.message && (
+        <ErrorMessage>
+          {error.message}
+        </ErrorMessage>
+      )}
       {fields.map((section, sectionIndex) => (
         <SectionWrapper
           key={section.section}
@@ -265,6 +389,7 @@ export const Registration = ({
                         onChange={(e) =>
                           handleInputChange(field.name, e.target.value)
                         }
+                        onFocus={() => onRegistrationFocus(field.name)}
                         onBlur={(e) => handleBlur(field.name, e.target.value)}
                         $hasError={showFieldErrors[field.name]}
                         placeholder={
@@ -277,7 +402,7 @@ export const Registration = ({
                       <TogglePasswordButton
                         type="button"
                         onClick={onTogglePassword}
-                        variants={togglePasswordVariants}
+                        variants={togglePasswordButtonVariants}
                         initial="initial"
                         whileHover="hover"
                       >
@@ -291,6 +416,7 @@ export const Registration = ({
                       onChange={(e) =>
                         handleInputChange(field.name, e.target.value)
                       }
+                      onFocus={() => onRegistrationFocus(field.name)}
                       onBlur={(e) => handleBlur(field.name, e.target.value)}
                       $hasError={showFieldErrors[field.name]}
                       placeholder={
@@ -336,7 +462,64 @@ export const Registration = ({
           Object.values(fieldErrors).some((error) => error)
         }
       >
-        Register
+        {isRegistering ? (
+          <AnimatedLoading>
+            <LoadingText>Processing Registration</LoadingText>
+            <LoadingDot 
+              initial="initial"
+              animate="animate"
+              variants={{
+                initial: { opacity: 0, scale: 0.5 },
+                animate: { 
+                  opacity: [0, 1, 1, 0],
+                  scale: [0.5, 1, 1, 0.5],
+                  transition: {
+                    duration: 1.2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0
+                  }
+                }
+              }} 
+            />
+            <LoadingDot 
+              initial="initial"
+              animate="animate"
+              variants={{
+                initial: { opacity: 0, scale: 0.5 },
+                animate: { 
+                  opacity: [0, 1, 1, 0],
+                  scale: [0.5, 1, 1, 0.5],
+                  transition: {
+                    duration: 1.2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.2
+                  }
+                }
+              }} 
+            />
+            <LoadingDot 
+              initial="initial"
+              animate="animate"
+              variants={{
+                initial: { opacity: 0, scale: 0.5 },
+                animate: { 
+                  opacity: [0, 1, 1, 0],
+                  scale: [0.5, 1, 1, 0.5],
+                  transition: {
+                    duration: 1.2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.4
+                  }
+                }
+              }} 
+            />
+          </AnimatedLoading>
+        ) : (
+          "Register"
+        )}
       </RegisterButton>
 
       <FormDivider ref={formDividerRef}>
@@ -345,10 +528,11 @@ export const Registration = ({
           onLoginToggle={onLoginToggle}
           loginData={loginData}
           onLoginInput={onLoginInput}
+          onLoginFocus={onLoginFocus}
           onLogin={onLogin}
           isLoginFormValid={isLoginFormValid}
-          emailError="Invalid Email"
-          passwordError="Invalid Password"
+          emailError={emailError}
+          passwordError={passwordError}
           showPassword={showPassword}
           onTogglePassword={onTogglePassword}
           onResetPasswordClick={onResetPasswordClick}
@@ -357,6 +541,7 @@ export const Registration = ({
           isResettingPassword={isResettingPassword}
           setIsResettingPassword={setIsResettingPassword}
           isLoggingIn={isLoggingIn}
+          clearLoginErrors={clearLoginErrors}
         />
       </FormDivider>
     </StepContainer>

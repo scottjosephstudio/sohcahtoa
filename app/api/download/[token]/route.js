@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '../../../../lib/database/supabaseClient';
+import { getSupabaseClient } from '../../../../lib/database/supabaseClient';
 import FontSecurity from '../../../../lib/fontSecurity';
 import { existsSync } from 'fs';
 import { join } from 'path';

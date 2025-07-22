@@ -90,7 +90,7 @@ export const FontTesterControls = ({
                     whileHover="hover"
                   >
                     <motion.span variants={resetButtonSpanVariants}>
-                      R
+                      ×
                     </motion.span>
                   </ResetButton>
                 </ControlGroup>
@@ -119,7 +119,7 @@ export const FontTesterControls = ({
                     whileHover="hover"
                   >
                     <motion.span variants={resetButtonSpanVariants}>
-                      R
+                      ×
                     </motion.span>
                   </ResetButton>
                 </ControlGroup>
@@ -153,7 +153,7 @@ export const FontTesterControls = ({
                     whileHover="hover"
                   >
                     <motion.span variants={resetButtonSpanVariants}>
-                      R
+                      ×
                     </motion.span>
                   </ResetButton>
                 </ControlGroup>

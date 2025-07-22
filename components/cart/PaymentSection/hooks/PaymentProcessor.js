@@ -86,6 +86,13 @@ const PaymentProcessor = ({
       return;
     }
 
+    // REQUIRED: User must have verified their email address
+    if (!currentUser.email_confirmed_at) {
+      onError(new Error("Please verify your email address before completing your purchase. Check your inbox for a verification email."));
+      setIsProcessing(false);
+      return;
+    }
+
     // REQUIRED: User must have a valid email
     const userEmail = currentUser?.email || currentUser?.dbData?.email || savedRegistrationData?.email;
     if (!userEmail) {
@@ -94,7 +101,7 @@ const PaymentProcessor = ({
       return;
     }
 
-    if (!addressData?.country || !addressData?.postcode) {
+    if (!addressData?.country?.trim() || !addressData?.postcode?.trim()) {
       onError(new Error("Please provide both country and postcode"));
       setIsProcessing(false);
       return;

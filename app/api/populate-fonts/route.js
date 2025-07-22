@@ -4,58 +4,13 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-export async function GET(request) {
-  return Response.json({ 
-    message: 'Populate fonts API is working. Use POST to add JANT font.',
-    timestamp: new Date().toISOString(),
-    hasServiceKey: !!supabaseServiceKey
-  });
-}
-
-export async function POST(request) {
-  try {
-    console.log('Starting JANT font population...');
-    
-    // Check if we have the service role key
-    if (!supabaseServiceKey) {
-      console.error('SUPABASE_SERVICE_ROLE_KEY is not set');
-      return Response.json({ 
-        error: 'Service role key not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.' 
-      }, { status: 500 });
-    }
-
-    // Create admin client with service role key to bypass RLS
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
-    
-    // Check if JANT already exists
-    const { data: existingJant, error: checkError } = await supabaseAdmin
-      .from('font_families')
-      .select('id, name, slug')
-      .eq('slug', 'jant')
-      .single();
-    
-    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
-      console.error('Error checking for existing JANT font:', checkError);
-      return Response.json({ 
-        error: 'Error checking existing fonts', 
-        details: checkError 
-      }, { status: 500 });
-    }
-    
-    if (existingJant) {
-      console.log('JANT font already exists:', existingJant);
-      return Response.json({ 
-        success: true, 
-        message: 'JANT font already exists in database',
-        data: existingJant
-      });
-    }
-
-    // JANT font family data
-    const jantFontFamily = {
+// Font data configuration
+const FONT_DATA = {
+  jant: {
+    family: {
       name: 'JANT',
       slug: 'jant',
-      description: 'Revival of universal case based on teaching children to draw letters of alphabet by Jan Tschichold.',
+      description: 'Revival of universal case typeface by Jan Tschichold based on teaching children to draw letters of alphabet.',
       designer: 'Scott Joseph',
       foundry: 'Soh Cah Toa',
       release_date: '2026-01-01',
@@ -72,100 +27,175 @@ export async function POST(request) {
         'clig'
       ],
       preview_text: 'The quick brown fox jumps over the lazy dog'
-    };
+    },
+    styles: [
+      {
+        name: 'Regular',
+        slug: 'regular',
+        weight: 400,
+        style: 'normal',
+        is_active: true,
+        font_files: {
+          otf: '/fonts/JANTReg.otf',
+          ttf: '/fonts/JANTReg.ttf',
+          woff: '/fonts/JANTReg.woff',
+          woff2: '/fonts/JANTReg.woff2'
+        },
+        metrics: {
+          units_per_em: 1000,
+          ascender: 800,
+          descender: -200,
+          line_gap: 0,
+          cap_height: 700,
+          x_height: 500
+        },
+        glyph_count: 256,
+        supported_languages: [
+          'en', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'da', 'sv', 'no'
+        ]
+      }
+      // Add more styles here as needed
+    ]
+  },
+  // Add more fonts here
+  // example: {
+  //   family: { ... },
+  //   styles: [ ... ]
+  // }
+};
 
-    // Create font family using admin client
-    console.log('Creating JANT font family...');
-    const { data: fontFamily, error: familyError } = await supabaseAdmin
-      .from('font_families')
-      .insert([jantFontFamily])
-      .select()
-      .single();
+export async function GET(request) {
+  return Response.json({ 
+    message: 'Populate fonts API is working. Use POST to add fonts.',
+    availableFonts: Object.keys(FONT_DATA),
+    timestamp: new Date().toISOString(),
+    hasServiceKey: !!supabaseServiceKey
+  });
+}
 
-    if (familyError) {
-      console.error('Error creating font family:', familyError);
+export async function POST(request) {
+  try {
+    console.log('Starting font population...');
+    
+    // Check if we have the service role key
+    if (!supabaseServiceKey) {
+      console.error('SUPABASE_SERVICE_ROLE_KEY is not set');
       return Response.json({ 
-        error: 'Failed to create font family', 
-        details: familyError 
+        error: 'Service role key not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.' 
       }, { status: 500 });
     }
 
-    console.log('Font family created successfully:', fontFamily);
+    // Create admin client with service role key to bypass RLS
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+    
+    const results = [];
+    
+    // Process each font in the configuration
+    for (const [fontSlug, fontData] of Object.entries(FONT_DATA)) {
+      console.log(`Processing font: ${fontSlug}`);
+      
+      // Check if font already exists
+      const { data: existingFont, error: checkError } = await supabaseAdmin
+        .from('font_families')
+        .select('id, name, slug')
+        .eq('slug', fontSlug)
+        .single();
+      
+      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error(`Error checking for existing ${fontSlug} font:`, checkError);
+        results.push({ font: fontSlug, status: 'error', error: checkError });
+        continue;
+      }
+      
+      if (existingFont) {
+        console.log(`${fontSlug} font already exists:`, existingFont);
+        results.push({ font: fontSlug, status: 'exists', data: existingFont });
+        continue;
+      }
 
-    // JANT font style data
-    const jantFontStyle = {
-      font_family_id: fontFamily.id,
-      name: 'Regular',
-      slug: 'regular',
-      weight: 400,
-      style: 'normal',
-      is_active: true,
-      font_files: {
-        otf: '/fonts/JANTReg.otf',
-        ttf: '/fonts/JANTReg.ttf',
-        woff: '/fonts/JANTReg.woff',
-        woff2: '/fonts/JANTReg.woff2'
-      },
-      metrics: {
-        units_per_em: 1000,
-        ascender: 800,
-        descender: -200,
-        line_gap: 0,
-        cap_height: 700,
-        x_height: 500
-      },
-      glyph_count: 256,
-      supported_languages: [
-        'en', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'da', 'sv', 'no'
-      ]
-    };
+      // Create font family
+      console.log(`Creating ${fontSlug} font family...`);
+      const { data: fontFamily, error: familyError } = await supabaseAdmin
+        .from('font_families')
+        .insert([fontData.family])
+        .select()
+        .single();
 
-    // Create font style using admin client
-    console.log('Creating JANT font style...');
-    const { data: fontStyle, error: styleError } = await supabaseAdmin
-      .from('font_styles')
-      .insert([jantFontStyle])
-      .select()
-      .single();
+      if (familyError) {
+        console.error(`Error creating ${fontSlug} font family:`, familyError);
+        results.push({ font: fontSlug, status: 'error', error: familyError });
+        continue;
+      }
 
-    if (styleError) {
-      console.error('Error creating font style:', styleError);
-      return Response.json({ 
-        error: 'Failed to create font style', 
-        details: styleError 
-      }, { status: 500 });
+      console.log(`${fontSlug} font family created successfully:`, fontFamily);
+
+      // Create font styles
+      const createdStyles = [];
+      for (const styleData of fontData.styles) {
+        const styleWithFamilyId = {
+          ...styleData,
+          font_family_id: fontFamily.id
+        };
+
+        console.log(`Creating ${fontSlug} ${styleData.name} style...`);
+        const { data: fontStyle, error: styleError } = await supabaseAdmin
+          .from('font_styles')
+          .insert([styleWithFamilyId])
+          .select()
+          .single();
+
+        if (styleError) {
+          console.error(`Error creating ${fontSlug} ${styleData.name} style:`, styleError);
+          results.push({ 
+            font: fontSlug, 
+            style: styleData.name, 
+            status: 'error', 
+            error: styleError 
+          });
+          continue;
+        }
+
+        console.log(`${fontSlug} ${styleData.name} style created successfully:`, fontStyle);
+        createdStyles.push(fontStyle);
+      }
+
+      // Verify the complete font data
+      const { data: verifyFamily, error: verifyError } = await supabaseAdmin
+        .from('font_families')
+        .select(`
+          *,
+          font_styles (*)
+        `)
+        .eq('slug', fontSlug)
+        .single();
+
+      if (verifyError) {
+        console.error(`Error verifying ${fontSlug} font data:`, verifyError);
+        results.push({ 
+          font: fontSlug, 
+          status: 'error', 
+          error: verifyError 
+        });
+        continue;
+      }
+
+      results.push({
+        font: fontSlug,
+        status: 'success',
+        data: {
+          family: fontFamily,
+          styles: createdStyles,
+          verification: verifyFamily
+        }
+      });
+
+      console.log(`${fontSlug} font population completed successfully!`);
     }
-
-    console.log('Font style created successfully:', fontStyle);
-
-    // Verify the complete font data
-    const { data: verifyFamily, error: verifyError } = await supabaseAdmin
-      .from('font_families')
-      .select(`
-        *,
-        font_styles (*)
-      `)
-      .eq('slug', 'jant')
-      .single();
-
-    if (verifyError) {
-      console.error('Error verifying font data:', verifyError);
-      return Response.json({ 
-        error: 'Failed to verify font data', 
-        details: verifyError 
-      }, { status: 500 });
-    }
-
-    console.log('JANT font population completed successfully!');
     
     return Response.json({ 
       success: true, 
-      message: 'JANT font successfully added to database',
-      data: {
-        family: fontFamily,
-        style: fontStyle,
-        verification: verifyFamily
-      }
+      message: 'Font population completed',
+      results
     });
 
   } catch (error) {

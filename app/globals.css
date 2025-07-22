@@ -48,7 +48,7 @@ body {
 
 /* Primary mottled paper texture - with finer grain */
 body::before {
-  content: "";
+  content: '';
   position: fixed;
   top: 0;
   left: 0;
@@ -59,8 +59,26 @@ body::before {
   mix-blend-mode: multiply;
   z-index: -1;
   pointer-events: none;
-  -webkit-transition: opacity 0.05s, -webkit-transform 0.05s;
-  transition: opacity 0.05s, transform 0.05s;
+}
+
+/* Test alignment wrapper styles */
+.test-alignment-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+.test-alignment-wrapper::before {
+  content: '';
+  position: fixed;
+  top: 109px;
+  left: 0;
+  right: 0;
+  height: 0px;
+  background-color: #000;
+  z-index: 10001;
 }
 
 a, button, [role="button"] {
@@ -171,6 +189,19 @@ body.typefaces-page .bottom-blur-overlay {
   display: none;
 }
 
+/* Hide body pseudo-elements when modals are open */
+body.modal-open::before,
+body.modal-open::after,
+body.dashboard-open::before,
+body.dashboard-open::after {
+  display: none !important;
+}
+
+body.modal-open .bottom-blur-overlay,
+body.dashboard-open .bottom-blur-overlay {
+  display: none !important;
+}
+
 ::selection {
   background: rgb(51, 255, 0);
 }
@@ -185,7 +216,39 @@ button {
   border: none;
   cursor: pointer;
   font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
+
+/* Remove focus outline globally */
+*:focus {
+  outline: none;
+}
+
+/* Remove focus outline for specific interactive elements */
+button:focus,
+input:focus,
+textarea:focus,
+select:focus,
+a:focus,
+[role="button"]:focus,
+[tabindex]:focus {
+  outline: none;
+}
+
+/* For accessibility, you can optionally add a custom focus indicator */
+/* Uncomment the following if you want a custom focus indicator */
+/*
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #006efe;
+  outline-offset: 2px;
+}
+*/
 
 /* Base transitions for page animations */
 .page-transition-enter {

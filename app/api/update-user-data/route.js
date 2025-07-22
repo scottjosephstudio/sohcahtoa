@@ -15,78 +15,64 @@ export async function POST(request) {
   // Check if service is available
   if (!supabaseService) {
     return NextResponse.json(
-      { success: false, error: 'Update service not available - missing environment variables' },
+      { success: false, error: 'User service not available - missing environment variables' },
       { status: 503 }
     );
   }
 
   try {
-    const body = await request.json();
+    const requestData = await request.json();
     const { 
-      auth_user_id, 
-      email, 
-      street_address, 
-      city, 
-      postal_code, 
-      country, 
-      newsletter_subscribed 
-    } = body;
+      userId,
+      street_address,
+      city,
+      postal_code,
+      country
+    } = requestData;
 
-    console.log('Updating user data for:', { auth_user_id, email });
-    console.log('Using service role key:', !!supabaseServiceKey);
-
-    if (!auth_user_id) {
-      return Response.json(
-        { error: 'Missing required auth_user_id' },
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required field: userId' },
         { status: 400 }
       );
     }
 
-    // Update user record in database
+    console.log('Updating user billing details for:', userId);
+
+    // Update user record
     const { data: updatedUser, error: updateError } = await supabaseService
       .from('users')
       .update({
-        email,
-        street_address,
-        city,
-        postal_code,
-        country,
-        newsletter_subscribed,
+        street_address: street_address || null,
+        city: city || null,
+        postal_code: postal_code || null,
+        country: country || null,
         updated_at: new Date().toISOString()
       })
-      .eq('auth_user_id', auth_user_id)
+      .eq('auth_user_id', userId)
       .select()
       .single();
 
     if (updateError) {
       console.error('Database error:', updateError);
-      return Response.json(
-        { 
-          error: 'Failed to update user data', 
-          details: updateError 
-        },
+      return NextResponse.json(
+        { success: false, error: 'Failed to update user data' },
         { status: 500 }
       );
     }
 
-    console.log('Successfully updated user:', updatedUser.email);
-    return Response.json({ 
-      success: true, 
-      user: updatedUser 
+    console.log('User billing details updated successfully:', updatedUser.email);
+
+    return NextResponse.json({
+      success: true,
+      user: updatedUser,
+      message: 'User billing details updated successfully'
     });
 
   } catch (error) {
     console.error('Update user data error:', error);
-    return Response.json(
-      { 
-        error: 'Failed to update user data', 
-        details: {
-          message: error.message,
-          details: error.stack,
-          hint: error.hint || '',
-          code: error.code || ''
-        }
-      },
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }

@@ -493,8 +493,10 @@ export const FormGroup = styled.div.withConfig({
     if (props.fieldName === "country") {
       return `
         margin-top: 0px;
+        margin-bottom: 6px;
         @media (max-width: 1200px) {
           margin-top: 0px;
+          margin-bottom: 0px;
         }
       `;
     }
@@ -502,6 +504,29 @@ export const FormGroup = styled.div.withConfig({
       return `
         @media (max-width: 1200px) {
           margin-top: 8px;
+        }
+      `;
+    }
+    if (props.fieldName === "contactPhone") {
+      return `
+        @media (max-width: 1200px) {
+          margin-top: 8px;
+          
+          input {
+            margin-bottom: 6px;
+          }
+        }
+      `;
+    }
+        if (props.fieldName === "address") {
+      return `
+        input {
+          margin-bottom: -2px;
+        }
+        @media (max-width: 1200px) {
+          input {
+            margin-bottom: 6px;
+          }
         }
       `;
     }
@@ -702,7 +727,7 @@ export const Button = styled(motion.button)`
 export const RegisterButton = styled(motion.button)`
   width: 100%;
   padding: 10px 12px 8px 12px;
-  margin-top: 6px;
+  margin-bottom: -6px;
   background-color: rgb(16, 12, 8);
   border: 2px solid rgb(16, 12, 8);
   color: white;
@@ -1164,12 +1189,6 @@ export const TogglePasswordButton = styled(motion.button)`
   @media (min-width: 1420px) {
     letter-spacing: 0.8px;
   }
-
-  span:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-  }
 `;
 
 export const FormDivider = styled.div`
@@ -1187,7 +1206,8 @@ export const LoginHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: ${(props) => (props.isExpanded ? "24px" : "12px")};
+  padding-bottom: ${(props) => (props.isExpanded ? "0px" : "0px")};
+
   transition: padding-bottom 0.2s ease;
   letter-spacing: 0.8px;
 
@@ -1235,12 +1255,6 @@ export const LoginToggleButton = styled(motion.button)`
   @media (min-width: 1420px) {
     letter-spacing: 0.8px;
   }
-
-  span:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-  }
 `;
 
 export const LoginFormContainer = styled(motion.div)`
@@ -1259,7 +1273,7 @@ export const LoginFormContainer = styled(motion.div)`
   }
 
   > div {
-    padding-top: 12px;
+    padding-top: 36px;
   }
 
   [data-resetting="true"] & > div:first-child {
@@ -1293,12 +1307,6 @@ export const ResetPasswordLink = styled(motion.button)`
 
   @media (min-width: 1420px) {
     letter-spacing: 0.8px;
-  }
-
-  span:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
   }
 
   [data-resetting="true"] & {
@@ -1548,7 +1556,7 @@ export const AddTypefacesButton = styled.button`
   opacity: ${props => props.disabled ? 0.5 : 1};
   cursor: ${props => props.disabled ? 'default' : 'pointer'};
   transition: opacity 0.2s, background-color 0.2s;
-  margin-bottom: 0px;
+  margin-bottom: 10px;
   overflow: hidden;
 
   > div {
@@ -1595,7 +1603,7 @@ export const AddTypefacesButton = styled.button`
 export const CustomizeButton = styled(motion.button)`
   width: 100%;
   padding: 10px 12px 8px 12px;
-  margin-top: 24px;
+  margin-top: 30px;
   background-color: rgb(16, 12, 8);
   border: 2px solid rgb(16, 12, 8);
   color: white;
@@ -1973,16 +1981,19 @@ export const paymentMethodButtonVariants = {
   },
 };
 
-export const togglePasswordVariants = {
+export const togglePasswordButtonVariants = {
   initial: {
+    color: "#006efe",
     textDecoration: "none",
-    textUnderlineOffset: "0px",
     textDecorationThickness: "0px",
+    textUnderlineOffset: "0px",
   },
   hover: {
+    color: "#006efe",
     textDecoration: "underline",
-    textUnderlineOffset: "3px",
     textDecorationThickness: "2px",
+    textUnderlineOffset: "3px",
+    textDecorationColor: "currentColor",
     transition: { duration: 0.2 },
   },
 };
@@ -1990,9 +2001,16 @@ export const togglePasswordVariants = {
 export const loginToggleVariants = {
   initial: {
     color: "rgb(16, 12, 8)",
+    textDecoration: "none",
+    textDecorationThickness: "0px",
+    textUnderlineOffset: "0px",
   },
   hover: {
     color: "#006efe",
+    textDecoration: "underline",
+    textDecorationThickness: "2px",
+    textUnderlineOffset: "3px",
+    textDecorationColor: "currentColor",
     transition: { duration: 0.2 },
   },
 };
@@ -2024,9 +2042,16 @@ export const addLicenseLinkVariants = {
 export const resetPasswordLinkVariants = {
   initial: {
     color: "rgb(16, 12, 8)",
+    textDecoration: "none",
+    textDecorationThickness: "0px",
+    textUnderlineOffset: "0px",
   },
   hover: {
-    color: "#006efe",
+    color: "rgb(16, 12, 8)",
+    textDecoration: "underline",
+    textDecorationThickness: "2px",
+    textUnderlineOffset: "3px",
+    textDecorationColor: "currentColor",
     transition: { duration: 0.2 },
   },
 };

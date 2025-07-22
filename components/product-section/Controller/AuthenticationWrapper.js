@@ -90,6 +90,8 @@ const AuthenticationWrapper = ({ authState, formState, uiState }) => {
                 handleBackToLogin={() => formSetters.setIsResetPassword(false)}
                 handleSubmitNewPassword={formHandlers.handleSubmitNewPassword}
                 isResetting={formState.state.isResetting}
+                resetRateLimitCountdown={formState.state.resetRateLimitCountdown}
+                resetRateLimitMessage={formState.state.resetRateLimitMessage}
               />
             </LoginModal>
           )}
@@ -115,7 +117,8 @@ const AuthenticationWrapper = ({ authState, formState, uiState }) => {
           handleModalClick={uiHandlers.handleModalClick}
           setIsLoginModalOpen={authSetters.setIsDashboardOpen}
           $isSaving={$isSaving}
-          userId={currentUser?.id || currentUser?.dbData?.auth_user_id || null}
+          userId={currentUser?.id || null}
+          currentUser={currentUser}
         />
       )}
     </>

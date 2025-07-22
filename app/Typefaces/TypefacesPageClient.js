@@ -62,9 +62,9 @@ const HeaderContainer = styled(motion.header)`
   }
 `;
 
-export default function TypefacesContent() {
+export default function TypefacesContent({ currentUser, databaseDataLoaded }) {
   const searchParams = useSearchParams();
-  const authStateFlat = useAuthState();
+  const authStateFlat = useAuthState(currentUser, databaseDataLoaded);
   const formState = useFormState();
   const uiState = useUIState();
   const { setIsModalOpen } = usePortal();
@@ -147,9 +147,11 @@ export default function TypefacesContent() {
         isLoggedIn={authStateFlat.isLoggedIn}
         handleLoginClick={authStateFlat.handleLoginClick}
         isNavigatingHome={false}
+        currentUser={authStateFlat.currentUser}
+        databaseDataLoaded={authStateFlat.databaseDataLoaded}
       />
     ),
-    [authStateFlat.isLoggedIn, authStateFlat.handleLoginClick],
+    [authStateFlat.isLoggedIn, authStateFlat.handleLoginClick, authStateFlat.currentUser, authStateFlat.databaseDataLoaded],
   );
 
   // Font info data

@@ -11,12 +11,16 @@ const NavigationContext = createContext({
   previousPath: "",
   $isMenuOpen: false,
   set$isMenuOpen: () => {},
+  isPasswordResetMode: false,
+  passwordResetUser: null,
 });
 
 // Create a provider component
 export function NavigationProvider({ children }) {
   const [$isNavigating, set$isNavigating] = useState(false);
   const [$isMenuOpen, set$isMenuOpen] = useState(false);
+  const [isPasswordResetMode, setIsPasswordResetMode] = useState(false);
+  const [passwordResetUser, setPasswordResetUser] = useState(null);
   const pathname = usePathname();
   const router = useRouter();
   const [currentPath, setCurrentPath] = useState(pathname);
@@ -35,6 +39,35 @@ export function NavigationProvider({ children }) {
     }
   }, [pathname, currentPath]);
 
+  // Listen for password reset mode events
+  useEffect(() => {
+    const handlePasswordResetMode = (event) => {
+      console.log('🔒 Password reset mode activated:', event.detail);
+      setIsPasswordResetMode(event.detail.isActive);
+      setPasswordResetUser(event.detail.user);
+    };
+
+    const handlePasswordResetComplete = (event) => {
+      console.log('🔓 Password reset completed, clearing mode');
+      setIsPasswordResetMode(false);
+      setPasswordResetUser(null);
+      
+      // Clear any stored data
+      if (typeof window !== 'undefined') {
+        delete window.tempPasswordResetUser;
+        delete window.isPasswordResetMode;
+      }
+    };
+
+    window.addEventListener('passwordResetMode', handlePasswordResetMode);
+    window.addEventListener('passwordResetComplete', handlePasswordResetComplete);
+
+    return () => {
+      window.removeEventListener('passwordResetMode', handlePasswordResetMode);
+      window.removeEventListener('passwordResetComplete', handlePasswordResetComplete);
+    };
+  }, []);
+
   // Memoize context value to prevent unnecessary re-renders
   const contextValue = useMemo(
     () => ({
@@ -44,8 +77,10 @@ export function NavigationProvider({ children }) {
       previousPath,
       $isMenuOpen,
       set$isMenuOpen,
+      isPasswordResetMode,
+      passwordResetUser,
     }),
-    [$isNavigating, currentPath, previousPath, $isMenuOpen],
+    [$isNavigating, currentPath, previousPath, $isMenuOpen, isPasswordResetMode, passwordResetUser],
   );
 
   return (

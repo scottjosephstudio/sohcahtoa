@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase, supabaseService } from '../../../lib/database/supabaseClient';
+import { getSupabaseClient, supabaseService } from '../../../lib/database/supabaseClient';
 import { PurchaseService } from '../../../lib/database/fontService';
 import Stripe from 'stripe';
 
@@ -86,7 +86,8 @@ export async function POST(request) {
     // Check current auth state
     let currentAuthUser = null;
     try {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const supabase = getSupabaseClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
       currentAuthUser = authUser;
       console.log('🔍 Current auth state:', {
         hasAuthUser: !!authUser,

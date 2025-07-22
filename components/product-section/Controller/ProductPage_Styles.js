@@ -2,7 +2,7 @@ import styled, { keyframes } from "styled-components";
 import { motion } from "framer-motion";
 
 // Cross-browser text decoration mixins
-const textDecorationMixin = `
+export const textDecorationMixin = `
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
@@ -44,7 +44,7 @@ const textDecorationNone = `
 `;
 
 // Font normalization mixin for consistent rendering across devices
-const fontNormalization = `
+export const fontNormalization = `
   font-family: 'Jant', sans-serif;
   font-weight: normal;
   -webkit-font-smoothing: antialiased;
@@ -90,7 +90,7 @@ export const UserDashboard = styled(motion.div)`
   max-width: 100%;
   height: 100vh;
   background: #e0e0e0; // Changed to match cart
-  z-index: 65;
+  z-index: 891;
   display: flex;
   flex-direction: column;
 
@@ -291,7 +291,7 @@ export const LogoutButton = styled(motion.button)`
   position: fixed;
   right: 20px;
   top: 35px;
-  z-index: 2;
+  z-index: 80;
 
   &:hover {
     text-shadow:
@@ -1036,71 +1036,94 @@ export const ResetPasswordLink = styled(motion.button)`
 
 export const glowing = keyframes`
   0% {
-    background-position: 0 0;
+    background-position: 0% 50%;
   }
   50% {
-    background-position: 300% 0;
+    background-position: 100% 50%;
   }
   100% {
-    background-position: 0 0;
+    background-position: 0% 50%;
   }
 `;
 
 export const pulse = keyframes`
   0% {
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3);
   }
-  50% {
-    box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0), inset 0 0 10px rgba(255, 255, 255, 0.4);
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0), inset 0 0 20px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+`;
+
+export const fadeIn = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 `;
 
 export const SuccessMessage = styled(motion.div)`
   color: #fff;
-  background-color: rgba(120, 120, 120, 0.2);
-  padding: 10px 12px 8px 12px;
-  border-radius: 10px;
+  background-color: rgba(120, 120, 120, 0.15);
+  padding: 12px 16px 10px 16px;
+  border-radius: 12px;
   margin-top: 6px;
   text-align: center;
   font-size: 20px;
   letter-spacing: 0.8px;
-  line-height: 20px;
+  line-height: 24px;
   position: relative;
-  text-shadow: 0 0 0px rgba(255, 255, 255, 0.5);
-  animation: ${pulse} 1.5s infinite;
-  opacity: 0; /* Start with opacity 0 */
-  animation-delay: 0.5s; /* Delay the text appearance */
-  animation-fill-mode: forwards; /* Ensure the animation stays in the final state */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  animation: ${fadeIn} 0.6s ease-out, ${pulse} 2s ease-in-out infinite 0.6s;
+  opacity: 1;
+  transform: translateY(0);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 
   &::before {
     content: "";
     position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    border-radius: 10px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 12px;
     background: linear-gradient(
-      45deg,
-      #a0a0a0,
-      #ffffff,
-      #707070,
-      #ffffff,
-      #a0a0a0,
-      #ffffff
+      135deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.1)
     );
-    background-size: 300%;
+    background-size: 200% 200%;
     z-index: -1;
-    animation: ${glowing} 3s linear infinite;
-    filter: brightness(1);
+    animation: ${glowing} 4s ease-in-out infinite;
+    opacity: 0.8;
   }
 
-  &.animate {
-    opacity: 1; /* Fade in the text */
-    transition: opacity 0.5s ease-in; /* Smooth transition for opacity */
+  &::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    border-radius: 12px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.2),
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.2)
+    );
+    z-index: -2;
+    opacity: 0.3;
   }
 `;
 
@@ -1145,12 +1168,15 @@ export const FormGroup = styled.div`
     @media (max-width: 1200px) {
       margin-top: 0px;
     }
-  }  &.postcode-group {
+  }
+  
+  &.postcode-group {
     margin-top: 0px;
    
     @media (max-width: 1200px) {
       margin-top: 8px;
-   }
+    }
+  }
 
   &.country-group {
     margin-top: 0px;
@@ -1158,6 +1184,10 @@ export const FormGroup = styled.div`
     @media (max-width: 1200px) {
       margin-top: 16px;
     }
+  }
+
+  &.reset-group {
+    margin-bottom: 6px;
   }
 `;
 
@@ -1174,8 +1204,8 @@ export const Label = styled.label`
   letter-spacing: 0.8px;
   ${textDecorationMixin}
   color: #f9f9f9;
-  margin-top: 6px;
-  margin-bottom: 16px;
+  margin-top: 0px;
+  margin-bottom: 10px;
 `;
 
 export const DashboardLabel = styled.label`
@@ -1197,7 +1227,7 @@ export const Input = styled.input`
   width: 100%;
   padding: 10px 12px 8px 12px;
   border-radius: 10px;
-  margin-bottom: 0px;
+  margin-bottom: 3px;
   color: ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
   background-color: #f9f9f9;
   border: 2px solid ${(props) => (props.$hasError ? "#FF0000" : "#f9f9f9;")};
@@ -1271,6 +1301,7 @@ export const TogglePasswordButton = styled(motion.button)`
   transform: translateY(-50%);
   background: none;
   border: none;
+  outline: none;
   color: ${(props) => (props.disabled ? "rgba(0, 110, 254, 0.7)" : "#006efe")};
   cursor: ${(props) => (props.disabled ? "default" : "pointer")};
   font-size: 20px;

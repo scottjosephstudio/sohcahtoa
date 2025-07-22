@@ -3,6 +3,7 @@ import StyledComponentsRegistry from "./config/registry";
 import "./globals.css";
 import Favicon from "./config/favicon";
 import ClientLayout from "./components/ClientLayout";
+import DevSecurePanel from "./components/DevSecurePanel";
 
 export const dynamic = "force-dynamic";
 
@@ -177,6 +178,7 @@ export default function RootLayout({ children }) {
           <ClientLayout>{children}</ClientLayout>
         </StyledComponentsRegistry>
         <div className="bottom-blur-overlay"></div>
+        {/* <DevSecurePanel /> */}
       </body>
     </html>
   );
