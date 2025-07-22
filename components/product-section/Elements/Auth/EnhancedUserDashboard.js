@@ -832,7 +832,7 @@ const EnhancedUserDashboard = ({
                                 <PriceText>{formatPrice(purchase.purchase_items?.[0]?.total_price_cents || 0)}</PriceText>
                               </div>
                               {purchase.purchase_items?.[0]?.purchase_orders?.[0]?.usage_type && (
-                                <div style={{ display: 'flex', alignItems: 'right', gap: '12px', fontSize: '20px', color: '#666', opacity: 1 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', fontSize: '20px', color: '#666', opacity: 1 }}>
                                   <span>Usage: {purchase.purchase_items?.[0]?.purchase_orders?.[0]?.usage_type}</span>
                                   <span style={{ fontSize: '20px', opacity: 1 }}>
                                     {formatDate(purchase.purchase_items?.[0]?.purchase_orders?.[0]?.created_at)}
