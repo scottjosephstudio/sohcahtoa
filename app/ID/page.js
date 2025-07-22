@@ -2,7 +2,6 @@
 import React from "react";
 import TypefacesClient from "./TypefaceClient";
 import { getServerUserData } from "../../lib/database/supabaseServer";
-import { headers } from "next/headers";
 
 export const metadata = {
   title: "Typefaces | Scott Joseph Studio",
@@ -22,8 +21,6 @@ export default async function TypefacesPage() {
   return (
     <>
       <TypefacesClient currentUser={currentUser} databaseDataLoaded={!!dbData} />
-      {/* Preload Typefaces page for faster navigation */}
-      <link rel="prefetch" href="/Typefaces" />
     </>
   );
 }

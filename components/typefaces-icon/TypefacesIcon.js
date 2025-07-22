@@ -32,7 +32,7 @@ const TypefacesIcon = ({
     setFadeIn(false);
     const timer = setTimeout(() => {
       setFadeIn(true);
-    }, 100);
+    }, 200);
     return () => clearTimeout(timer);
   }, [pathname]);
 
@@ -41,7 +41,7 @@ const TypefacesIcon = ({
     if (pathname === "/Typefaces") {
       const timer = setTimeout(() => {
         set$isNavigating(false);
-      }, 50);
+      }, 100);
       return () => clearTimeout(timer);
     }
   }, [pathname, set$isNavigating]);
@@ -68,18 +68,7 @@ const TypefacesIcon = ({
     }
     setTimeout(() => {
       set$isNavigating(false);
-    }, 400);
-  };
-
-  // Preload Typefaces page on hover for faster navigation
-  const handleMouseEnter = () => {
-    if (typeof window !== "undefined" && !isTypefacePath) {
-      // Preload the Typefaces page
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.href = typefacesLink;
-      document.head.appendChild(link);
-    }
+    }, 1000);
   };
 
   return (
@@ -95,7 +84,6 @@ const TypefacesIcon = ({
       <TooltipContainer
         className="custom-tooltip no-hover no-underline"
         onClick={handleClick}
-        onMouseEnter={handleMouseEnter}
         whileHover="hover"
         initial="initial"
       >

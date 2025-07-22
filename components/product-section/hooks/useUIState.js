@@ -118,7 +118,7 @@ export const useUIState = (props = {}) => {
           window.dispatchEvent(event);
         }
         setIsNavigatingHome(true);
-      }, 150);
+      }, 300);
     },
     [activeTab],
   );
