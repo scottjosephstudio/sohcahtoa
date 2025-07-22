@@ -2091,12 +2091,12 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn, current
       country: "",
     });
     
-    // Clear login data when switching to reset password mode
-    // This ensures clean state when switching from login to reset password
-    setLoginData({
-      email: "",
-      password: "",
-    });
+    // Only clear login data when switching to reset password mode, not on every focus
+    // This was causing the login form to clear inputs between fields
+    // setLoginData({
+    //   email: "",
+    //   password: "",
+    // });
     
     // Trigger registration error clearing
     setClearRegistrationErrors(true);
@@ -2507,6 +2507,12 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn, current
   };
 
   const handleResetPasswordClick = () => {
+    // Clear login data when switching to reset password mode
+    setLoginData({
+      email: "",
+      password: "",
+    });
+    
     if (cartPanelRef.current && formDividerRef.current) {
       const isMobileView = window.innerWidth <= 768;
 
