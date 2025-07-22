@@ -79,6 +79,7 @@ export const useCartState = () => {
   // Listen for cart state changes (not just localStorage changes)
   useEffect(() => {
     const handleCartUpdate = async () => {
+      console.log('🔄 useCartState: Cart state changed, updating cart count...');
       const savedCart = await secureCartStorage.getCartState();
       if (savedCart) {
         let totalFonts = 0;
@@ -87,6 +88,12 @@ export const useCartState = () => {
         } else if (savedCart.selectedFont) {
           totalFonts = 1;
         }
+        console.log('🔄 useCartState: Cart count calculation:', {
+          selectedFontIds: savedCart.selectedFontIds,
+          selectedFont: savedCart.selectedFont,
+          totalFonts,
+          cartItems: totalFonts
+        });
         setCartItems(totalFonts);
         setIsInCart(totalFonts > 0);
         setWeightOption(savedCart.weightOption || "");
@@ -103,6 +110,7 @@ export const useCartState = () => {
     };
 
     const handleCartCleared = () => {
+      console.log('🔄 useCartState: Cart cleared, setting count to 0');
       setCartItems(0);
       setIsInCart(false);
       setWeightOption("");

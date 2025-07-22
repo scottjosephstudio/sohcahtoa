@@ -1623,8 +1623,31 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn, current
     setHasProceedBeenClicked(false);
     localStorage.removeItem("hasProceedBeenClicked");
 
-    // Clear cart state but preserve authentication
-    localStorage.removeItem("cartState");
+    // Save the empty cart state to persistent storage
+    const emptyCartState = {
+      weightOption: "",
+      selectedPackage: null,
+      customizing: false,
+      customPrintLicense: null,
+      customWebLicense: null,
+      customAppLicense: null,
+      customSocialLicense: null,
+      selectedFonts: [],
+      selectedStyles: {},
+      selectedFontIds: [],
+      selectedFont: null,
+      showRegistration: false,
+      showUsageSelection: false,
+      showPaymentForm: false,
+      isRegistrationComplete: false,
+      selectedUsage: null,
+      eulaAccepted: false,
+      isAuthenticatedAndPending: false,
+      hasProceedBeenClicked: false,
+    };
+    
+    saveCartState(emptyCartState);
+
     // Notify other components that cart was cleared
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('cartCleared'));
@@ -3214,6 +3237,11 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn, current
       selectedFontIds: Array.from(selectedFontIds),
     };
     saveCartState(cartState);
+    
+    // Dispatch custom event to notify cart count components
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cartStateChanged'));
+    }
   };
 
   // NEW: Handle style updates
@@ -3235,6 +3263,11 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn, current
       selectedFontIds: Array.from(selectedFontIds),
     };
     saveCartState(cartState);
+    
+    // Dispatch custom event to notify cart count components
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cartStateChanged'));
+    }
   };
 
   const handleWeightSelect = (newWeightOption) => {
