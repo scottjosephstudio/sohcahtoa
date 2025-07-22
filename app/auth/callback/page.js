@@ -399,16 +399,39 @@ export default function UnifiedVerification() {
 
 // Inner component that uses searchParams
 function VerificationContent() {
-  const [status, setStatus] = useState("verifying");
-  const [message, setMessage] = useState("Processing your request...");
-  const [showSpinner, setShowSpinner] = useState(true);
-  const [isPasswordReset, setIsPasswordReset] = useState(false);
-  const [newPassword, setNewPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
-  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [status, setStatus] = useState("loading");
+  const [message, setMessage] = useState("Processing authentication...");
+  const [user, setUser] = useState(null);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Debug Supabase connection
+  useEffect(() => {
+    const testSupabaseConnection = async () => {
+      try {
+        console.log('🔍 Testing Supabase connection...');
+        const supabase = getSupabaseClient();
+        console.log('✅ Supabase client obtained:', !!supabase);
+        
+        // Test a simple query
+        const { data, error } = await supabase.from('system_config').select('*').limit(1);
+        if (error) {
+          console.error('❌ Supabase connection test failed:', error);
+        } else {
+          console.log('✅ Supabase connection test successful');
+        }
+      } catch (error) {
+        console.error('❌ Supabase connection test error:', error);
+      }
+    };
+    
+    testSupabaseConnection();
+  }, []);
 
   // Log environment info for debugging
   useEffect(() => {
