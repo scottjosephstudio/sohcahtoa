@@ -3097,7 +3097,13 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn, current
         selectedStyles,
       });
 
-      scrollToTop();
+      // Scroll to bottom for mobile devices (768px and below), top for desktop
+      const isMobileView = typeof window !== 'undefined' && window.innerWidth <= 768;
+      if (isMobileView) {
+        scrollToBottom(true);
+      } else {
+        scrollToTop();
+      }
     }
   };
 
