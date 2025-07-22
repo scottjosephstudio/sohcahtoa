@@ -409,6 +409,10 @@ function VerificationContent() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSpinner, setShowSpinner] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [isPasswordReset, setIsPasswordReset] = useState(false);
 
   // Debug Supabase connection
   useEffect(() => {
@@ -1334,7 +1338,7 @@ function VerificationContent() {
             animate="visible"
             exit="hidden"
           >
-            {email && !isPasswordReset && (
+            {finalEmail && !isPasswordReset && (
               <ActionButton 
                 variants={buttonVariants}
                 initial="initial"
