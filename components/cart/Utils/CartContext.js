@@ -28,6 +28,7 @@ import {
 import gsap from 'gsap';
 import VerificationPrompt from '../Forms/VerificationPrompt';
 import secureCartStorage from './secureCartStorage.js';
+import { getAuthCallbackUrl } from '../../../lib/authRedirectUtils';
 
 export const CartContext = createContext();
 
@@ -3298,7 +3299,7 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn, current
       const supabase = getSupabaseClient();
       
       // Use the same redirect URL as registration
-      const redirectTo = `${process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')}/auth/callback`;
+      const redirectTo = getAuthCallbackUrl();
       
       console.log('🔗 Using redirect URL:', redirectTo);
       

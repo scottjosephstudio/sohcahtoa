@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseClient } from '../../../lib/database/supabaseClient';
+import { getAuthCallbackUrl } from '../../../lib/authRedirectUtils';
 
 export async function POST(request) {
   try {
@@ -15,7 +16,7 @@ export async function POST(request) {
     const supabase = getSupabaseClient();
     
     // Use the same redirect URL as the auth callback
-    const redirectTo = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/auth/callback`;
+    const redirectTo = getAuthCallbackUrl();
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectTo

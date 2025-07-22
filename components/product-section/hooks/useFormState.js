@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useUIState } from "./useUIState";
 import { getSupabaseClient } from "../../../lib/database/supabaseClient";
+import { getAuthCallbackUrl } from "../../../lib/authRedirectUtils";
 
 export const useFormState = () => {
   const {
@@ -115,8 +116,8 @@ export const useFormState = () => {
         errorMessage: testError?.message 
       });
       
-      const redirectTo = `${process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')}/auth/callback`;
-      console.log('🔗 Using redirect URL:', redirectTo);
+          const redirectTo = getAuthCallbackUrl();
+    console.log('🔗 Using redirect URL:', redirectTo);
       console.log('🔧 Environment check:', {
         NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
         windowOrigin: typeof window !== 'undefined' ? window.location.origin : 'undefined'
