@@ -200,7 +200,7 @@ const ResendVerificationButton = styled(motion.button)`
   color: #f9f9f9;
   background-color: #006efe;
   border-radius: 10px;
-  margin-top: 0px;
+  margin-top: 8px;
   margin-bottom: 0px;
   cursor: pointer;
   transition: background-color 0.2s;

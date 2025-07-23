@@ -526,19 +526,20 @@ export const useAuthState = (prefetchedUser = null, prefetchedDatabaseDataLoaded
       setIsDashboardOpen(!isDashboardOpen);
     } else {
       // Check if user is authenticated but unverified
-      if (currentUser && !currentUser.email_confirmed_at) {
+      // Only show verification prompt if user is actually authenticated (has valid session)
+      if (currentUser && currentUser.id && !currentUser.email_confirmed_at) {
         // User is unverified, show verification prompt/message
         setIsLoginModalOpen(true);
         setLoginError("Please check your email and verify your account before logging in.");
         setShowResendVerification(true);
       } else {
         // User is not authenticated at all, show normal login modal
-      setIsLoginModalOpen(!isLoginModalOpen);
-      // Clear any previous errors when opening modal
-      if (!isLoginModalOpen) {
-        setLoginError("");
-        setEmailError(false);
-        setPasswordError(false);
+        setIsLoginModalOpen(!isLoginModalOpen);
+        // Clear any previous errors when opening modal
+        if (!isLoginModalOpen) {
+          setLoginError("");
+          setEmailError(false);
+          setPasswordError(false);
           setShowResendVerification(false);
         }
       }
