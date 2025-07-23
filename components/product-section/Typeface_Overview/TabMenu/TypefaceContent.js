@@ -46,13 +46,14 @@ export default forwardRef(function TypefaceContent(
         exit="exit"
         style={{ position: "relative" }}
       >
-        <TypefaceContentContainer>
+        <TypefaceContentContainer $activeTab={currentTab}>
           {currentTab === "specimen" && (
             <SpecimenSection
               variants={variants}
               handleHomeClick={handleHomeClick}
               selectedFont={selectedFont}
               isSpecimenExiting={isSpecimenExiting}
+              isNavigatingHome={isNavigatingHome}
             />
           )}
           {currentTab === "test" && (

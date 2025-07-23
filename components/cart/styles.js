@@ -96,7 +96,7 @@ export const CartContent = styled.div.attrs((props) => {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 20px;
-  padding: 86px 20px 0 20px;
+  padding: 88px 20px 0 20px;
   position: relative;
   z-index: 101;
   font-size: 20px;

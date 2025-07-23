@@ -184,7 +184,7 @@ export const DashboardContent = styled.div`
 `;
 
 export const ContentWrapper = styled.div`
-  padding: 112px 20px 24px 20px;
+  padding: 114px 20px 24px 20px;
 `;
 
 export const DashboardHeader = styled(motion.div)`

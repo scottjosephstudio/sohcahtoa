@@ -133,8 +133,8 @@ export const TypefaceContentContainer = styled.div`
   z-index: 1;
   padding-left: 30px;
   padding-right: 30px;
-  height: 100vh;
-  overflow-y: hidden;
+  height: ${props => props.$activeTab === 'specimen' ? '100vh' : '100vh'};
+  overflow-y: ${props => props.$activeTab === 'specimen' ? 'auto' : 'hidden'};
   padding-bottom: 0px;
   isolation: isolate;
 `;

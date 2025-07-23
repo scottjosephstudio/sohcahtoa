@@ -55,7 +55,7 @@ const TypefaceOverview = forwardRef(
               },
             }}
           >
-            <TypefaceOverviewContainer>
+            <TypefaceOverviewContainer $activeTab={activeTab}>
               <TypefaceContent
                 variants={contentVariants}
                 activeTab={activeTab}
