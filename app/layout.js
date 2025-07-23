@@ -3,7 +3,6 @@ import StyledComponentsRegistry from "./config/registry";
 import "./globals.css";
 import Favicon from "./config/favicon";
 import ClientLayout from "./components/ClientLayout";
-import DevSecurePanel from "./components/DevSecurePanel";
 
 export const dynamic = "force-dynamic";
 

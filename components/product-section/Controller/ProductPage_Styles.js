@@ -129,6 +129,8 @@ export const DashboardContent = styled.div`
   overflow-y: auto;
   background: #e0e0e0; // Changed to match cart
 
+ 
+
   &::-webkit-scrollbar {
     display: none;
   }

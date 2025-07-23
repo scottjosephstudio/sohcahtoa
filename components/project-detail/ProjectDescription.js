@@ -45,24 +45,7 @@ const ProjectDescriptionContainer = styled(motion.div)`
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   overflow: hidden;
   
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    background-size: 200px 200px;
-    background-repeat: repeat;
-    opacity: 0.5;
-    mix-blend-mode: multiply;
-    z-index: 0;
-    pointer-events: none;
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-      border-radius: 10px;
-    }
+
   
   .long-description {
     position: relative;
