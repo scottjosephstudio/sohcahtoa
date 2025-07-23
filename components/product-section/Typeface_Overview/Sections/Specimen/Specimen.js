@@ -30,16 +30,16 @@ const LoadingDot = styled(motion.span)`
 `;
 
 const Section = styled.div`
-  margin-top: 2rem;
   width: 100%;
-  min-height: auto;
+  background-color: transparent;
 `;
 
 const Container = styled.div`
   width: 100%;
-  padding: 0 0px;
+  padding: 0;
   height: auto;
   font-size: 16px;
+  background-color: transparent;
 `;
 
 const Content = styled(motion.div)`
@@ -48,65 +48,117 @@ const Content = styled(motion.div)`
   letter-spacing: 0.8px;
   width: 100%;
   height: 100%;
+  background-color: transparent;
 `;
 
 const FontInfo = styled.div`
-  margin-bottom: 24px;
-  padding: 20px;
-  background: rgba(249, 249, 249, 0.8);
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 116px;
+  padding: 0px 20px;
+  border-left: 2px solid rgb(16, 12, 8);
+  border-right: 2px solid rgb(16, 12, 8);
 `;
 
 const FontName = styled.div`
-  font-size: 24px;
+  background: #e0e0e0;
+  padding: 1px 12px;
+  border-radius: 30px;
+  font-size: 12px;
   letter-spacing: 0.8px;
-  line-height: 28px;
-  color: rgb(16, 12, 8);
-  margin-bottom: 8px;
-  font-weight: 500;
+  color: rgb(16, 2, 8);
+  margin: 0 0 12px 0;
+  display: inline-block;
+  width: fit-content;
+  font-weight: normal;
 `;
 
 const FontDetails = styled.p`
-  font-size: 16px;
+  font-size: 12px;
   letter-spacing: 0.8px;
-  line-height: 20px;
+  line-height: 16px;
   margin: 0;
   color: rgb(16, 12, 8);
-  opacity: 0.8;
 `;
 
 const SpecimenGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
-  margin-bottom: 60px;
-`;
-
-const SpecimenCard = styled(motion.div)`
-  background: rgba(249, 249, 249, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  padding: 24px;
-  transition: all 0.3s ease;
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
+  row-gap: 20px;
+  margin-bottom: 20px;
   
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  /* Mobile first - single column */
+  grid-template-columns: 1fr;
+  grid-template-areas: 
+    "display"
+    "lowercase"
+    "numbers"
+    "pangram"
+    "body"
+    "ligatures";
+  
+  /* Tablet breakpoint - 768px */
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 
+      "display display"
+      "lowercase numbers"
+      "pangram ligatures"
+      "body body";
+  }
+  
+  /* Desktop breakpoint - 1200px */
+  @media (min-width: 1200px) {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas: 
+      "display display display"
+      "lowercase numbers ligatures"
+      "pangram body body";
   }
 `;
 
+const SpecimenCard = styled(motion.div)`
+  position: relative;
+  padding: 0px 12px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+   border-left: 2px solid rgb(16, 12, 8);
+  
+  /* Desktop: 3 columns - specific border logic based on grid areas */
+  @media (min-width: 1200px) {
+    /* Display Headline, Body Text, and Character Pairs get right borders */
+    &[style*="grid-area: display"],
+    &[style*="grid-area: body"],
+    &[style*="grid-area: ligatures"] {
+      border-right: 2px solid rgb(16, 12, 8);
+    }
+  }
+  
+  /* Tablet: 2 columns - show right border on 1st column and Character Pairs */
+  @media (min-width: 768px) and (max-width: 1199px) {
+    &:nth-child(2n-1),
+    &[style*="grid-area: ligatures"] {
+      border-right: 2px solid rgb(16, 12, 8);
+    }
+  }
+  
+  /* Mobile: single column - no right border needed */
+  @media (max-width: 767px) {
+     border-right: 2px solid rgb(16, 12, 8);
+  }
+  
+
+`;
+
 const SpecimenTitle = styled.h3`
-  font-size: 18px;
+  background: #e0e0e0;
+  padding: 1px 12px;
+  border-radius: 30px;
+  font-size: 12px;
   letter-spacing: 0.8px;
-  line-height: 22px;
-  color: rgb(16, 12, 8);
-  margin: 0 0 16px 0;
-  font-weight: 500;
+  color: rgb(16, 2, 8);
+  margin: 0 0 12px 0;
+  display: inline-block;
+  width: fit-content;
+  font-weight: normal;
 `;
 
 const SpecimenText = styled.div`
@@ -118,6 +170,19 @@ const SpecimenText = styled.div`
   margin-bottom: 12px;
   word-wrap: break-word;
   hyphens: auto;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+  overflow: hidden;
+  
+  /* Fixed height for animated display headline */
+  ${props => props.$isAnimated && `
+    height: calc(1.1 * clamp(60px, 8vw, 120px) * 2);
+    
+    @media (max-width: 767px) {
+      height: calc(1.1 * clamp(60px, 8vw, 120px) * 3);
+    }
+  `}
   
   &:last-child {
     margin-bottom: 0;
@@ -129,7 +194,7 @@ const SpecimenDescription = styled.p`
   letter-spacing: 0.6px;
   line-height: 18px;
   color: rgb(16, 12, 8);
-  opacity: 0.6;
+  opacity: 1;
   margin: 12px 0 0 0;
 `;
 
@@ -155,13 +220,13 @@ const fadeVariants = {
 };
 
 const cardVariants = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 0 },
   animate: { 
     opacity: 1, 
     y: 0,
     transition: { duration: 0.4, ease: "easeOut" }
   },
-  exit: { opacity: 0, y: -20 }
+  exit: { opacity: 0, y: -0 }
 };
 
 const useFontLoader = (fontPath) => {
@@ -207,55 +272,143 @@ const useFontLoader = (fontPath) => {
   return { font, loading, error };
 };
 
+// Animated display headline component
+const AnimatedDisplayHeadline = ({ fontFamily }) => {
+  const [displayText, setDisplayText] = useState("");
+  const [isTyping, setIsTyping] = useState(true);
+  const [fontSize, setFontSize] = useState("");
+  
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  
+  // Calculate current font size
+  useEffect(() => {
+    const calculateFontSize = () => {
+      const vw = window.innerWidth / 100;
+      const clampedSize = Math.min(Math.max(60, 8 * vw), 120);
+      setFontSize(`${Math.round(clampedSize)}px`);
+    };
+    
+    calculateFontSize();
+    window.addEventListener('resize', calculateFontSize);
+    return () => window.removeEventListener('resize', calculateFontSize);
+  }, []);
+  
+  useEffect(() => {
+    let timeout;
+    
+    if (isTyping) {
+      if (displayText.length < alphabet.length) {
+        timeout = setTimeout(() => {
+          setDisplayText(alphabet.slice(0, displayText.length + 1));
+        }, 50);
+      } else {
+        // Finished typing alphabet, wait then start deleting
+        timeout = setTimeout(() => {
+          setIsTyping(false);
+        }, 5000);
+      }
+    } else {
+      if (displayText.length > 0) {
+        timeout = setTimeout(() => {
+          setDisplayText(displayText.slice(0, -1));
+        }, 100);
+      } else {
+        // Finished deleting, wait before restarting cycle
+        timeout = setTimeout(() => {
+          setIsTyping(true);
+        }, 1000);
+      }
+    }
+    
+    return () => clearTimeout(timeout);
+  }, [displayText, isTyping, alphabet]);
+  
+  return (
+    <div style={{ position: 'relative' }}>
+      <SpecimenText
+        $fontFamily={fontFamily}
+        $fontSize="clamp(60px, 8vw, 120px)"
+        $lineHeight="1.1"
+        $letterSpacing="clamp(0.8px, 1vw, 0.8px)"
+        $isAnimated={true}
+        style={{ 
+          minWidth: 'fit-content',
+          position: 'relative'
+        }}
+      >
+        {displayText}
+        <span style={{ 
+          position: 'absolute',
+          visibility: 'hidden',
+          pointerEvents: 'none'
+        }}>
+          {alphabet}
+        </span>
+      </SpecimenText>
+      <div style={{
+        position: 'absolute',
+        bottom: '-7px',
+        left: '0',
+        fontSize: '12px',
+        color: 'rgba(16, 12, 8)',
+        fontFamily: fontFamily
+      }}>
+        Font-size: {fontSize}
+      </div>
+    </div>
+  );
+};
+
 // Sample text specimens
 const SPECIMEN_SAMPLES = [
   {
     title: "Display Headline",
     text: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     description: "Uppercase alphabet showcase",
-    fontSize: "36px",
+    fontSize: "clamp(60px, 8vw, 120px)",
     lineHeight: "1.1",
-    letterSpacing: "1.2px"
+    letterSpacing: "clamp(0.8px, 1vw, 0.8px)",
+    isAnimated: true
   },
   {
     title: "Lowercase Alphabet",
     text: "abcdefghijklmnopqrstuvwxyz",
     description: "Lowercase character set",
-    fontSize: "28px",
+    fontSize: "clamp(18px, 3.5vw, 28px)",
     lineHeight: "1.2",
-    letterSpacing: "0.6px"
+    letterSpacing: "clamp(0.3px, 0.8vw, 0.6px)"
   },
   {
     title: "Numbers & Symbols",
     text: "0123456789 !@#$%^&*()",
     description: "Numerals and punctuation",
-    fontSize: "24px",
+    fontSize: "clamp(16px, 3vw, 24px)",
     lineHeight: "1.3",
-    letterSpacing: "0.8px"
+    letterSpacing: "clamp(0.4px, 0.8vw, 0.8px)"
   },
   {
     title: "Pangram",
     text: "The quick brown fox jumps over the lazy dog",
     description: "Contains every letter of the alphabet",
-    fontSize: "20px",
+    fontSize: "clamp(14px, 2.5vw, 20px)",
     lineHeight: "1.4",
-    letterSpacing: "0.8px"
+    letterSpacing: "clamp(0.3px, 0.6vw, 0.8px)"
   },
   {
     title: "Body Text Sample",
     text: "Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. The arrangement of type involves selecting typefaces, point sizes, line lengths, line-spacing, and letter-spacing.",
     description: "Extended text for readability testing",
-    fontSize: "16px",
+    fontSize: "clamp(12px, 2vw, 16px)",
     lineHeight: "1.5",
-    letterSpacing: "0.4px"
+    letterSpacing: "clamp(0.2px, 0.4vw, 0.4px)"
   },
   {
     title: "Character Pairs",
     text: "fi fl ff ffi ffl th ch sh ph qu",
     description: "Common ligatures and letter combinations",
-    fontSize: "28px",
+    fontSize: "clamp(18px, 3.5vw, 28px)",
     lineHeight: "1.2",
-    letterSpacing: "0.8px"
+    letterSpacing: "clamp(0.4px, 0.8vw, 0.8px)"
   }
 ];
 
@@ -314,7 +467,7 @@ export default forwardRef(function SpecimenSection(
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              height: '200px',
+              height: '100%',
               width: '100%',
               fontSize: '16px',
               letterSpacing: '0.8px',
@@ -404,7 +557,7 @@ export default forwardRef(function SpecimenSection(
       </Section>
     );
   }
-
+  
   return (
     <AnimatePresence mode="wait">
       {!isNavigatingHome && !isSpecimenExiting && (
@@ -416,7 +569,50 @@ export default forwardRef(function SpecimenSection(
         >
           <Section>
             <Container>
-              <Content>
+                            <Content>
+                <SpecimenGrid>
+                  {SPECIMEN_SAMPLES.map((sample, index) => {
+                    // Map sample titles to grid area names
+                    const gridAreaMap = {
+                      "Display Headline": "display",
+                      "Lowercase Alphabet": "lowercase", 
+                      "Numbers & Symbols": "numbers",
+                      "Pangram": "pangram",
+                      "Body Text Sample": "body",
+                      "Character Pairs": "ligatures"
+                    };
+                    
+                    const gridArea = gridAreaMap[sample.title];
+                    
+                    return (
+                      <SpecimenCard
+                        key={index}
+                        style={{ gridArea }}
+                        data-label={sample.title}
+                        variants={cardVariants}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <SpecimenTitle>{sample.title}</SpecimenTitle>
+                        {sample.isAnimated ? (
+                          <AnimatedDisplayHeadline fontFamily={fontFamily} />
+                        ) : (
+                          <SpecimenText
+                            $fontFamily={fontFamily}
+                            $fontSize={sample.fontSize}
+                            $lineHeight={sample.lineHeight}
+                            $letterSpacing={sample.letterSpacing}
+                          >
+                            {sample.text}
+                          </SpecimenText>
+                        )}
+                      </SpecimenCard>
+                    );
+                  })}
+                </SpecimenGrid>
+                
                 {selectedFont && (
                   <FontInfo>
                     <FontName>{selectedFont.name}</FontName>
@@ -427,30 +623,6 @@ export default forwardRef(function SpecimenSection(
                     </FontDetails>
                   </FontInfo>
                 )}
-
-                <SpecimenGrid>
-                  {SPECIMEN_SAMPLES.map((sample, index) => (
-                    <SpecimenCard
-                      key={index}
-                      variants={cardVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <SpecimenTitle>{sample.title}</SpecimenTitle>
-                      <SpecimenText
-                        $fontFamily={fontFamily}
-                        $fontSize={sample.fontSize}
-                        $lineHeight={sample.lineHeight}
-                        $letterSpacing={sample.letterSpacing}
-                      >
-                        {sample.text}
-                      </SpecimenText>
-                      <SpecimenDescription>{sample.description}</SpecimenDescription>
-                    </SpecimenCard>
-                  ))}
-                </SpecimenGrid>
               </Content>
             </Container>
           </Section>

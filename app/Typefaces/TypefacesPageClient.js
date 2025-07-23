@@ -184,7 +184,7 @@ export default function TypefacesContent({ currentUser, databaseDataLoaded }) {
         </HeaderContainer>
 
         <Suspense fallback={<div></div>}>
-          <Banner bannerText="// UNDER CONSTRUCTION //" />
+          {!$isNavigating && <Banner bannerText="// UNDER CONSTRUCTION //" />}
           <Spinner />
           <SlotMachine />
           <AuthenticationWrapper

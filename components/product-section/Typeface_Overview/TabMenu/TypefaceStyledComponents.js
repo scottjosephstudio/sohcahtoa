@@ -128,11 +128,12 @@ export const TypefaceSlider = styled(motion.div)`
 `;
 
 export const TypefaceContentContainer = styled.div`
-  margin-top: 2rem;
+  margin-top: 0;
+  padding-top: 88px;
   position: relative;
   z-index: 1;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: ${props => props.$activeTab === 'glyphs' ? '0' : '20px'};
+  padding-right: ${props => props.$activeTab === 'glyphs' ? '0' : '20px'};
   height: ${props => props.$activeTab === 'specimen' ? '100vh' : '100vh'};
   overflow-y: ${props => props.$activeTab === 'specimen' ? 'auto' : 'hidden'};
   padding-bottom: 0px;

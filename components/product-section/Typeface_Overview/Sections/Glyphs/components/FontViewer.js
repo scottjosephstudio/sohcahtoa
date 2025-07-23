@@ -33,12 +33,11 @@ const LoadingDot = styled(motion.span)`
 
 const Container = styled.div`
   width: 100vw;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding: 0 20px;
   height: auto;
   overflow: none;
   font-size: 16px;
-  margin-top: 40px;
+  margin-top: 0;
 `;
 
 const Content = styled(motion.div)`
@@ -233,7 +232,6 @@ const FontViewer = forwardRef(
               justifyContent: 'center',
               height: '100%',
               width: '100%',
-              marginTop: '54px',
               fontSize: '16px',
               letterSpacing: '0.8px',
               color: 'rgb(16, 12, 8)'

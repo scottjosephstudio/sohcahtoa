@@ -3,7 +3,6 @@ import FontViewer from "./components/FontViewer";
 import React, { useRef, forwardRef } from "react";
 
 const Section = styled.div`
-  margin-top: 20px;
   width: 100%;
 `;
 
