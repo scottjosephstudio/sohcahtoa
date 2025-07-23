@@ -184,7 +184,7 @@ export const DashboardContent = styled.div`
 `;
 
 export const ContentWrapper = styled.div`
-  padding: 114px 20px 24px 20px;
+  padding: 88px 20px 24px 20px;
 `;
 
 export const DashboardHeader = styled(motion.div)`
@@ -215,8 +215,7 @@ export const DashboardGrid = styled(motion.div)`
   grid-template-columns: 1fr 1fr;
   gap: 20px;
   margin: 0 auto;
-  margin-top: -26px;
-  margin-bottom: -24px;
+  margin-bottom: 0px;
   align-items: start;
 
   @media (min-width: 1200px) {
