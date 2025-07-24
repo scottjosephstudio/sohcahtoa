@@ -534,12 +534,12 @@ export const useAuthState = (prefetchedUser = null, prefetchedDatabaseDataLoaded
         setShowResendVerification(true);
       } else {
         // User is not authenticated at all, show normal login modal
-        setIsLoginModalOpen(!isLoginModalOpen);
-        // Clear any previous errors when opening modal
-        if (!isLoginModalOpen) {
-          setLoginError("");
-          setEmailError(false);
-          setPasswordError(false);
+      setIsLoginModalOpen(!isLoginModalOpen);
+      // Clear any previous errors when opening modal
+      if (!isLoginModalOpen) {
+        setLoginError("");
+        setEmailError(false);
+        setPasswordError(false);
           setShowResendVerification(false);
         }
       }

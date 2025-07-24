@@ -58,11 +58,55 @@ const FontInfo = styled.div`
   border-right: 2px solid rgb(16, 12, 8);
   position: relative;
   
+  /* Mobile: hide second div (author details only) */
+  @media (max-width: 767px) {
+    & > div:nth-child(2) {
+      display: none;
+    }
+    
+    & > div:nth-child(1) {
+      margin-bottom: 12px;
+    }
+  }
+  
+  /* Tablet: 2 columns with vertical line */
+  @media (min-width: 768px) and (max-width: 1199px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    align-items: start;
+    
+    & > div:nth-child(1) {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    
+    & > div:nth-child(2) {
+      display: none;
+    }
+    
+    & > div:nth-child(3) {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: calc(50% - 1px);
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgb(16, 12, 8);
+    }
+  }
+  
   /* Desktop: 3 columns with vertical lines */
   @media (min-width: 1200px) {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 0;
+    align-items: start;
     
     &::before {
       content: '';
@@ -93,7 +137,7 @@ const FontName = styled.div`
   font-size: 12px;
   letter-spacing: 0.8px;
   color: rgb(16, 2, 8);
-  margin: 0 0 12px 0;
+  margin: 0 0 0px 0;
   display: inline-block;
   width: fit-content;
   font-weight: normal;
@@ -102,9 +146,15 @@ const FontName = styled.div`
 const FontDetails = styled.p`
   font-size: 12px;
   letter-spacing: 0.8px;
-  line-height: 16px;
-  margin: 0;
+  line-height: 15px;
+  margin: 0px;
   color: rgb(16, 12, 8);
+  
+  &.mobile-tablet-only {
+    @media (min-width: 1200px) {
+      display: none;
+    }
+  }
 `;
 
 const SpecimenGrid = styled.div`
@@ -191,7 +241,7 @@ const SpecimenTitle = styled.h3`
 
 const SpecimenText = styled.div`
   font-size: ${props => props.$fontSize || '20px'};
-  line-height: ${props => props.$lineHeight || '1.4'};
+  line-height: ${props => props.$lineHeight || '24ox'};
   letter-spacing: ${props => props.$letterSpacing || '0.8px'};
   color: rgb(16, 12, 8);
   font-family: ${props => props.$fontFamily || 'inherit'};
@@ -393,7 +443,7 @@ const SPECIMEN_SAMPLES = [
     title: "Display Headline",
     text: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     description: "Uppercase alphabet showcase",
-    fontSize: "clamp(60px, 8vw, 120px)",
+    fontSize: "clamp(84px, 8vw, 144px)",
     lineHeight: "1.1",
     letterSpacing: "clamp(0.8px, 1vw, 0.8px)",
     isAnimated: true
@@ -641,28 +691,33 @@ export default forwardRef(function SpecimenSection(
                   })}
                 </SpecimenGrid>
                 
-                {selectedFont && (
-                  <FontInfo>
-                    <div style={{ padding: '20px' }}>
-                      <FontName>{selectedFont.name}</FontName>
-                    </div>
-                    <div style={{ padding: '20px' }}>
-                      <FontDetails>
+            {selectedFont && (
+              <FontInfo>
+                    <div style={{ paddingLeft: '12px', paddingRight: '20px' }}>
+                <FontName>{selectedFont.name}</FontName>
+                      <FontDetails style={{ marginTop: '12px' }} className="mobile-tablet-only">
                         {selectedFont.designer && `Designer: ${selectedFont.designer}`}
                         {selectedFont.foundry && ` • Foundry: ${selectedFont.foundry}`}
                         {selectedFont.font_styles?.[0] && ` • Style: ${selectedFont.font_styles[0].name}`}
                       </FontDetails>
                     </div>
-                    <div style={{ padding: '20px' }}>
+                    <div style={{ paddingLeft: '12px', paddingRight: '20px' }}>
+                <FontDetails>
+                  {selectedFont.designer && `Designer: ${selectedFont.designer}`}
+                  {selectedFont.foundry && ` • Foundry: ${selectedFont.foundry}`}
+                        {selectedFont.font_styles?.[0] && ` • Style: ${selectedFont.font_styles[0].name}`}
+                      </FontDetails>
+                    </div>
+                    <div style={{ paddingLeft: '12px', paddingRight: '20px' }}>
                       <FontDetails style={{ marginBottom: '12px' }}>
                         Discovery of Jan Tschihold's roman letter skeletons made with a 2 nip, a pen for drawing equal stroke widths in all directions held provenance during a 'Type Design' class at the Gerrit Rietveld Academie during 2008 by Radim Pesko and Laurenz Brunner.
                       </FontDetails>
                       <FontDetails>
-                        The forms hark of a universal case, with the use of a single story 'a' — no tail or hook on the lower-case 'i', coupled with non-lining figures as standard, offers a kind of medley of times and styles while retaining both modular and humanist curves within the same map.
-                      </FontDetails>
+                        The forms hark of a universal case, with the use of a single story 'a' — no tail or hook on the lower-case 'i', coupled with non-lining figures as standard, offers a kind of medley of times and styles, while retaining both modular and humanist curves alongside proportional spacing within the same map.
+                </FontDetails>
                     </div>
-                  </FontInfo>
-                )}
+              </FontInfo>
+            )}
               </Content>
             </Container>
           </Section>
