@@ -17,7 +17,7 @@ const Header = styled.div`
   margin-bottom: 12px;
   margin-right: 0px;
   padding-bottom: 12px;
-  border-bottom: 1px solid rgb(16, 12, 8);
+  border-bottom: 2px solid rgb(16, 12, 8);
 
   @media (max-width: 768px) {
   margin-right: -12px;

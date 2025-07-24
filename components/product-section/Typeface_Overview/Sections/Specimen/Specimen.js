@@ -53,9 +53,37 @@ const Content = styled(motion.div)`
 
 const FontInfo = styled.div`
   margin-bottom: 116px;
-  padding: 0px 20px;
+  padding: 0px 0px;
   border-left: 2px solid rgb(16, 12, 8);
   border-right: 2px solid rgb(16, 12, 8);
+  position: relative;
+  
+  /* Desktop: 3 columns with vertical lines */
+  @media (min-width: 1200px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: calc(33.33% - 1px);
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgb(16, 12, 8);
+    }
+    
+    &::after {
+      content: '';
+      position: absolute;
+      left: calc(66.66% - 1px);
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgb(16, 12, 8);
+    }
+  }
 `;
 
 const FontName = styled.div`
@@ -615,12 +643,24 @@ export default forwardRef(function SpecimenSection(
                 
                 {selectedFont && (
                   <FontInfo>
-                    <FontName>{selectedFont.name}</FontName>
-                    <FontDetails>
-                      {selectedFont.designer && `Designer: ${selectedFont.designer}`}
-                      {selectedFont.foundry && ` • Foundry: ${selectedFont.foundry}`}
-                      {selectedFont.font_styles?.[0] && ` • Style: ${selectedFont.font_styles[0].name}`}
-                    </FontDetails>
+                    <div style={{ padding: '20px' }}>
+                      <FontName>{selectedFont.name}</FontName>
+                    </div>
+                    <div style={{ padding: '20px' }}>
+                      <FontDetails>
+                        {selectedFont.designer && `Designer: ${selectedFont.designer}`}
+                        {selectedFont.foundry && ` • Foundry: ${selectedFont.foundry}`}
+                        {selectedFont.font_styles?.[0] && ` • Style: ${selectedFont.font_styles[0].name}`}
+                      </FontDetails>
+                    </div>
+                    <div style={{ padding: '20px' }}>
+                      <FontDetails style={{ marginBottom: '12px' }}>
+                        Discovery of Jan Tschihold's roman letter skeletons made with a 2 nip, a pen for drawing equal stroke widths in all directions held provenance during a 'Type Design' class at the Gerrit Rietveld Academie during 2008 by Radim Pesko and Laurenz Brunner.
+                      </FontDetails>
+                      <FontDetails>
+                        The forms hark of a universal case, with the use of a single story 'a' — no tail or hook on the lower-case 'i', coupled with non-lining figures as standard, offers a kind of medley of times and styles while retaining both modular and humanist curves within the same map.
+                      </FontDetails>
+                    </div>
                   </FontInfo>
                 )}
               </Content>

@@ -26,7 +26,7 @@ const Header = styled.div`
   margin-bottom: 12px;
   margin-right: -12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid rgb(16, 12, 8);
+  border-bottom: 2px solid rgb(16, 12, 8);
   
   @media (min-width: 768px) and (max-width: 1366px) and (orientation: portrait) {
     /* iPad portrait: Extend border to full width */
