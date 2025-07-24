@@ -169,8 +169,8 @@ const SpecimenGrid = styled.div`
     "lowercase"
     "numbers"
     "pangram"
-    "body"
-    "ligatures";
+    "ligatures"
+    "body";
   
   /* Tablet breakpoint - 768px */
   @media (min-width: 768px) {
@@ -184,11 +184,17 @@ const SpecimenGrid = styled.div`
   
   /* Desktop breakpoint - 1200px */
   @media (min-width: 1200px) {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     grid-template-areas: 
-      "display display display"
-      "lowercase numbers ligatures"
-      "pangram body body";
+      "display display"
+      "lowercase numbers
+      " pangram ligature " 
+      "body body";
+      
+    /* Override body text to only span 1 column instead of 2 */
+    & > div[style*="grid-area: body"] {
+      grid-column: 2 / 3;
+    }
   }
 `;
 
@@ -202,9 +208,10 @@ const SpecimenCard = styled(motion.div)`
   
   /* Desktop: 3 columns - specific border logic based on grid areas */
   @media (min-width: 1200px) {
-    /* Display Headline, Body Text, and Character Pairs get right borders */
+    /* Display Headline, Body Text, Numbers & Symbols, and Character Pairs get right borders */
     &[style*="grid-area: display"],
     &[style*="grid-area: body"],
+    &[style*="grid-area: numbers"],
     &[style*="grid-area: ligatures"] {
       border-right: 2px solid rgb(16, 12, 8);
     }
