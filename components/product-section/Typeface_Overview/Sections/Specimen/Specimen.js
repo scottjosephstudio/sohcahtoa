@@ -200,7 +200,7 @@ const SpecimenGrid = styled.div`
 
 const SpecimenCard = styled(motion.div)`
   position: relative;
-  padding: 0px 12px;
+  padding: 0px 8px;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -215,6 +215,11 @@ const SpecimenCard = styled(motion.div)`
     &[style*="grid-area: ligatures"] {
       border-right: 2px solid rgb(16, 12, 8);
     }
+    
+    /* Display Headline gets 10px right padding instead of 12px */
+    &[style*="grid-area: display"] {
+      padding-right: 6px;
+    }
   }
   
   /* Tablet: 2 columns - show right border on 1st column and Character Pairs */
@@ -223,11 +228,21 @@ const SpecimenCard = styled(motion.div)`
     &[style*="grid-area: ligatures"] {
       border-right: 2px solid rgb(16, 12, 8);
     }
+    
+    /* Display Headline gets 10px right padding on tablet */
+    &[style*="grid-area: display"] {
+      padding-right: 6px;
+    }
   }
   
   /* Mobile: single column - no right border needed */
   @media (max-width: 767px) {
      border-right: 2px solid rgb(16, 12, 8);
+     
+     /* Display Headline gets 10px right padding on mobile */
+     &[style*="grid-area: display"] {
+       padding-right: 6px;
+     }
   }
   
 
@@ -259,15 +274,6 @@ const SpecimenText = styled.div`
   word-break: break-word;
   max-width: 100%;
   overflow: hidden;
-  
-  /* Fixed height for animated display headline */
-  ${props => props.$isAnimated && `
-    height: calc(1.1 * clamp(60px, 8vw, 120px) * 2);
-    
-    @media (max-width: 767px) {
-      height: calc(1.1 * clamp(60px, 8vw, 120px) * 3);
-    }
-  `}
   
   &:last-child {
     margin-bottom: 0;
@@ -362,21 +368,44 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
   const [displayText, setDisplayText] = useState("");
   const [isTyping, setIsTyping] = useState(true);
   const [fontSize, setFontSize] = useState("");
+  const containerRef = useRef(null);
   
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   
-  // Calculate current font size
+  // Calculate font size to fill container width within height constraints
   useEffect(() => {
     const calculateFontSize = () => {
+      if (!containerRef.current) return;
+      
+      const container = containerRef.current;
+      const containerWidth = container.offsetWidth - 24; // Account for padding
       const vw = window.innerWidth / 100;
-      const clampedSize = Math.min(Math.max(60, 8 * vw), 120);
+      
+      // Calculate font size to fit the full alphabet on one line
+      const singleLineTest = document.createElement('div');
+      singleLineTest.style.fontFamily = fontFamily;
+      singleLineTest.style.fontSize = '100px';
+      singleLineTest.style.visibility = 'hidden';
+      singleLineTest.style.position = 'absolute';
+      singleLineTest.style.whiteSpace = 'nowrap';
+      singleLineTest.textContent = alphabet;
+      document.body.appendChild(singleLineTest);
+      
+      const singleLineWidth = singleLineTest.offsetWidth;
+      const scale = containerWidth / singleLineWidth;
+      const optimalFontSize = 98 * scale;
+      
+      document.body.removeChild(singleLineTest);
+      
+      // Apply reasonable limits
+      const clampedSize = Math.min(Math.max(40, optimalFontSize), 300);
       setFontSize(`${Math.round(clampedSize)}px`);
     };
     
     calculateFontSize();
     window.addEventListener('resize', calculateFontSize);
     return () => window.removeEventListener('resize', calculateFontSize);
-  }, []);
+  }, [fontFamily]);
   
   useEffect(() => {
     let timeout;
@@ -409,16 +438,21 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
   }, [displayText, isTyping, alphabet]);
   
   return (
-    <div style={{ position: 'relative' }}>
+    <div ref={containerRef} style={{ 
+      position: 'relative', 
+      width: '100%',
+      minHeight: fontSize ? `calc(${fontSize} * 1.4)` : 'auto'
+    }}>
       <SpecimenText
         $fontFamily={fontFamily}
-        $fontSize="clamp(60px, 8vw, 120px)"
+        $fontSize={fontSize}
         $lineHeight="1.1"
-        $letterSpacing="clamp(0.8px, 1vw, 0.8px)"
+        $letterSpacing="0.02em"
         $isAnimated={true}
         style={{ 
-          minWidth: 'fit-content',
-          position: 'relative'
+          width: '100%',
+          position: 'relative',
+          whiteSpace: 'nowrap'
         }}
       >
         {displayText}
@@ -430,6 +464,7 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
           {alphabet}
         </span>
       </SpecimenText>
+      
       <div style={{
         position: 'absolute',
         bottom: '-7px',
@@ -451,7 +486,7 @@ const SPECIMEN_SAMPLES = [
     text: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     description: "Uppercase alphabet showcase",
     fontSize: "clamp(84px, 8vw, 144px)",
-    lineHeight: "1.1",
+    lineHeight: "1",
     letterSpacing: "clamp(0.8px, 1vw, 0.8px)",
     isAnimated: true
   },
