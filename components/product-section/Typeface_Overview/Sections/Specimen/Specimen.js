@@ -143,10 +143,10 @@ const FontName = styled.div`
   font-weight: normal;
 `;
 
-const FontDetails = styled.p`
-  font-size: 12px;
+const FontDetails = styled.div`
+  font-size: 16px;
   letter-spacing: 0.8px;
-  line-height: 15px;
+  line-height: 20px;
   margin: 0px;
   color: rgb(16, 12, 8);
   
@@ -166,20 +166,20 @@ const SpecimenGrid = styled.div`
   grid-template-columns: 1fr;
   grid-template-areas: 
     "display"
+    "body"
     "lowercase"
     "numbers"
     "pangram"
-    "ligatures"
-    "body";
+    "ligatures";
   
   /* Tablet breakpoint - 768px */
   @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
     grid-template-areas: 
       "display display"
+      "body body"
       "lowercase numbers"
-      "pangram ligatures"
-      "body body";
+      "pangram ligatures";
   }
   
   /* Desktop breakpoint - 1200px */
@@ -187,14 +187,9 @@ const SpecimenGrid = styled.div`
     grid-template-columns: 1fr 1fr;
     grid-template-areas: 
       "display display"
-      "lowercase numbers
-      " pangram ligature " 
-      "body body";
-      
-    /* Override body text to only span 1 column instead of 2 */
-    & > div[style*="grid-area: body"] {
-      grid-column: 2 / 3;
-    }
+      "body body"
+      "lowercase numbers"
+      "pangram ligatures";
   }
 `;
 
@@ -204,7 +199,7 @@ const SpecimenCard = styled(motion.div)`
   height: auto;
   display: flex;
   flex-direction: column;
-   border-left: 2px solid rgb(16, 12, 8);
+  border-left: 2px solid rgb(16, 12, 8);
   
   /* Desktop: 3 columns - specific border logic based on grid areas */
   @media (min-width: 1200px) {
@@ -237,15 +232,13 @@ const SpecimenCard = styled(motion.div)`
   
   /* Mobile: single column - no right border needed */
   @media (max-width: 767px) {
-     border-right: 2px solid rgb(16, 12, 8);
-     
-     /* Display Headline gets 10px right padding on mobile */
-     &[style*="grid-area: display"] {
-       padding-right: 6px;
-     }
+    border-right: 2px solid rgb(16, 12, 8);
+    
+    /* Display Headline gets 10px right padding on mobile */
+    &[style*="grid-area: display"] {
+      padding-right: 6px;
+    }
   }
-  
-
 `;
 
 const SpecimenTitle = styled.h3`
@@ -269,25 +262,35 @@ const SpecimenText = styled.div`
   font-family: ${props => props.$fontFamily || 'inherit'};
   margin-bottom: 12px;
   word-wrap: break-word;
-  hyphens: auto;
+  hyphens: ${props => props.$noHyphens ? 'none' : 'auto'};
   overflow-wrap: break-word;
   word-break: break-word;
   max-width: 100%;
   overflow: hidden;
+  
+  /* Two column layout for body text on desktop */
+  ${props => props.$twoColumns && `
+    @media (min-width: 1200px) {
+      column-count: 2;
+      column-gap: 40px;
+      column-fill: balance;
+    }
+  `}
   
   &:last-child {
     margin-bottom: 0;
   }
 `;
 
-const SpecimenDescription = styled.p`
-  font-size: 14px;
-  letter-spacing: 0.6px;
-  line-height: 18px;
-  color: rgb(16, 12, 8);
-  opacity: 1;
-  margin: 12px 0 0 0;
+const FontSizeLabel = styled.div`
+  position: absolute;
+  bottom: -7px;
+  left: 0;
+  font-size: 12px;
+  color: rgba(16, 12, 8);
+  font-family: ${props => props.$fontFamily || 'inherit'};
 `;
+
 
 // Fade variants for consistent animations
 const fadeVariants = {
@@ -361,6 +364,37 @@ const useFontLoader = (fontPath) => {
   }, [fontPath]);
 
   return { font, loading, error };
+};
+
+// Function to calculate actual font-size from clamp CSS
+const calculateActualFontSize = (clampValue) => {
+  // Parse clamp(min, preferred, max) format
+  const match = clampValue.match(/clamp\(([^,]+),([^,]+),([^)]+)\)/);
+  if (!match) return clampValue;
+  
+  const [, min, preferred, max] = match;
+  const viewportWidth = window.innerWidth;
+  
+  // Convert viewport units to pixels
+  const preferredValue = preferred.trim();
+  let preferredPx;
+  
+  if (preferredValue.includes('vw')) {
+    const vwValue = parseFloat(preferredValue.replace('vw', ''));
+    preferredPx = (viewportWidth * vwValue) / 100;
+  } else if (preferredValue.includes('px')) {
+    preferredPx = parseFloat(preferredValue.replace('px', ''));
+  } else {
+    preferredPx = parseFloat(preferredValue);
+  }
+  
+  // Parse min and max values
+  const minPx = parseFloat(min.replace('px', ''));
+  const maxPx = parseFloat(max.replace('px', ''));
+  
+  // Apply clamp logic
+  const actualSize = Math.min(Math.max(minPx, preferredPx), maxPx);
+  return `${Math.round(actualSize)}px`;
 };
 
 // Animated display headline component
@@ -486,7 +520,7 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
       
       <div style={{
         position: 'absolute',
-        bottom: '-7px',
+        bottom: '-8px',
         left: '0',
         fontSize: '12px',
         color: 'rgba(16, 12, 8)',
@@ -501,7 +535,7 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
 // Sample text specimens
 const SPECIMEN_SAMPLES = [
   {
-    title: "Display Headline",
+    title: "Uppercase",
     text: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     description: "Uppercase alphabet showcase",
     fontSize: "clamp(84px, 8vw, 144px)",
@@ -535,6 +569,14 @@ const SPECIMEN_SAMPLES = [
   },
   {
     title: "Body Text Sample",
+    text: "Acton Academy is an innovative school network that describes itself as \"one-room schoolhouses for the 21st century.\" Founded in 2009 with just 12 students, it has grown into a global network with multiple locations across the United States and internationally. The school operates on a fundamentally different educational model from traditional institutions. At Acton Academy, \"We have Guides, not teachers. We have Studios, not classrooms. We have Portfolios and Exhibitions, not grades.\" The approach emphasizes self-directed, learner-driven education where \"the adults step back and the students take on the roles of self-management and running the school.\"",
+    description: "Extended text for readability testing",
+    fontSize: "clamp(16px, 2vw, 24px)",
+    lineHeight: "1.4",
+    letterSpacing: "clamp(0.2px, 0.4vw, 0.4px)"
+  },
+  {
+    title: "Body Text Sample 2",
     text: "Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. The arrangement of type involves selecting typefaces, point sizes, line lengths, line-spacing, and letter-spacing.",
     description: "Extended text for readability testing",
     fontSize: "clamp(12px, 2vw, 16px)",
@@ -557,8 +599,23 @@ export default forwardRef(function SpecimenSection(
 ) {
   const [fontFamily, setFontFamily] = useState('inherit');
   const [fontPath, setFontPath] = useState("/fonts/JANTReg.ttf"); // Set initial fallback
+  const [bodyTextFontSize, setBodyTextFontSize] = useState("");
   
   const { font, loading, error } = useFontLoader(fontPath);
+
+  // Calculate actual font-size for body text sample
+  useEffect(() => {
+    const updateBodyTextFontSize = () => {
+      const bodyTextSample = SPECIMEN_SAMPLES.find(sample => sample.title === "Body Text Sample");
+      if (bodyTextSample) {
+        setBodyTextFontSize(calculateActualFontSize(bodyTextSample.fontSize));
+      }
+    };
+    
+    updateBodyTextFontSize();
+    window.addEventListener('resize', updateBodyTextFontSize);
+    return () => window.removeEventListener('resize', updateBodyTextFontSize);
+  }, []);
 
   // Get font path from selected font
   useEffect(() => {
@@ -713,7 +770,7 @@ export default forwardRef(function SpecimenSection(
                   {SPECIMEN_SAMPLES.map((sample, index) => {
                     // Map sample titles to grid area names
                     const gridAreaMap = {
-                      "Display Headline": "display",
+                      "Uppercase": "display",
                       "Lowercase Alphabet": "lowercase", 
                       "Numbers & Symbols": "numbers",
                       "Pangram": "pangram",
@@ -738,14 +795,31 @@ export default forwardRef(function SpecimenSection(
                         {sample.isAnimated ? (
                           <AnimatedDisplayHeadline fontFamily={fontFamily} />
                         ) : (
-                          <SpecimenText
-                            $fontFamily={fontFamily}
-                            $fontSize={sample.fontSize}
-                            $lineHeight={sample.lineHeight}
-                            $letterSpacing={sample.letterSpacing}
-                          >
-                            {sample.text}
-                          </SpecimenText>
+                          <div style={{ position: 'relative' }}>
+                            <SpecimenText
+                              $fontFamily={fontFamily}
+                              $fontSize={sample.fontSize}
+                              $lineHeight={sample.lineHeight}
+                              $letterSpacing={sample.letterSpacing}
+                              $twoColumns={sample.title === "Body Text Sample"}
+                              $noHyphens={sample.title === "Body Text Sample"}
+                            >
+                              {sample.text}
+                            </SpecimenText>
+                            {sample.title === "Body Text Sample" && (
+                              <div style={{
+                                position: 'absolute',
+                                bottom: '-8px',
+                                left: '0',
+                                fontSize: '12px',
+                                color: 'rgba(16, 12, 8)',
+                                fontFamily: fontFamily,
+                              
+                              }}>
+                                Font-size: {bodyTextFontSize}
+                              </div>
+                            )}
+                          </div>
                         )}
                       </SpecimenCard>
                     );
@@ -754,29 +828,75 @@ export default forwardRef(function SpecimenSection(
                 
             {selectedFont && (
               <FontInfo>
-                    <div style={{ paddingLeft: '12px', paddingRight: '20px' }}>
-                <FontName>{selectedFont.name}</FontName>
-                      <FontDetails style={{ marginTop: '12px' }} className="mobile-tablet-only">
-                        {selectedFont.designer && `Designer: ${selectedFont.designer}`}
-                        {selectedFont.foundry && ` • Foundry: ${selectedFont.foundry}`}
-                        {selectedFont.font_styles?.[0] && ` • Style: ${selectedFont.font_styles[0].name}`}
-                      </FontDetails>
+                <div style={{ paddingLeft: '8px', paddingRight: '20px' }}>
+                  <FontName>{selectedFont?.name || 'Font Name'}</FontName>
+                  <div style={{ marginTop: '12px', marginBottom: '-2px' }}>
+                    <div style={{ fontSize: '12px', marginBottom: '6px', color: 'rgb(16, 12, 8)' }}>
+                      Specimen PDF
                     </div>
-                    <div style={{ paddingLeft: '12px', paddingRight: '20px' }}>
-                <FontDetails>
+                    <svg 
+                      width="120" 
+                      height="85" 
+                      viewBox="0 0 120 85" 
+                      fill="none" 
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{ 
+                        cursor: 'pointer', 
+                        marginLeft: '-12px'
+                      }}
+                      onClick={() => {
+                        // TODO: Add actual PDF download functionality
+                        console.log('Download PDF for:', selectedFont?.name);
+                      }}
+                    >
+                      <path 
+                        d="M15 7.5C15 3.35786 18.3579 0 22.5 0H52.5L75 22.5V67.5C75 71.6421 71.6421 75 67.5 75H22.5C18.3579 75 15 71.6421 15 67.5V7.5Z" 
+                        fill="currentColor"
+                        fillOpacity="0.1"
+                        style={{ transition: 'fill-opacity 0.2s ease' }}
+                        onMouseEnter={(e) => e.target.style.fillOpacity = '0.2'}
+                        onMouseLeave={(e) => e.target.style.fillOpacity = '0.1'}
+                      />
+                      <path 
+                        d="M52.5 0L75 22.5H60C56.8579 22.5 52.5 19.1421 52.5 15V0Z" 
+                        fill="currentColor"
+                        fillOpacity="0.4"
+                        style={{ transition: 'fill-opacity 0.2s ease' }}
+                        onMouseEnter={(e) => e.target.style.fillOpacity = '0.3'}
+                        onMouseLeave={(e) => e.target.style.fillOpacity = '0.2'}
+                      />
+                      <path 
+                        d="M26.25 15H63.75M26.25 25H63.75M26.25 35H56.25M26.25 45H63.75M26.25 55H48.75" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round"
+                        strokeOpacity="0.6"
+                        style={{ transition: 'stroke-opacity 0.2s ease' }}
+                        onMouseEnter={(e) => e.target.style.strokeOpacity = '0.8'}
+                        onMouseLeave={(e) => e.target.style.strokeOpacity = '0.6'}
+                      />
+                    </svg>
+                  </div>
+                  <FontDetails className="mobile-tablet-only">
                   {selectedFont.designer && `Designer: ${selectedFont.designer}`}
                   {selectedFont.foundry && ` • Foundry: ${selectedFont.foundry}`}
-                        {selectedFont.font_styles?.[0] && ` • Style: ${selectedFont.font_styles[0].name}`}
-                      </FontDetails>
-                    </div>
-                    <div style={{ paddingLeft: '12px', paddingRight: '20px' }}>
-                      <FontDetails style={{ marginBottom: '12px' }}>
-                        Discovery of Jan Tschihold's roman letter skeletons made with a 2 nip, a pen for drawing equal stroke widths in all directions held provenance during a 'Type Design' class at the Gerrit Rietveld Academie during 2008 by Radim Pesko and Laurenz Brunner.
-                      </FontDetails>
-                      <FontDetails>
-                        The forms hark of a universal case, with the use of a single story 'a' — no tail or hook on the lower-case 'i', coupled with non-lining figures as standard, offers a kind of medley of times and styles, while retaining both modular and humanist curves alongside proportional spacing within the same map.
+                  </FontDetails>
+                </div>
+                <div style={{ paddingLeft: '8px', paddingRight: '20px' }}>
+                  <FontDetails>
+                    {selectedFont.designer && `Designer: ${selectedFont.designer}`}
+                    {selectedFont.foundry && ` • Foundry: ${selectedFont.foundry}`}
+                    {selectedFont.font_styles?.[0] && ` • Style: ${selectedFont.font_styles[0].name}`}
+                  </FontDetails>
+                </div>
+                <div style={{ paddingLeft: '8px', paddingRight: '20px' }}>
+                  <FontDetails style={{ marginBottom: '12px' }}>
+                    Discovery of Jan Tschihold's roman letter skeletons made with a 2 nip, a pen for drawing equal stroke widths in all directions held provenance during a 'Type Design' class at the Gerrit Rietveld Academie during 2008 by Radim Pesko and Laurenz Brunner.
+                  </FontDetails>
+                  <FontDetails>
+                    The forms hark of a universal case, with the use of a single story 'a' — no tail or hook on the lower-case 'i', coupled with non-lining figures as standard, offers a kind of medley of times and styles, while retaining both modular and humanist curves alongside proportional spacing within the same map.
                 </FontDetails>
-                    </div>
+                </div>
               </FontInfo>
             )}
               </Content>
