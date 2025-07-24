@@ -166,6 +166,7 @@ const SpecimenGrid = styled.div`
   grid-template-columns: 1fr;
   grid-template-areas: 
     "display"
+    "theorists"
     "body"
     "lowercase"
     "numbers"
@@ -177,6 +178,7 @@ const SpecimenGrid = styled.div`
     grid-template-columns: 1fr 1fr;
     grid-template-areas: 
       "display display"
+      "theorists theorists"
       "body body"
       "lowercase numbers"
       "pangram ligatures";
@@ -187,6 +189,7 @@ const SpecimenGrid = styled.div`
     grid-template-columns: 1fr 1fr;
     grid-template-areas: 
       "display display"
+      "theorists theorists"
       "body body"
       "lowercase numbers"
       "pangram ligatures";
@@ -195,7 +198,7 @@ const SpecimenGrid = styled.div`
 
 const SpecimenCard = styled(motion.div)`
   position: relative;
-  padding: 0px 8px;
+  padding: 0px 12px;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -207,7 +210,8 @@ const SpecimenCard = styled(motion.div)`
     &[style*="grid-area: display"],
     &[style*="grid-area: body"],
     &[style*="grid-area: numbers"],
-    &[style*="grid-area: ligatures"] {
+    &[style*="grid-area: ligatures"],
+    &[style*="grid-area: theorists"] {
       border-right: 2px solid rgb(16, 12, 8);
     }
     
@@ -220,7 +224,8 @@ const SpecimenCard = styled(motion.div)`
   /* Tablet: 2 columns - show right border on 1st column and Character Pairs */
   @media (min-width: 768px) and (max-width: 1199px) {
     &:nth-child(2n-1),
-    &[style*="grid-area: ligatures"] {
+    &[style*="grid-area: ligatures"],
+    &[style*="grid-area: theorists"] {
       border-right: 2px solid rgb(16, 12, 8);
     }
     
@@ -260,7 +265,7 @@ const SpecimenText = styled.div`
   letter-spacing: ${props => props.$letterSpacing || '0.8px'};
   color: rgb(16, 12, 8);
   font-family: ${props => props.$fontFamily || 'inherit'};
-  margin-bottom: 12px;
+  margin-bottom: ${props => props.$twoColumns ? '0' : '12px'};
   word-wrap: break-word;
   hyphens: ${props => props.$noHyphens ? 'none' : 'auto'};
   overflow-wrap: break-word;
@@ -268,12 +273,44 @@ const SpecimenText = styled.div`
   max-width: 100%;
   overflow: hidden;
   
-  /* Two column layout for body text on desktop */
+  /* Single column layout with center alignment */
+  ${props => props.$singleColumn && `
+    text-align: center;
+    width: 100%;
+    margin-bottom: 0;
+  `}
+  
+  /* Multi-column layout for body text */
   ${props => props.$twoColumns && `
-    @media (min-width: 1200px) {
+    /* Mobile: single column with overflow control */
+    @media (max-width: 767px) {
+      max-height: 200px;
+      overflow: hidden;
+      margin-bottom: 0;
+    }
+    
+    /* Tablet: 2 columns */
+    @media (min-width: 768px) and (max-width: 1199px) {
       column-count: 2;
       column-gap: 40px;
       column-fill: balance;
+      margin-bottom: 0;
+    }
+    
+    /* Desktop: 3 columns */
+    @media (min-width: 1200px) and (max-width: 1599px) {
+      column-count: 3;
+      column-gap: 40px;
+      column-fill: balance;
+      margin-bottom: 0;
+    }
+    
+    /* Large screens: 4 columns */
+    @media (min-width: 1600px) {
+      column-count: 4;
+      column-gap: 40px;
+      column-fill: balance;
+      margin-bottom: 0;
     }
   `}
   
@@ -395,6 +432,58 @@ const calculateActualFontSize = (clampValue) => {
   // Apply clamp logic
   const actualSize = Math.min(Math.max(minPx, preferredPx), maxPx);
   return `${Math.round(actualSize)}px`;
+};
+
+
+
+// Function to truncate text based on available height and font-size
+const truncateTextByHeight = (text, fontSize, lineHeight, maxHeight) => {
+  // Create a temporary element to measure text height
+  const tempElement = document.createElement('div');
+  tempElement.style.fontSize = fontSize;
+  tempElement.style.lineHeight = lineHeight;
+  tempElement.style.width = '100%';
+  tempElement.style.position = 'absolute';
+  tempElement.style.visibility = 'hidden';
+  tempElement.style.whiteSpace = 'pre-wrap';
+  tempElement.style.wordWrap = 'break-word';
+  tempElement.style.overflow = 'hidden';
+  
+  document.body.appendChild(tempElement);
+  
+  // Binary search to find the right amount of text
+  let start = 0;
+  let end = text.length;
+  let result = '';
+  
+  while (start <= end) {
+    const mid = Math.floor((start + end) / 2);
+    const testText = text.substring(0, mid);
+    
+    tempElement.textContent = testText;
+    const height = tempElement.scrollHeight;
+    
+    if (height <= maxHeight) {
+      result = testText;
+      start = mid + 1;
+    } else {
+      end = mid - 1;
+    }
+  }
+  
+  document.body.removeChild(tempElement);
+  
+  // Add ellipsis if text was truncated
+  if (result.length < text.length) {
+    // Find the last complete word
+    const lastSpace = result.lastIndexOf(' ');
+    if (lastSpace > 0) {
+      result = result.substring(0, lastSpace);
+    }
+    result += '...';
+  }
+  
+  return result;
 };
 
 // Animated display headline component
@@ -532,6 +621,76 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
   );
 };
 
+// Dynamic body text component that truncates based on available height
+const DynamicBodyText = ({ text, fontSize, lineHeight, fontFamily }) => {
+  const [truncatedText, setTruncatedText] = useState(text);
+  const containerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Check if we're in mobile mode
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+  
+  useEffect(() => {
+    const updateTruncatedText = () => {
+      if (!containerRef.current) return;
+      
+      // Use different heights for mobile vs desktop
+      const fixedHeight = isMobile ? 200 : 300; // Much smaller height for mobile due to uppercase taking more space
+      
+      // Calculate available height (limit to 100% of fixed height)
+      const availableHeight = fixedHeight * 1;
+      
+      // Parse font-size to get actual pixel value
+      const actualFontSize = calculateActualFontSize(fontSize);
+      const fontSizePx = parseInt(actualFontSize);
+      
+      // Calculate line height in pixels
+      const lineHeightPx = fontSizePx * parseFloat(lineHeight);
+      
+      // Calculate max lines that can fit
+      const maxLines = Math.floor(availableHeight / lineHeightPx);
+      const maxHeight = maxLines * lineHeightPx;
+      
+      // Truncate text based on available height
+      const truncated = truncateTextByHeight(text, actualFontSize, lineHeight, maxHeight);
+      setTruncatedText(truncated);
+    };
+    
+    updateTruncatedText();
+    window.addEventListener('resize', updateTruncatedText);
+    return () => window.removeEventListener('resize', updateTruncatedText);
+  }, [text, fontSize, lineHeight, isMobile]);
+  
+  return (
+    <div ref={containerRef} style={{ 
+      position: 'relative', 
+      width: '100%', 
+      height: isMobile ? '200px' : '300px', 
+      overflow: 'hidden',
+      marginBottom: '12px'
+    }}>
+      <SpecimenText
+        $fontFamily={fontFamily}
+        $fontSize={fontSize}
+        $lineHeight={lineHeight}
+        $twoColumns={true}
+        $noHyphens={true}
+        style={{ overflow: 'hidden', maxHeight: '100%' }}
+      >
+        {truncatedText}
+      </SpecimenText>
+    </div>
+  );
+};
+
 // Sample text specimens
 const SPECIMEN_SAMPLES = [
   {
@@ -544,10 +703,19 @@ const SPECIMEN_SAMPLES = [
     isAnimated: true
   },
   {
+    title: "Educational Theorists",
+    text: "Maria Montessori, Project-Based Learning, Sudbury Schools, Howard Gardner, Waldorf Education, John Dewey, Microschooling, Paulo Freire, Reggio Emilia Approach, Ken Robinson, Democratic Schools, Jean Piaget, High Tech High, Charlotte Mason Method, Ivan Illich, Maker Education, Carol Dweck, Peter Gray, Inquiry-Based Learning, Rudolf Steiner, Big Picture Learning, A.S. Neill, Experiential Learning, Alfie Kohn, Khan Academy, Constructivist Learning, Jerome Bruner, AltSchool, Minerva Schools",
+    description: "List of educational theorists and approaches",
+    fontSize: "clamp(20px, 2vw, 36px)",
+    lineHeight: "1.3",
+    letterSpacing: "clamp(0.2px, 0.4vw, 0.4px)",
+    isSingleColumn: true
+  },
+  {
     title: "Lowercase Alphabet",
     text: "abcdefghijklmnopqrstuvwxyz",
     description: "Lowercase character set",
-    fontSize: "clamp(18px, 3.5vw, 28px)",
+    fontSize: "clamp(16px, 3.5vw, 24px)",
     lineHeight: "1.2",
     letterSpacing: "clamp(0.3px, 0.8vw, 0.6px)"
   },
@@ -569,18 +737,10 @@ const SPECIMEN_SAMPLES = [
   },
   {
     title: "Body Text Sample",
-    text: "Acton Academy is an innovative school network that describes itself as \"one-room schoolhouses for the 21st century.\" Founded in 2009 with just 12 students, it has grown into a global network with multiple locations across the United States and internationally. The school operates on a fundamentally different educational model from traditional institutions. At Acton Academy, \"We have Guides, not teachers. We have Studios, not classrooms. We have Portfolios and Exhibitions, not grades.\" The approach emphasizes self-directed, learner-driven education where \"the adults step back and the students take on the roles of self-management and running the school.\"",
+    text: "Acton Academy is an innovative private school network that describes itself as \"one-room schoolhouses for the 21st century.\" Founded in 2009 with just 12 students, it has grown into a global network with multiple locations across the United States and internationally. The school operates on a fundamentally different educational model from traditional institutions. At Acton Academy, \"We have Guides, not teachers. We have Studios, not classrooms. We have Portfolios and Exhibitions, not grades.\" The approach emphasizes self-directed, learner-driven education where \"the adults step back and the students take on the roles of self-management and running the school.\" Central to Acton's philosophy is the Hero's Journey narrative framework. The Hero's Journey is \"the #1 element that defines an Acton learner driven community\" and equips students with tools to \"learn how to learn, learn how to do and learn how to be.\" The school believes \"there is a hero in every child\" and defines a hero as someone who doesn't quit when challenges arise, takes responsibility rather than making excuses, and works to solve problems that make the world better. The educational model features several distinctive elements. Guides are described as \"gamemakers who propose exciting challenges, set boundaries and invite Eagles to start a life changing journey.\" Rather than traditional teaching methods, \"teaching by lecturing or issuing instructions is not allowed at Acton.\" Instead, the model relies heavily on self-directed learning with peer feedback, where older students help younger ones set and monitor goals. The curriculum is designed to be student-centered, emphasizing critical thinking, creativity, and independence. The academy uses \"the latest technology in a self-paced learning environment that is designed to foster responsibility, goal-setting, and teamwork.\" Students work through real-world projects and apprenticeships, with high school students finding their own paid apprenticeships as part of their learning experience. Acton Academy serves students from kindergarten through 12th grade and has expanded through a franchise model, offering \"kits\" to entrepreneurs and parents interested in opening similar schools in their communities. The network represents part of a broader movement toward alternative education models that challenge traditional schooling approaches.",
     description: "Extended text for readability testing",
-    fontSize: "clamp(16px, 2vw, 24px)",
+    fontSize: "clamp(16px, 2vw, 20px)",
     lineHeight: "1.4",
-    letterSpacing: "clamp(0.2px, 0.4vw, 0.4px)"
-  },
-  {
-    title: "Body Text Sample 2",
-    text: "Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. The arrangement of type involves selecting typefaces, point sizes, line lengths, line-spacing, and letter-spacing.",
-    description: "Extended text for readability testing",
-    fontSize: "clamp(12px, 2vw, 16px)",
-    lineHeight: "1.5",
     letterSpacing: "clamp(0.2px, 0.4vw, 0.4px)"
   },
   {
@@ -600,6 +760,7 @@ export default forwardRef(function SpecimenSection(
   const [fontFamily, setFontFamily] = useState('inherit');
   const [fontPath, setFontPath] = useState("/fonts/JANTReg.ttf"); // Set initial fallback
   const [bodyTextFontSize, setBodyTextFontSize] = useState("");
+  const [theoristsFontSize, setTheoristsFontSize] = useState("");
   
   const { font, loading, error } = useFontLoader(fontPath);
 
@@ -615,6 +776,20 @@ export default forwardRef(function SpecimenSection(
     updateBodyTextFontSize();
     window.addEventListener('resize', updateBodyTextFontSize);
     return () => window.removeEventListener('resize', updateBodyTextFontSize);
+  }, []);
+
+  // Calculate actual font-size for educational theorists sample
+  useEffect(() => {
+    const updateTheoristsFontSize = () => {
+      const theoristsSample = SPECIMEN_SAMPLES.find(sample => sample.title === "Educational Theorists");
+      if (theoristsSample) {
+        setTheoristsFontSize(calculateActualFontSize(theoristsSample.fontSize));
+      }
+    };
+    
+    updateTheoristsFontSize();
+    window.addEventListener('resize', updateTheoristsFontSize);
+    return () => window.removeEventListener('resize', updateTheoristsFontSize);
   }, []);
 
   // Get font path from selected font
@@ -771,7 +946,8 @@ export default forwardRef(function SpecimenSection(
                     // Map sample titles to grid area names
                     const gridAreaMap = {
                       "Uppercase": "display",
-                      "Lowercase Alphabet": "lowercase", 
+                      "Educational Theorists": "theorists", 
+                      "Lowercase Alphabet": "lowercase",
                       "Numbers & Symbols": "numbers",
                       "Pangram": "pangram",
                       "Body Text Sample": "body",
@@ -794,32 +970,57 @@ export default forwardRef(function SpecimenSection(
                         <SpecimenTitle>{sample.title}</SpecimenTitle>
                         {sample.isAnimated ? (
                           <AnimatedDisplayHeadline fontFamily={fontFamily} />
-                        ) : (
+                        ) : sample.title === "Body Text Sample" ? (
+                          <div style={{ position: 'relative' }}>
+                            <DynamicBodyText
+                              text={sample.text}
+                              fontSize={sample.fontSize}
+                              lineHeight={sample.lineHeight}
+                              fontFamily={fontFamily}
+                            />
+                            <div style={{
+                              position: 'absolute',
+                              bottom: '-8px',
+                              left: '0',
+                              fontSize: '12px',
+                              color: 'rgba(16, 12, 8)',
+                              fontFamily: fontFamily
+                            }}>
+                              Font-size: {bodyTextFontSize}
+                            </div>
+                          </div>
+                        ) : sample.title === "Educational Theorists" ? (
                           <div style={{ position: 'relative' }}>
                             <SpecimenText
                               $fontFamily={fontFamily}
                               $fontSize={sample.fontSize}
                               $lineHeight={sample.lineHeight}
                               $letterSpacing={sample.letterSpacing}
-                              $twoColumns={sample.title === "Body Text Sample"}
-                              $noHyphens={sample.title === "Body Text Sample"}
+                              $singleColumn={sample.isSingleColumn}
                             >
                               {sample.text}
                             </SpecimenText>
-                            {sample.title === "Body Text Sample" && (
-                              <div style={{
-                                position: 'absolute',
-                                bottom: '-8px',
-                                left: '0',
-                                fontSize: '12px',
-                                color: 'rgba(16, 12, 8)',
-                                fontFamily: fontFamily,
-                              
-                              }}>
-                                Font-size: {bodyTextFontSize}
-                              </div>
-                            )}
+                            <div style={{
+                              position: 'absolute',
+                              bottom: '-8px',
+                              left: '0',
+                              fontSize: '12px',
+                              color: 'rgba(16, 12, 8)',
+                              fontFamily: fontFamily
+                            }}>
+                              Font-size: {theoristsFontSize}
+                            </div>
                           </div>
+                        ) : (
+                          <SpecimenText
+                            $fontFamily={fontFamily}
+                            $fontSize={sample.fontSize}
+                            $lineHeight={sample.lineHeight}
+                            $letterSpacing={sample.letterSpacing}
+                            $singleColumn={sample.isSingleColumn}
+                          >
+                            {sample.text}
+                          </SpecimenText>
                         )}
                       </SpecimenCard>
                     );
@@ -828,7 +1029,7 @@ export default forwardRef(function SpecimenSection(
                 
             {selectedFont && (
               <FontInfo>
-                <div style={{ paddingLeft: '8px', paddingRight: '20px' }}>
+                <div style={{ paddingLeft: '12px', paddingRight: '20px' }}>
                   <FontName>{selectedFont?.name || 'Font Name'}</FontName>
                   <div style={{ marginTop: '12px', marginBottom: '-2px' }}>
                     <div style={{ fontSize: '12px', marginBottom: '6px', color: 'rgb(16, 12, 8)' }}>
@@ -882,14 +1083,14 @@ export default forwardRef(function SpecimenSection(
                   {selectedFont.foundry && ` • Foundry: ${selectedFont.foundry}`}
                   </FontDetails>
                 </div>
-                <div style={{ paddingLeft: '8px', paddingRight: '20px' }}>
+                <div style={{ paddingLeft: '12px', paddingRight: '20px' }}>
                   <FontDetails>
                     {selectedFont.designer && `Designer: ${selectedFont.designer}`}
                     {selectedFont.foundry && ` • Foundry: ${selectedFont.foundry}`}
                     {selectedFont.font_styles?.[0] && ` • Style: ${selectedFont.font_styles[0].name}`}
                   </FontDetails>
                 </div>
-                <div style={{ paddingLeft: '8px', paddingRight: '20px' }}>
+                <div style={{ paddingLeft: '12px', paddingRight: '20px' }}>
                   <FontDetails style={{ marginBottom: '12px' }}>
                     Discovery of Jan Tschihold's roman letter skeletons made with a 2 nip, a pen for drawing equal stroke widths in all directions held provenance during a 'Type Design' class at the Gerrit Rietveld Academie during 2008 by Radim Pesko and Laurenz Brunner.
                   </FontDetails>
