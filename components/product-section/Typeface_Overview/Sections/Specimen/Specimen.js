@@ -368,9 +368,21 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
   const [displayText, setDisplayText] = useState("");
   const [isTyping, setIsTyping] = useState(true);
   const [fontSize, setFontSize] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef(null);
   
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  
+  // Check if we're in mobile/tablet mode (768px and below)
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
   
   // Calculate font size to fill container width within height constraints
   useEffect(() => {
@@ -378,8 +390,7 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
       if (!containerRef.current) return;
       
       const container = containerRef.current;
-      const containerWidth = container.offsetWidth - 24; // Account for padding
-      const vw = window.innerWidth / 100;
+      const containerWidth = container.offsetWidth - (isMobile ? 12 : 24); // Account for padding
       
       // Calculate font size to fit the full alphabet on one line
       const singleLineTest = document.createElement('div');
@@ -393,19 +404,27 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
       
       const singleLineWidth = singleLineTest.offsetWidth;
       const scale = containerWidth / singleLineWidth;
-      const optimalFontSize = 98 * scale;
+      const optimalFontSize = (isMobile ? 196 : 98) * scale;
       
       document.body.removeChild(singleLineTest);
       
-      // Apply reasonable limits
-      const clampedSize = Math.min(Math.max(40, optimalFontSize), 300);
+      // Apply different limits based on screen size
+      let clampedSize;
+      if (isMobile) {
+        // For mobile/tablet (768px and below), allow smaller font size for 2-line wrapping
+        clampedSize = Math.min(Math.max(30, optimalFontSize), 200);
+      } else {
+        // For desktop, maintain current limits
+        clampedSize = Math.min(Math.max(40, optimalFontSize), 300);
+      }
+      
       setFontSize(`${Math.round(clampedSize)}px`);
     };
     
     calculateFontSize();
     window.addEventListener('resize', calculateFontSize);
     return () => window.removeEventListener('resize', calculateFontSize);
-  }, [fontFamily]);
+  }, [fontFamily, isMobile]);
   
   useEffect(() => {
     let timeout;
@@ -441,18 +460,18 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
     <div ref={containerRef} style={{ 
       position: 'relative', 
       width: '100%',
-      minHeight: fontSize ? `calc(${fontSize} * 1.4)` : 'auto'
+      minHeight: fontSize ? `calc(${fontSize} * ${isMobile ? '2.8' : '1.4'})` : 'auto'
     }}>
       <SpecimenText
         $fontFamily={fontFamily}
         $fontSize={fontSize}
-        $lineHeight="1.1"
+        $lineHeight={isMobile ? "1.1" : "1.1"}
         $letterSpacing="0.02em"
         $isAnimated={true}
         style={{ 
           width: '100%',
           position: 'relative',
-          whiteSpace: 'nowrap'
+          whiteSpace: isMobile ? 'normal' : 'nowrap'
         }}
       >
         {displayText}
