@@ -801,7 +801,7 @@ const NaturalFlowBodyText = ({ text, fontSize, lineHeight, fontFamily }) => {
       const lineHeightPx = fontSizePx * parseFloat(lineHeight);
       
       // For single column, limit to a specific number of lines
-      const maxLines = isSingleColumn ? 6 : 12; // Show fewer lines in single column
+      const maxLines = isSingleColumn ? 8 : 12; // Show more lines in single column
       const maxHeight = maxLines * lineHeightPx;
       
       // Find the right amount of text that fits
