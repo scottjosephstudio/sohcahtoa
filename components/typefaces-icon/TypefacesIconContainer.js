@@ -15,11 +15,11 @@ const TypefacesIconContainer = styled(motion.div)`
   opacity: ${({ $fadeIn }) => ($fadeIn ? 1 : 0)};
   visibility: ${({ $fadeIn }) => ($fadeIn ? "visible" : "hidden")};
   transition:
-    opacity 1s ease,
-    visibility 1s ease;
+    opacity 0.3s ease,
+    visibility 0.3s ease;
   -webkit-transition:
-    opacity 1s ease,
-    visibility 1s ease;
+    opacity 0.3s ease,
+    visibility 0.3s ease;
 
   /* Performance optimizations */
   transform: translateZ(0);

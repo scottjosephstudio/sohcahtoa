@@ -68,7 +68,7 @@ const TypefacesIcon = ({
     }
     setTimeout(() => {
       set$isNavigating(false);
-    }, 1000);
+    }, 300);
   };
 
   return (
