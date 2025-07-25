@@ -168,11 +168,11 @@ const SpecimenGrid = styled.div`
     "display"
     "theorists"
     "body"
-    "pangram"
-    "ligatures"
-    "body2"
     "lowercase"
-    "numbers";
+    "numbers"
+    "body2"
+    "pangram"
+    "ligatures";
   
   /* Tablet breakpoint - 768px */
   @media (min-width: 768px) {
@@ -181,9 +181,9 @@ const SpecimenGrid = styled.div`
       "display display"
       "theorists theorists"
       "body body"
-      "pangram ligatures"
+      "lowercase numbers"
       "body2 body2"
-      "lowercase numbers";
+      "pangram ligatures";
   }
   
   /* Desktop breakpoint - 1200px */
@@ -193,9 +193,9 @@ const SpecimenGrid = styled.div`
       "display display"
       "theorists theorists"
       "body body"
-      "pangram ligatures"
+      "lowercase numbers"
       "body2 body2"
-      "lowercase numbers";
+      "pangram ligatures";
   }
 `;
 
@@ -290,14 +290,14 @@ const SpecimenText = styled.div`
   ${props => props.$twoColumns && `
     /* Mobile: single column with overflow control */
     @media (max-width: 600px) {
-      max-height: 138px;
+
       overflow: hidden;
       margin-bottom: 0;
     }
     
     /* Tablet: single column with overflow control */
     @media (min-width: 601px) and (max-width: 768px) {
-      max-height: 180px;
+
       overflow: hidden;
       margin-bottom: 0;
     }
@@ -374,14 +374,6 @@ const SpecimenText = styled.div`
   }
 `;
 
-const FontSizeLabel = styled.div`
-  position: absolute;
-  bottom: -7px;
-  left: 0;
-  font-size: 12px;
-  color: rgba(16, 12, 8);
-  font-family: ${props => props.$fontFamily || 'inherit'};
-`;
 
 
 // Fade variants for consistent animations
@@ -677,85 +669,252 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
   );
 };
 
-// Dynamic body text component that truncates based on available height
-const DynamicBodyText = ({ text, fontSize, lineHeight, fontFamily, isMultiColumn = false }) => {
-  const [truncatedText, setTruncatedText] = useState(text);
+// Animated lowercase alphabet component
+const AnimatedLowercaseAlphabet = ({ fontFamily }) => {
+  const [displayText, setDisplayText] = useState("");
+  const [isTyping, setIsTyping] = useState(true);
+  const [fontSize, setFontSize] = useState("");
   const containerRef = useRef(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isTablet, setIsTablet] = useState(false);
   
-  // Check if we're in mobile or tablet mode
-  useEffect(() => {
-    const checkScreenSize = () => {
-      const width = window.innerWidth;
-      setIsMobile(width <= 600);
-      setIsTablet(width > 600 && width <= 768);
-    };
-    
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+  const alphabet = "ONLY 1 IN 3";
   
+  // Calculate font size to fill container width
   useEffect(() => {
-    const updateTruncatedText = () => {
+    const calculateFontSize = () => {
       if (!containerRef.current) return;
       
-  
+      const container = containerRef.current;
+      const containerWidth = container.offsetWidth - 24; // Account for padding
       
-      // Calculate available height (limit to 100% of fixed height)
-      const availableHeight = fixedHeight * 1;
+      // Calculate font size to fit the full alphabet on one line
+      const singleLineTest = document.createElement('div');
+      singleLineTest.style.fontFamily = fontFamily;
+      singleLineTest.style.fontSize = '100px';
+      singleLineTest.style.visibility = 'hidden';
+      singleLineTest.style.position = 'absolute';
+      singleLineTest.style.whiteSpace = 'nowrap';
+      singleLineTest.textContent = alphabet;
+      document.body.appendChild(singleLineTest);
       
-      // Parse font-size to get actual pixel value
-      const actualFontSize = calculateActualFontSize(fontSize);
-      const fontSizePx = parseInt(actualFontSize);
+      const singleLineWidth = singleLineTest.offsetWidth;
+      const scale = containerWidth / singleLineWidth;
+      const optimalFontSize = 100 * scale;
       
-      // Calculate line height in pixels
-      const lineHeightPx = fontSizePx * parseFloat(lineHeight);
+      document.body.removeChild(singleLineTest);
       
-      // Calculate max lines that can fit
-      const maxLines = Math.floor(availableHeight / lineHeightPx);
-      const maxHeight = maxLines * lineHeightPx;
-      
-      // Truncate text based on available height
-      const truncated = truncateTextByHeight(text, actualFontSize, lineHeight, maxHeight);
-      setTruncatedText(truncated);
+      // Apply clamp limits
+      const clampedSize = Math.min(Math.max(24, optimalFontSize), 36);
+      setFontSize(`${Math.round(clampedSize)}px`);
     };
     
-    updateTruncatedText();
-    window.addEventListener('resize', updateTruncatedText);
-    return () => window.removeEventListener('resize', updateTruncatedText);
-  }, [text, fontSize, lineHeight, isMobile, isTablet]);
+    calculateFontSize();
+    window.addEventListener('resize', calculateFontSize);
+    return () => window.removeEventListener('resize', calculateFontSize);
+  }, [fontFamily, alphabet]);
   
-  // Calculate height based on screen size
-  const getHeight = () => {
-    if (isMobile) return '138px';
-    if (isTablet) return '180px';
-    return '300px';
-  };
+  useEffect(() => {
+    let timeout;
+    
+    if (isTyping) {
+      if (displayText.length < alphabet.length) {
+        timeout = setTimeout(() => {
+          setDisplayText(alphabet.slice(0, displayText.length + 1));
+        }, 50);
+      } else {
+        timeout = setTimeout(() => {
+          setIsTyping(false);
+        }, 3000);
+      }
+    } else {
+      if (displayText.length > 0) {
+        timeout = setTimeout(() => {
+          setDisplayText(displayText.slice(0, -1));
+        }, 100);
+      } else {
+        timeout = setTimeout(() => {
+          setIsTyping(true);
+        }, 1000);
+      }
+    }
+    
+    return () => clearTimeout(timeout);
+  }, [displayText, isTyping, alphabet]);
   
   return (
     <div ref={containerRef} style={{ 
       position: 'relative', 
-      width: '100%', 
-      height: getHeight(),
-      overflow: 'hidden',
-      marginBottom: '12px'
+      width: '100%'
     }}>
-      <SpecimenText
-        $fontFamily={fontFamily}
-        $fontSize={fontSize}
-        $lineHeight={lineHeight}
-        $twoColumns={!isMultiColumn}
-        $multiColumn={isMultiColumn}
-        $noHyphens={true}
-        style={{ overflow: 'hidden', maxHeight: '100%' }}
-      >
-        {truncatedText}
-      </SpecimenText>
+      <div style={{
+        height: fontSize ? `calc(${fontSize} * 1)` : 'auto',
+        marginBottom: '18px'
+      }}>
+        <SpecimenText
+          $fontFamily={fontFamily}
+          $fontSize={fontSize}
+          $lineHeight="1"
+          $letterSpacing="clamp(0.8px, 0.8vw, 0.6px)"
+          style={{ 
+            width: '100%',
+            position: 'relative',
+            whiteSpace: 'nowrap',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center'
+          }}
+          
+        >
+          {displayText}
+          <span style={{ 
+            position: 'absolute',
+            visibility: 'hidden',
+            pointerEvents: 'none'
+          }}>
+            {alphabet}
+          </span>
+        </SpecimenText>
+      </div>
+      
+      <div style={{
+        position: 'absolute',
+        bottom: '-8px',
+        left: '0',
+        fontSize: '12px',
+        color: 'rgba(16, 12, 8)',
+        fontFamily: fontFamily,
+        marginTop: '12px'
+      }}>
+        Font-size: {fontSize}
+      </div>
     </div>
   );
 };
+
+// Animated numbers and symbols component
+const AnimatedNumbersSymbols = ({ fontFamily }) => {
+  const [displayText, setDisplayText] = useState("");
+  const [isTyping, setIsTyping] = useState(true);
+  const [fontSize, setFontSize] = useState("");
+  const containerRef = useRef(null);
+  
+  const symbols = "ARE PUPILS ";
+  
+  // Calculate font size to fill container width
+  useEffect(() => {
+    const calculateFontSize = () => {
+      if (!containerRef.current) return;
+      
+      const container = containerRef.current;
+      const containerWidth = container.offsetWidth - 24; // Account for padding
+      
+      // Calculate font size to fit the full symbols on one line
+      const singleLineTest = document.createElement('div');
+      singleLineTest.style.fontFamily = fontFamily;
+      singleLineTest.style.fontSize = '100px';
+      singleLineTest.style.visibility = 'hidden';
+      singleLineTest.style.position = 'absolute';
+      singleLineTest.style.whiteSpace = 'nowrap';
+      singleLineTest.textContent = symbols;
+      document.body.appendChild(singleLineTest);
+      
+      const singleLineWidth = singleLineTest.offsetWidth;
+      const scale = containerWidth / singleLineWidth;
+      const optimalFontSize = 100 * scale;
+      
+      document.body.removeChild(singleLineTest);
+      
+      // Apply clamp limits
+      const clampedSize = Math.min(Math.max(24, optimalFontSize), 36);
+      setFontSize(`${Math.round(clampedSize)}px`);
+    };
+    
+    calculateFontSize();
+    window.addEventListener('resize', calculateFontSize);
+    return () => window.removeEventListener('resize', calculateFontSize);
+  }, [fontFamily, symbols]);
+  
+  useEffect(() => {
+    let timeout;
+    
+    if (isTyping) {
+      if (displayText.length < symbols.length) {
+        timeout = setTimeout(() => {
+          setDisplayText(symbols.slice(0, displayText.length + 1));
+        }, 50);
+      } else {
+        timeout = setTimeout(() => {
+          setIsTyping(false);
+        }, 3000);
+      }
+    } else {
+      if (displayText.length > 0) {
+        timeout = setTimeout(() => {
+          setDisplayText(displayText.slice(0, -1));
+        }, 100);
+      } else {
+        timeout = setTimeout(() => {
+          setIsTyping(true);
+        }, 1000);
+      }
+    }
+    
+    return () => clearTimeout(timeout);
+  }, [displayText, isTyping, symbols]);
+  
+  return (
+    <div ref={containerRef} style={{ 
+      position: 'relative', 
+      width: '100%'
+    }}>
+      <div style={{
+        height: fontSize ? `calc(${fontSize} * 1)` : 'auto',
+        marginBottom: '18px'
+      }}>
+        <SpecimenText
+          $fontFamily={fontFamily}
+          $fontSize={fontSize}
+          $lineHeight="1"
+          $letterSpacing="clamp(0.4px, 0.8vw, 0.8px)"
+          style={{ 
+            width: '100%',
+            position: 'relative',
+            whiteSpace: 'nowrap',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center'
+          }}
+        >
+          {displayText}
+          <span style={{ 
+            position: 'absolute',
+            visibility: 'hidden',
+            pointerEvents: 'none'
+          }}>
+            {symbols}
+          </span>
+        </SpecimenText>
+      </div>
+      
+            <div style={{
+        position: 'absolute',
+        bottom: '-8px',
+        left: '0',
+        fontSize: '12px',
+        color: 'rgba(16, 12, 8)',
+        fontFamily: fontFamily,
+        marginTop: '12px'
+      }}>
+        Font-size: {fontSize}
+      </div>
+    </div>
+  );
+};
+
+
 
 // Natural flow body text component that shows only what fits
 const NaturalFlowBodyText = ({ text, fontSize, lineHeight, fontFamily }) => {
@@ -907,7 +1066,7 @@ const SPECIMEN_SAMPLES = [
   {
     title: "Uppercase",
     text: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    description: "Uppercase alphabet showcase",
+    description: "Uppercase alphabet",
     fontSize: "clamp(84px, 8vw, 144px)",
     lineHeight: "1",
     letterSpacing: "clamp(0.8px, 1vw, 0.8px)",
@@ -916,33 +1075,33 @@ const SPECIMEN_SAMPLES = [
   {
     title: "Titles",
     text: "Shadow Work, The Power of Yet, The Element, No Contest, Tool and Symbol,  By Head, Hand and Heart,  Gifts and Occupations, Punished by Rewards,The Hole in the Wall, Help Me To Do It Myself, What Do I Do Monday?, Never Too Late",
-    description: "List of educational theorists and approaches",
+    description: "Educational theorists and approaches",
     fontSize: "clamp(24px, 2vw, 36px)",
     lineHeight: "1.4",
-    letterSpacing: "clamp(0.6px, 0.4vw, 0.4px)",
+    letterSpacing: "clamp(0.6px, 0.4vw, 0.6px)",
     isSingleColumn: true
   },
   {
-    title: "Lowercase Alphabet",
-    text: "abcdefghijklmnopqrstuvwxyz",
-    description: "Lowercase character set",
-    fontSize: "clamp(16px, 3.5vw, 24px)",
+    title: "Headline",
+    description: "Headline",
+    fontSize: "clamp(24px, 3.5vw, 48px)",
     lineHeight: "1.2",
-    letterSpacing: "clamp(0.3px, 0.8vw, 0.6px)"
+    letterSpacing: "clamp(0.8px, 0.8vw, 0.6px)",
+    isAnimated: true
   },
   {
-    title: "Numbers & Symbols",
-    text: "0123456789 !@#$%^&*()",
+    title: "Headline (part 2)",
     description: "Numerals and punctuation",
-    fontSize: "clamp(16px, 3vw, 24px)",
-    lineHeight: "1.4",
-    letterSpacing: "clamp(0.4px, 0.8vw, 0.8px)"
+    fontSize: "clamp(24px, 3.5vw, 48px)",
+    lineHeight: "1.2",
+    letterSpacing: "clamp(0.8px, 0.8vw, 0.6px)",
+    isAnimated: true
   },
   {
     title: "Character Pairs (Lowercase)",
     text: "fi fl ff ffi ffl th ch sh ph qu st ct rt lt nt dt pt ft vt at et it ot ut gt ht mt nt pt qt rt st tt ut vt wt xt yt zt av ev iv ov uv wv xv yv zv aw ew iw ow uw xw yw zw ax ex ix ox ux wx yx zx ay ey iy oy uy wy xy zy az ez iz oz uz wz xz yz zz",
     description: "Lowercase letter combinations and ligatures",
-    fontSize: "clamp(14px, 2.5vw, 20px)",
+    fontSize: "clamp(14px, 3.5vw, 24px)",
     lineHeight: "1.2",
     letterSpacing: "clamp(0.8px, 0.6vw, 0.8px)"
   },
@@ -965,9 +1124,9 @@ const SPECIMEN_SAMPLES = [
   },
   {
     title: "Character Pairs",
-    text: "Ta Te Ti To Tu Ty Va Ve Vi Vo Vu Vy Wa We Wi Wo Wu Wy Xa Xe Xi Xo Xu Xy Ya Ye Yi Yo Yu Yy Za Ze Zi Zo Zu Zy",
+    text: "Fi Fl Ff Ffi Ffl Th Ch Sh Ph Qu St Ct Rt Lt Nt Dt Pt Ft Vt At Et It Ot Ut Gt Ht Mt Nt Pt Qt Rt St Tt Ut Vt Wt Xt Yt Zt Av Ev Iv Ov Uv Wv Xv Yv Zv Aw Ew Iw Ow Uw Xw Yw Zw Ax Ex Ix Ox Ux Wx Yx Zx Ay Ey Iy Oy Uy Wy Xy Zy Az Ez Iz Oz Uz Wz Xz Yz Zz",
     description: "Mixed upper and lowercase kerning pairs",
-    fontSize: "clamp(18px, 3.5vw, 28px)",
+    fontSize: "clamp(14px, 3.5vw, 24px)",
     lineHeight: "1.2",
     letterSpacing: "clamp(0.4px, 0.8vw, 0.8px)"
   }
@@ -1212,8 +1371,8 @@ export default forwardRef(function SpecimenSection(
                     const gridAreaMap = {
                       "Uppercase": "display",
                       "Titles": "theorists", 
-                      "Lowercase Alphabet": "lowercase", 
-                      "Numbers & Symbols": "numbers",
+                      "Headline": "lowercase", 
+                      "Headline (part 2)": "numbers",
                       "Character Pairs (Lowercase)": "pangram",
                       "Body Text Sample": "body",
                       "Body Text Sample 2": "body2",
@@ -1235,7 +1394,15 @@ export default forwardRef(function SpecimenSection(
                       >
                         <SpecimenTitle>{sample.title}</SpecimenTitle>
                         {sample.isAnimated ? (
-                          <AnimatedDisplayHeadline fontFamily={fontFamily} />
+                          sample.title === "Uppercase" ? (
+                            <AnimatedDisplayHeadline fontFamily={fontFamily} />
+                          ) : sample.title === "Headline" ? (
+                            <AnimatedLowercaseAlphabet fontFamily={fontFamily} />
+                                                      ) : sample.title === "Headline (part 2)" ? (
+                              <AnimatedNumbersSymbols fontFamily={fontFamily} />
+                          ) : (
+                            <AnimatedDisplayHeadline fontFamily={fontFamily} />
+                          )
                         ) : sample.title === "Body Text Sample" ? (
                           <div style={{ position: 'relative' }}>
                             <NaturalFlowBodyText
@@ -1259,11 +1426,12 @@ export default forwardRef(function SpecimenSection(
                           </div>
                         ) : sample.title === "Body Text Sample 2" ? (
                           <div style={{ position: 'relative' }}>
-                            <NaturalBodyText
+                            <NaturalFlowBodyText
                               text={sample.text}
                               fontSize={sample.fontSize}
                               lineHeight={sample.lineHeight}
                               fontFamily={fontFamily}
+                              style={{ marginBottom: '12px' }}
                             />
                             <div style={{
                               position: 'absolute',
@@ -1308,7 +1476,7 @@ export default forwardRef(function SpecimenSection(
                               $fontSize={sample.fontSize}
                               $lineHeight={sample.lineHeight}
                               $letterSpacing={sample.letterSpacing}
-                              style={{ marginBottom: '12px' }}
+                              style={{ marginBottom: '18px' }}
                             >
                               {sample.text}
                             </SpecimenText>
@@ -1331,7 +1499,7 @@ export default forwardRef(function SpecimenSection(
                               $fontSize={sample.fontSize}
                               $lineHeight={sample.lineHeight}
                               $letterSpacing={sample.letterSpacing}
-                              style={{ marginBottom: '12px' }}
+                              style={{ marginBottom: '18px' }}
                             >
                               {sample.text}
                             </SpecimenText>
