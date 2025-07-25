@@ -168,6 +168,7 @@ const SpecimenGrid = styled.div`
     "display"
     "theorists"
     "body"
+    "body2"
     "lowercase"
     "numbers"
     "pangram"
@@ -180,6 +181,7 @@ const SpecimenGrid = styled.div`
       "display display"
       "theorists theorists"
       "body body"
+      "body2 body2"
       "lowercase numbers"
       "pangram ligatures";
   }
@@ -191,6 +193,7 @@ const SpecimenGrid = styled.div`
       "display display"
       "theorists theorists"
       "body body"
+      "body2 body2"
       "lowercase numbers"
       "pangram ligatures";
   }
@@ -286,8 +289,15 @@ const SpecimenText = styled.div`
   /* Multi-column layout for body text */
   ${props => props.$twoColumns && `
     /* Mobile: single column with overflow control */
-    @media (max-width: 767px) {
-      max-height: 200px;
+    @media (max-width: 600px) {
+      max-height: 138px;
+      overflow: hidden;
+      margin-bottom: 0;
+    }
+    
+    /* Tablet: single column with overflow control */
+    @media (min-width: 601px) and (max-width: 768px) {
+      max-height: 180px;
       overflow: hidden;
       margin-bottom: 0;
     }
@@ -311,6 +321,48 @@ const SpecimenText = styled.div`
     /* Large screens: 4 columns */
     @media (min-width: 1600px) {
       column-count: 4;
+      column-gap: 40px;
+      column-fill: balance;
+      margin-bottom: 0;
+    }
+  `}
+  
+  /* Extended multi-column layout for body text 2 */
+  ${props => props.$multiColumn && `
+    /* Mobile: single column with overflow control */
+    @media (max-width: 767px) {
+      max-height: 200px;
+      overflow: hidden;
+      margin-bottom: 0;
+    }
+    
+    /* Tablet: 2 columns */
+    @media (min-width: 768px) and (max-width: 1199px) {
+      column-count: 2;
+      column-gap: 40px;
+      column-fill: balance;
+      margin-bottom: 0;
+    }
+    
+    /* Desktop: 3 columns */
+    @media (min-width: 1200px) and (max-width: 1599px) {
+      column-count: 3;
+      column-gap: 40px;
+      column-fill: balance;
+      margin-bottom: 0;
+    }
+    
+    /* Large screens: 4 columns */
+    @media (min-width: 1600px) and (max-width: 1999px) {
+      column-count: 4;
+      column-gap: 40px;
+      column-fill: balance;
+      margin-bottom: 0;
+    }
+    
+    /* Extra large screens: 5 columns */
+    @media (min-width: 2000px) {
+      column-count: 5;
       column-gap: 40px;
       column-fill: balance;
       margin-bottom: 0;
@@ -626,15 +678,18 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
 };
 
 // Dynamic body text component that truncates based on available height
-const DynamicBodyText = ({ text, fontSize, lineHeight, fontFamily }) => {
+const DynamicBodyText = ({ text, fontSize, lineHeight, fontFamily, isMultiColumn = false }) => {
   const [truncatedText, setTruncatedText] = useState(text);
   const containerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
   
-  // Check if we're in mobile mode
+  // Check if we're in mobile or tablet mode
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      const width = window.innerWidth;
+      setIsMobile(width <= 600);
+      setIsTablet(width > 600 && width <= 768);
     };
     
     checkScreenSize();
@@ -646,8 +701,7 @@ const DynamicBodyText = ({ text, fontSize, lineHeight, fontFamily }) => {
     const updateTruncatedText = () => {
       if (!containerRef.current) return;
       
-      // Use different heights for mobile vs desktop
-      const fixedHeight = isMobile ? 200 : 300; // Much smaller height for mobile due to uppercase taking more space
+  
       
       // Calculate available height (limit to 100% of fixed height)
       const availableHeight = fixedHeight * 1;
@@ -671,14 +725,146 @@ const DynamicBodyText = ({ text, fontSize, lineHeight, fontFamily }) => {
     updateTruncatedText();
     window.addEventListener('resize', updateTruncatedText);
     return () => window.removeEventListener('resize', updateTruncatedText);
-  }, [text, fontSize, lineHeight, isMobile]);
+  }, [text, fontSize, lineHeight, isMobile, isTablet]);
+  
+  // Calculate height based on screen size
+  const getHeight = () => {
+    if (isMobile) return '138px';
+    if (isTablet) return '180px';
+    return '300px';
+  };
   
   return (
     <div ref={containerRef} style={{ 
       position: 'relative', 
       width: '100%', 
-      height: isMobile ? '200px' : '300px', 
+      height: getHeight(),
       overflow: 'hidden',
+      marginBottom: '12px'
+    }}>
+      <SpecimenText
+        $fontFamily={fontFamily}
+        $fontSize={fontSize}
+        $lineHeight={lineHeight}
+        $twoColumns={!isMultiColumn}
+        $multiColumn={isMultiColumn}
+        $noHyphens={true}
+        style={{ overflow: 'hidden', maxHeight: '100%' }}
+      >
+        {truncatedText}
+      </SpecimenText>
+    </div>
+  );
+};
+
+// Natural flow body text component that shows only what fits
+const NaturalFlowBodyText = ({ text, fontSize, lineHeight, fontFamily }) => {
+  const [visibleText, setVisibleText] = useState(text);
+  const containerRef = useRef(null);
+  const [isSingleColumn, setIsSingleColumn] = useState(false);
+  
+  // Check if we're in single column mode
+  useEffect(() => {
+    const checkLayout = () => {
+      const width = window.innerWidth;
+      setIsSingleColumn(width <= 1199); // Single column for mobile and tablet
+    };
+    
+    checkLayout();
+    window.addEventListener('resize', checkLayout);
+    return () => window.removeEventListener('resize', checkLayout);
+  }, []);
+  
+  useEffect(() => {
+    const updateVisibleText = () => {
+      if (!containerRef.current) return;
+      
+      const container = containerRef.current;
+      
+      // Create a temporary element to measure text
+      const tempElement = document.createElement('div');
+      tempElement.style.fontSize = fontSize;
+      tempElement.style.lineHeight = lineHeight;
+      tempElement.style.width = '100%';
+      tempElement.style.position = 'absolute';
+      tempElement.style.visibility = 'hidden';
+      tempElement.style.whiteSpace = 'pre-wrap';
+      tempElement.style.wordWrap = 'break-word';
+      tempElement.style.overflow = 'hidden';
+      tempElement.style.fontFamily = fontFamily;
+      
+      document.body.appendChild(tempElement);
+      
+      // Calculate line height in pixels
+      const actualFontSize = calculateActualFontSize(fontSize);
+      const fontSizePx = parseInt(actualFontSize);
+      const lineHeightPx = fontSizePx * parseFloat(lineHeight);
+      
+      // For single column, limit to a specific number of lines
+      const maxLines = isSingleColumn ? 6 : 12; // Show fewer lines in single column
+      const maxHeight = maxLines * lineHeightPx;
+      
+      // Find the right amount of text that fits
+      let start = 0;
+      let end = text.length;
+      let result = '';
+      
+      while (start <= end) {
+        const mid = Math.floor((start + end) / 2);
+        const testText = text.substring(0, mid);
+        
+        tempElement.textContent = testText;
+        const height = tempElement.scrollHeight;
+        
+        if (height <= maxHeight) {
+          result = testText;
+          start = mid + 1;
+        } else {
+          end = mid - 1;
+        }
+      }
+      
+      document.body.removeChild(tempElement);
+      
+      // Find the last complete sentence
+      if (result.length < text.length) {
+        // Look for sentence endings: . ! ? followed by space or end of string
+        const sentenceEndings = ['. ', '! ', '? ', '.', '!', '?'];
+        let lastSentenceEnd = -1;
+        
+        for (const ending of sentenceEndings) {
+          const index = result.lastIndexOf(ending);
+          if (index > lastSentenceEnd) {
+            lastSentenceEnd = index + ending.length;
+          }
+        }
+        
+        if (lastSentenceEnd > 0) {
+          result = result.substring(0, lastSentenceEnd);
+        } else {
+          // Fallback to last complete word if no sentence ending found
+          const lastSpace = result.lastIndexOf(' ');
+          if (lastSpace > 0) {
+            result = result.substring(0, lastSpace);
+          }
+        }
+      }
+      
+      setVisibleText(result);
+    };
+    
+    // Initial update
+    updateVisibleText();
+    
+    // Update on resize
+    window.addEventListener('resize', updateVisibleText);
+    return () => window.removeEventListener('resize', updateVisibleText);
+  }, [text, fontSize, lineHeight, fontFamily, isSingleColumn]);
+  
+  return (
+    <div ref={containerRef} style={{ 
+      position: 'relative', 
+      width: '100%',
       marginBottom: '12px'
     }}>
       <SpecimenText
@@ -687,9 +873,30 @@ const DynamicBodyText = ({ text, fontSize, lineHeight, fontFamily }) => {
         $lineHeight={lineHeight}
         $twoColumns={true}
         $noHyphens={true}
-        style={{ overflow: 'hidden', maxHeight: '100%' }}
+        style={{ overflow: 'hidden' }}
       >
-        {truncatedText}
+        {visibleText}
+      </SpecimenText>
+    </div>
+  );
+};
+
+// Natural flow body text component without fixed height
+const NaturalBodyText = ({ text, fontSize, lineHeight, fontFamily }) => {
+  return (
+    <div style={{ 
+      position: 'relative', 
+      width: '100%',
+      marginBottom: '12px'
+    }}>
+      <SpecimenText
+        $fontFamily={fontFamily}
+        $fontSize={fontSize}
+        $lineHeight={lineHeight}
+        $multiColumn={true}
+        $noHyphens={true}
+      >
+        {text}
       </SpecimenText>
     </div>
   );
@@ -748,6 +955,15 @@ const SPECIMEN_SAMPLES = [
     letterSpacing: "clamp(0.2px, 0.4vw, 0.4px)"
   },
   {
+    title: "Body Text Sample 2",
+    text: "The franchise model that Acton Academy has adopted allows for rapid expansion while maintaining the core principles of the educational philosophy. By offering \"kits\" to entrepreneurs and parents interested in opening similar schools, Acton is creating a network of like-minded educational institutions that share a common vision for learner-driven education. This approach has the potential to transform education on a global scale, as more communities adopt and adapt the Acton model to their local contexts. The success of Acton Academy demonstrates that alternative educational models can not only exist alongside traditional schooling but can thrive and expand, offering families more choices in how their children are educated. As the network continues to grow, it serves as a powerful example of how innovative educational approaches can scale and impact students worldwide. The school's emphasis on real-world application extends beyond individual learning to community impact, with students encouraged to identify and solve problems that matter to them and their communities. This project-based approach not only makes learning more engaging but also helps students develop the skills and mindset needed to be active, contributing members of society. The combination of self-directed learning, peer collaboration, and real-world application creates a powerful educational experience that prepares students for the challenges and opportunities of the 21st century.",
+    description: "Continuation of body text with smaller font-size",
+    fontSize: "clamp(12px, 1.5vw, 16px)",
+    lineHeight: "1.5",
+    letterSpacing: "clamp(0.1px, 0.3vw, 0.3px)",
+    isMultiColumn: true
+  },
+  {
     title: "Character Pairs",
     text: "fi fl ff ffi ffl th ch sh ph qu",
     description: "Common ligatures and letter combinations",
@@ -764,6 +980,7 @@ export default forwardRef(function SpecimenSection(
   const [fontFamily, setFontFamily] = useState('inherit');
   const [fontPath, setFontPath] = useState("/fonts/JANTReg.ttf"); // Set initial fallback
   const [bodyTextFontSize, setBodyTextFontSize] = useState("");
+  const [bodyText2FontSize, setBodyText2FontSize] = useState("");
   const [theoristsFontSize, setTheoristsFontSize] = useState("");
   
   const { font, loading, error } = useFontLoader(fontPath);
@@ -780,6 +997,20 @@ export default forwardRef(function SpecimenSection(
     updateBodyTextFontSize();
     window.addEventListener('resize', updateBodyTextFontSize);
     return () => window.removeEventListener('resize', updateBodyTextFontSize);
+  }, []);
+
+  // Calculate actual font-size for body text sample 2
+  useEffect(() => {
+    const updateBodyText2FontSize = () => {
+      const bodyText2Sample = SPECIMEN_SAMPLES.find(sample => sample.title === "Body Text Sample 2");
+      if (bodyText2Sample) {
+        setBodyText2FontSize(calculateActualFontSize(bodyText2Sample.fontSize));
+      }
+    };
+    
+    updateBodyText2FontSize();
+    window.addEventListener('resize', updateBodyText2FontSize);
+    return () => window.removeEventListener('resize', updateBodyText2FontSize);
   }, []);
 
   // Calculate actual font-size for educational theorists sample
@@ -955,6 +1186,7 @@ export default forwardRef(function SpecimenSection(
                       "Numbers & Symbols": "numbers",
                       "Pangram": "pangram",
                       "Body Text Sample": "body",
+                      "Body Text Sample 2": "body2",
                       "Character Pairs": "ligatures"
                     };
                     
@@ -976,7 +1208,7 @@ export default forwardRef(function SpecimenSection(
                           <AnimatedDisplayHeadline fontFamily={fontFamily} />
                         ) : sample.title === "Body Text Sample" ? (
                           <div style={{ position: 'relative' }}>
-                            <DynamicBodyText
+                            <NaturalFlowBodyText
                               text={sample.text}
                               fontSize={sample.fontSize}
                               lineHeight={sample.lineHeight}
@@ -994,17 +1226,14 @@ export default forwardRef(function SpecimenSection(
                               Font-size: {bodyTextFontSize}
                             </div>
                           </div>
-                        ) : sample.title === "Educational Theorists" ? (
+                        ) : sample.title === "Body Text Sample 2" ? (
                           <div style={{ position: 'relative' }}>
-                            <SpecimenText
-                              $fontFamily={fontFamily}
-                              $fontSize={sample.fontSize}
-                              $lineHeight={sample.lineHeight}
-                              $letterSpacing={sample.letterSpacing}
-                              $singleColumn={sample.isSingleColumn}
-                            >
-                              {sample.text}
-                            </SpecimenText>
+                            <NaturalBodyText
+                              text={sample.text}
+                              fontSize={sample.fontSize}
+                              lineHeight={sample.lineHeight}
+                              fontFamily={fontFamily}
+                            />
                             <div style={{
                               position: 'absolute',
                               bottom: '-8px',
@@ -1014,7 +1243,7 @@ export default forwardRef(function SpecimenSection(
                               fontFamily: fontFamily,
                               marginTop: '12px'
                             }}>
-                              Font-size: {theoristsFontSize}
+                              Font-size: {bodyText2FontSize}
                             </div>
                           </div>
                         ) : (
@@ -1024,6 +1253,7 @@ export default forwardRef(function SpecimenSection(
                             $lineHeight={sample.lineHeight}
                             $letterSpacing={sample.letterSpacing}
                             $singleColumn={sample.isSingleColumn}
+                            $multiColumn={sample.isMultiColumn}
                           >
                             {sample.text}
                           </SpecimenText>
@@ -1102,7 +1332,7 @@ export default forwardRef(function SpecimenSection(
                   </FontDetails>
                   <FontDetails>
                     The forms hark of a universal case, with the use of a single story 'a' — no tail or hook on the lower-case 'i', coupled with non-lining figures as standard, offers a kind of medley of times and styles, while retaining both modular and humanist curves alongside proportional spacing within the same map.
-                </FontDetails>
+                  </FontDetails>
                 </div>
               </FontInfo>
             )}
