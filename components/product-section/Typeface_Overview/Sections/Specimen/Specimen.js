@@ -206,7 +206,6 @@ const SpecimenCard = styled(motion.div)`
   
   /* Desktop: 3 columns - specific border logic based on grid areas */
   @media (min-width: 1200px) {
-    /* Display Headline, Body Text, Numbers & Symbols, and Character Pairs get right borders */
     &[style*="grid-area: display"],
     &[style*="grid-area: body"],
     &[style*="grid-area: numbers"],
@@ -214,22 +213,28 @@ const SpecimenCard = styled(motion.div)`
     &[style*="grid-area: theorists"] {
       border-right: 2px solid rgb(16, 12, 8);
     }
-    
-    /* Display Headline gets 10px right padding instead of 12px */
+    &[style*="grid-area: pangram"],
+    &[style*="grid-area: lowercase"] {
+      border-right: none;
+    }
     &[style*="grid-area: display"] {
       padding-right: 6px;
     }
   }
   
-  /* Tablet: 2 columns - show right border on 1st column and Character Pairs */
+  /* Tablet: 2 columns - show right border on 1st column and specific areas */
   @media (min-width: 768px) and (max-width: 1199px) {
     &:nth-child(2n-1),
+    &[style*="grid-area: body"],
+    &[style*="grid-area: numbers"],
     &[style*="grid-area: ligatures"],
     &[style*="grid-area: theorists"] {
       border-right: 2px solid rgb(16, 12, 8);
     }
-    
-    /* Display Headline gets 10px right padding on tablet */
+    &[style*="grid-area: pangram"],
+    &[style*="grid-area: lowercase"] {
+      border-right: none;
+    }
     &[style*="grid-area: display"] {
       padding-right: 6px;
     }
@@ -238,8 +243,6 @@ const SpecimenCard = styled(motion.div)`
   /* Mobile: single column - no right border needed */
   @media (max-width: 767px) {
     border-right: 2px solid rgb(16, 12, 8);
-    
-    /* Display Headline gets 10px right padding on mobile */
     &[style*="grid-area: display"] {
       padding-right: 6px;
     }
@@ -613,7 +616,8 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
         left: '0',
         fontSize: '12px',
         color: 'rgba(16, 12, 8)',
-        fontFamily: fontFamily
+        fontFamily: fontFamily,
+        marginTop: '12px'
       }}>
         Font-size: {fontSize}
       </div>
@@ -704,10 +708,10 @@ const SPECIMEN_SAMPLES = [
   },
   {
     title: "Educational Theorists",
-    text: "Maria Montessori, Project-Based Learning, Sudbury Schools, Howard Gardner, Waldorf Education, John Dewey, Microschooling, Paulo Freire, Reggio Emilia Approach, Ken Robinson, Democratic Schools, Jean Piaget, High Tech High, Charlotte Mason Method, Ivan Illich, Maker Education, Carol Dweck, Peter Gray, Inquiry-Based Learning, Rudolf Steiner, Big Picture Learning, A.S. Neill, Experiential Learning, Alfie Kohn, Khan Academy, Constructivist Learning, Jerome Bruner, AltSchool, Minerva Schools",
+    text: "Shadow Work, The Power of Yet, The Element, No Contest, Tool and Symbol,  By Head, Hand and Heart,  Gifts and Occupations, Punished by Rewards,The Hole in the Wall, Help me to do it myself, What Do I Do Monday?, Never Too Late",
     description: "List of educational theorists and approaches",
-    fontSize: "clamp(20px, 2vw, 36px)",
-    lineHeight: "1.3",
+    fontSize: "clamp(24px, 2vw, 36px)",
+    lineHeight: "1.4",
     letterSpacing: "clamp(0.2px, 0.4vw, 0.4px)",
     isSingleColumn: true
   },
@@ -724,7 +728,7 @@ const SPECIMEN_SAMPLES = [
     text: "0123456789 !@#$%^&*()",
     description: "Numerals and punctuation",
     fontSize: "clamp(16px, 3vw, 24px)",
-    lineHeight: "1.3",
+    lineHeight: "1.4",
     letterSpacing: "clamp(0.4px, 0.8vw, 0.8px)"
   },
   {
@@ -737,9 +741,9 @@ const SPECIMEN_SAMPLES = [
   },
   {
     title: "Body Text Sample",
-    text: "Acton Academy is an innovative private school network that describes itself as \"one-room schoolhouses for the 21st century.\" Founded in 2009 with just 12 students, it has grown into a global network with multiple locations across the United States and internationally. The school operates on a fundamentally different educational model from traditional institutions. At Acton Academy, \"We have Guides, not teachers. We have Studios, not classrooms. We have Portfolios and Exhibitions, not grades.\" The approach emphasizes self-directed, learner-driven education where \"the adults step back and the students take on the roles of self-management and running the school.\" Central to Acton's philosophy is the Hero's Journey narrative framework. The Hero's Journey is \"the #1 element that defines an Acton learner driven community\" and equips students with tools to \"learn how to learn, learn how to do and learn how to be.\" The school believes \"there is a hero in every child\" and defines a hero as someone who doesn't quit when challenges arise, takes responsibility rather than making excuses, and works to solve problems that make the world better. The educational model features several distinctive elements. Guides are described as \"gamemakers who propose exciting challenges, set boundaries and invite Eagles to start a life changing journey.\" Rather than traditional teaching methods, \"teaching by lecturing or issuing instructions is not allowed at Acton.\" Instead, the model relies heavily on self-directed learning with peer feedback, where older students help younger ones set and monitor goals. The curriculum is designed to be student-centered, emphasizing critical thinking, creativity, and independence. The academy uses \"the latest technology in a self-paced learning environment that is designed to foster responsibility, goal-setting, and teamwork.\" Students work through real-world projects and apprenticeships, with high school students finding their own paid apprenticeships as part of their learning experience. Acton Academy serves students from kindergarten through 12th grade and has expanded through a franchise model, offering \"kits\" to entrepreneurs and parents interested in opening similar schools in their communities. The network represents part of a broader movement toward alternative education models that challenge traditional schooling approaches.",
+    text: "Acton Academy is an innovative school network that describes itself as \"one-room schoolhouses for the 21st century.\" Founded in 2009 with just 12 students, it has grown into a global network with multiple locations across the United States and internationally. The school operates on a fundamentally different educational model from traditional institutions. At Acton Academy, \"We have Guides, not teachers. We have Studios, not classrooms. We have Portfolios and Exhibitions, not grades.\" The approach emphasizes self-directed, learner-driven education where \"the adults step back and the students take on the roles of self-management and running the school.\" Central to Acton's philosophy is the Hero's Journey narrative framework. The Hero's Journey is \"the #1 element that defines an Acton learner driven community\" and equips students with tools to \"learn how to learn, learn how to do and learn how to be.\" The school believes \"there is a hero in every child\" and defines a hero as someone who doesn't quit when challenges arise, takes responsibility rather than making excuses, and works to solve problems that make the world better. The educational model features several distinctive elements. Guides are described as \"gamemakers who propose exciting challenges, set boundaries and invite Eagles to start a life changing journey.\" Rather than traditional teaching methods, \"teaching by lecturing or issuing instructions is not allowed at Acton.\" Instead, the model relies heavily on self-directed learning with peer feedback, where older students help younger ones set and monitor goals. The curriculum is designed to be student-centered, emphasizing critical thinking, creativity, and independence. The academy uses \"the latest technology in a self-paced learning environment that is designed to foster responsibility, goal-setting, and teamwork.\" Students work through real-world projects and apprenticeships, with high school students finding their own paid apprenticeships as part of their learning experience. Acton Academy serves students from kindergarten through 12th grade and has expanded through a franchise model, offering \"kits\" to entrepreneurs and parents interested in opening similar schools in their communities. The network represents part of a broader movement toward alternative education models that challenge traditional schooling approaches.",
     description: "Extended text for readability testing",
-    fontSize: "clamp(16px, 2vw, 20px)",
+    fontSize: "clamp(14px, 2vw, 18px)",
     lineHeight: "1.4",
     letterSpacing: "clamp(0.2px, 0.4vw, 0.4px)"
   },
@@ -748,7 +752,7 @@ const SPECIMEN_SAMPLES = [
     text: "fi fl ff ffi ffl th ch sh ph qu",
     description: "Common ligatures and letter combinations",
     fontSize: "clamp(18px, 3.5vw, 28px)",
-    lineHeight: "1.2",
+    lineHeight: "1.4",
     letterSpacing: "clamp(0.4px, 0.8vw, 0.8px)"
   }
 ];
@@ -984,7 +988,8 @@ export default forwardRef(function SpecimenSection(
                               left: '0',
                               fontSize: '12px',
                               color: 'rgba(16, 12, 8)',
-                              fontFamily: fontFamily
+                              fontFamily: fontFamily,
+                              marginTop: '12px'
                             }}>
                               Font-size: {bodyTextFontSize}
                             </div>
@@ -1006,7 +1011,8 @@ export default forwardRef(function SpecimenSection(
                               left: '0',
                               fontSize: '12px',
                               color: 'rgba(16, 12, 8)',
-                              fontFamily: fontFamily
+                              fontFamily: fontFamily,
+                              marginTop: '12px'
                             }}>
                               Font-size: {theoristsFontSize}
                             </div>
