@@ -919,7 +919,7 @@ const SPECIMEN_SAMPLES = [
     description: "List of educational theorists and approaches",
     fontSize: "clamp(24px, 2vw, 36px)",
     lineHeight: "1.4",
-    letterSpacing: "clamp(0.2px, 0.4vw, 0.4px)",
+    letterSpacing: "clamp(0.6px, 0.4vw, 0.4px)",
     isSingleColumn: true
   },
   {
@@ -943,24 +943,24 @@ const SPECIMEN_SAMPLES = [
     text: "fi fl ff ffi ffl th ch sh ph qu st ct rt lt nt dt pt ft vt at et it ot ut gt ht mt nt pt qt rt st tt ut vt wt xt yt zt av ev iv ov uv wv xv yv zv aw ew iw ow uw xw yw zw ax ex ix ox ux wx yx zx ay ey iy oy uy wy xy zy az ez iz oz uz wz xz yz zz",
     description: "Lowercase letter combinations and ligatures",
     fontSize: "clamp(14px, 2.5vw, 20px)",
-    lineHeight: "1.4",
-    letterSpacing: "clamp(0.3px, 0.6vw, 0.8px)"
+    lineHeight: "1.2",
+    letterSpacing: "clamp(0.8px, 0.6vw, 0.8px)"
   },
   {
     title: "Body Text Sample",
     text: "Acton Academy is an innovative school network that describes itself as \"one-room schoolhouses for the 21st century.\" Founded in 2009 with just 12 students, it has grown into a global network with multiple locations across the United States and internationally. The school operates on a fundamentally different educational model from traditional institutions. At Acton Academy, \"We have Guides, not teachers. We have Studios, not classrooms. We have Portfolios and Exhibitions, not grades.\" The approach emphasizes self-directed, learner-driven education where \"the adults step back and the students take on the roles of self-management and running the school.\" Central to Acton's philosophy is the Hero's Journey narrative framework. The Hero's Journey is \"the #1 element that defines an Acton learner driven community\" and equips students with tools to \"learn how to learn, learn how to do and learn how to be.\" The school believes \"there is a hero in every child\" and defines a hero as someone who doesn't quit when challenges arise, takes responsibility rather than making excuses, and works to solve problems that make the world better. The educational model features several distinctive elements. Guides are described as \"gamemakers who propose exciting challenges, set boundaries and invite Eagles to start a life changing journey.\" Rather than traditional teaching methods, \"teaching by lecturing or issuing instructions is not allowed at Acton.\" Instead, the model relies heavily on self-directed learning with peer feedback, where older students help younger ones set and monitor goals. The curriculum is designed to be student-centered, emphasizing critical thinking, creativity, and independence. The academy uses \"the latest technology in a self-paced learning environment that is designed to foster responsibility, goal-setting, and teamwork.\" Students work through real-world projects and apprenticeships, with high school students finding their own paid apprenticeships as part of their learning experience. Acton Academy serves students from kindergarten through 12th grade and has expanded through a franchise model, offering \"kits\" to entrepreneurs and parents interested in opening similar schools in their communities. The network represents part of a broader movement toward alternative education models that challenge traditional schooling approaches.",
     description: "Extended text for readability testing",
     fontSize: "clamp(14px, 2vw, 18px)",
-    lineHeight: "1.4",
-    letterSpacing: "clamp(0.2px, 0.4vw, 0.4px)"
+    lineHeight: "1.2",
+    letterSpacing: "clamp(0.8px, 0.4vw, 0.8px)"
   },
   {
     title: "Body Text Sample 2",
     text: "The franchise model that Acton Academy has adopted allows for rapid expansion while maintaining the core principles of the educational philosophy. By offering \"kits\" to entrepreneurs and parents interested in opening similar schools, Acton is creating a network of like-minded educational institutions that share a common vision for learner-driven education. This approach has the potential to transform education on a global scale, as more communities adopt and adapt the Acton model to their local contexts. The success of Acton Academy demonstrates that alternative educational models can not only exist alongside traditional schooling but can thrive and expand, offering families more choices in how their children are educated. As the network continues to grow, it serves as a powerful example of how innovative educational approaches can scale and impact students worldwide. The school's emphasis on real-world application extends beyond individual learning to community impact, with students encouraged to identify and solve problems that matter to them and their communities. This project-based approach not only makes learning more engaging but also helps students develop the skills and mindset needed to be active, contributing members of society. The combination of self-directed learning, peer collaboration, and real-world application creates a powerful educational experience that prepares students for the challenges and opportunities of the 21st century.",
     description: "Continuation of body text with smaller font-size",
     fontSize: "clamp(12px, 1.5vw, 16px)",
-    lineHeight: "1.5",
-    letterSpacing: "clamp(0.1px, 0.3vw, 0.3px)",
+    lineHeight: "1.3",
+    letterSpacing: "clamp(0.8px, 0.3vw, 0.8px)",
     isMultiColumn: true
   },
   {
@@ -968,7 +968,7 @@ const SPECIMEN_SAMPLES = [
     text: "Ta Te Ti To Tu Ty Va Ve Vi Vo Vu Vy Wa We Wi Wo Wu Wy Xa Xe Xi Xo Xu Xy Ya Ye Yi Yo Yu Yy Za Ze Zi Zo Zu Zy",
     description: "Mixed upper and lowercase kerning pairs",
     fontSize: "clamp(18px, 3.5vw, 28px)",
-    lineHeight: "1.4",
+    lineHeight: "1.2",
     letterSpacing: "clamp(0.4px, 0.8vw, 0.8px)"
   }
 ];
