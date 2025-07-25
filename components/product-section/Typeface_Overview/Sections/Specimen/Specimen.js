@@ -708,7 +708,7 @@ const SPECIMEN_SAMPLES = [
   },
   {
     title: "Educational Theorists",
-    text: "Shadow Work, The Power of Yet, The Element, No Contest, Tool and Symbol,  By Head, Hand and Heart,  Gifts and Occupations, Punished by Rewards,The Hole in the Wall, Help me to do it myself, What Do I Do Monday?, Never Too Late",
+    text: "Shadow Work, The Power of Yet, The Element, No Contest, Tool and Symbol,  By Head, Hand and Heart,  Gifts and Occupations, Punished by Rewards,The Hole in the Wall, Help Me To Do It Myself, What Do I Do Monday?, Never Too Late",
     description: "List of educational theorists and approaches",
     fontSize: "clamp(24px, 2vw, 36px)",
     lineHeight: "1.4",
