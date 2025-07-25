@@ -168,11 +168,11 @@ const SpecimenGrid = styled.div`
     "display"
     "theorists"
     "body"
+    "pangram"
+    "ligatures"
     "body2"
     "lowercase"
-    "numbers"
-    "pangram"
-    "ligatures";
+    "numbers";
   
   /* Tablet breakpoint - 768px */
   @media (min-width: 768px) {
@@ -181,9 +181,9 @@ const SpecimenGrid = styled.div`
       "display display"
       "theorists theorists"
       "body body"
+      "pangram ligatures"
       "body2 body2"
-      "lowercase numbers"
-      "pangram ligatures";
+      "lowercase numbers";
   }
   
   /* Desktop breakpoint - 1200px */
@@ -193,9 +193,9 @@ const SpecimenGrid = styled.div`
       "display display"
       "theorists theorists"
       "body body"
+      "pangram ligatures"
       "body2 body2"
-      "lowercase numbers"
-      "pangram ligatures";
+      "lowercase numbers";
   }
 `;
 
@@ -939,9 +939,9 @@ const SPECIMEN_SAMPLES = [
     letterSpacing: "clamp(0.4px, 0.8vw, 0.8px)"
   },
   {
-    title: "Pangram",
-    text: "The quick brown fox jumps over the lazy dog",
-    description: "Contains every letter of the alphabet",
+    title: "Character Pairs (Lowercase)",
+    text: "fi fl ff ffi ffl th ch sh ph qu st ct rt lt nt dt pt ft vt at et it ot ut gt ht mt nt pt qt rt st tt ut vt wt xt yt zt av ev iv ov uv wv xv yv zv aw ew iw ow uw xw yw zw ax ex ix ox ux wx yx zx ay ey iy oy uy wy xy zy az ez iz oz uz wz xz yz zz",
+    description: "Lowercase letter combinations and ligatures",
     fontSize: "clamp(14px, 2.5vw, 20px)",
     lineHeight: "1.4",
     letterSpacing: "clamp(0.3px, 0.6vw, 0.8px)"
@@ -965,8 +965,8 @@ const SPECIMEN_SAMPLES = [
   },
   {
     title: "Character Pairs",
-    text: "fi fl ff ffi ffl th ch sh ph qu",
-    description: "Common ligatures and letter combinations",
+    text: "Ta Te Ti To Tu Ty Va Ve Vi Vo Vu Vy Wa We Wi Wo Wu Wy Xa Xe Xi Xo Xu Xy Ya Ye Yi Yo Yu Yy Za Ze Zi Zo Zu Zy",
+    description: "Mixed upper and lowercase kerning pairs",
     fontSize: "clamp(18px, 3.5vw, 28px)",
     lineHeight: "1.4",
     letterSpacing: "clamp(0.4px, 0.8vw, 0.8px)"
@@ -982,6 +982,8 @@ export default forwardRef(function SpecimenSection(
   const [bodyTextFontSize, setBodyTextFontSize] = useState("");
   const [bodyText2FontSize, setBodyText2FontSize] = useState("");
   const [theoristsFontSize, setTheoristsFontSize] = useState("");
+  const [pangramFontSize, setPangramFontSize] = useState("");
+  const [characterPairsFontSize, setCharacterPairsFontSize] = useState("");
   
   const { font, loading, error } = useFontLoader(fontPath);
 
@@ -1025,6 +1027,34 @@ export default forwardRef(function SpecimenSection(
     updateTheoristsFontSize();
     window.addEventListener('resize', updateTheoristsFontSize);
     return () => window.removeEventListener('resize', updateTheoristsFontSize);
+  }, []);
+
+  // Calculate actual font-size for pangram sample
+  useEffect(() => {
+    const updatePangramFontSize = () => {
+      const pangramSample = SPECIMEN_SAMPLES.find(sample => sample.title === "Character Pairs (Lowercase)");
+      if (pangramSample) {
+        setPangramFontSize(calculateActualFontSize(pangramSample.fontSize));
+      }
+    };
+    
+    updatePangramFontSize();
+    window.addEventListener('resize', updatePangramFontSize);
+    return () => window.removeEventListener('resize', updatePangramFontSize);
+  }, []);
+
+  // Calculate actual font-size for character pairs sample
+  useEffect(() => {
+    const updateCharacterPairsFontSize = () => {
+      const characterPairsSample = SPECIMEN_SAMPLES.find(sample => sample.title === "Character Pairs");
+      if (characterPairsSample) {
+        setCharacterPairsFontSize(calculateActualFontSize(characterPairsSample.fontSize));
+      }
+    };
+    
+    updateCharacterPairsFontSize();
+    window.addEventListener('resize', updateCharacterPairsFontSize);
+    return () => window.removeEventListener('resize', updateCharacterPairsFontSize);
   }, []);
 
   // Get font path from selected font
@@ -1182,9 +1212,9 @@ export default forwardRef(function SpecimenSection(
                     const gridAreaMap = {
                       "Uppercase": "display",
                       "Titles": "theorists", 
-                      "Lowercase Alphabet": "lowercase",
+                      "Lowercase Alphabet": "lowercase", 
                       "Numbers & Symbols": "numbers",
-                      "Pangram": "pangram",
+                      "Character Pairs (Lowercase)": "pangram",
                       "Body Text Sample": "body",
                       "Body Text Sample 2": "body2",
                       "Character Pairs": "ligatures"
@@ -1269,6 +1299,52 @@ export default forwardRef(function SpecimenSection(
                               marginTop: '12px'
                             }}>
                               Font-size: {theoristsFontSize}
+                            </div>
+                          </div>
+                        ) : sample.title === "Character Pairs (Lowercase)" ? (
+                          <div style={{ position: 'relative', }}>
+                            <SpecimenText
+                              $fontFamily={fontFamily}
+                              $fontSize={sample.fontSize}
+                              $lineHeight={sample.lineHeight}
+                              $letterSpacing={sample.letterSpacing}
+                              style={{ marginBottom: '12px' }}
+                            >
+                              {sample.text}
+                            </SpecimenText>
+                            <div style={{
+                              position: 'absolute',
+                              bottom: '-8px',
+                              left: '0',
+                              fontSize: '12px',
+                              color: 'rgba(16, 12, 8)',
+                              fontFamily: fontFamily,
+                              marginTop: '12px'
+                            }}>
+                              Font-size: {pangramFontSize}
+                            </div>
+                          </div>
+                        ) : sample.title === "Character Pairs" ? (
+                          <div style={{ position: 'relative' }}>
+                            <SpecimenText
+                              $fontFamily={fontFamily}
+                              $fontSize={sample.fontSize}
+                              $lineHeight={sample.lineHeight}
+                              $letterSpacing={sample.letterSpacing}
+                              style={{ marginBottom: '12px' }}
+                            >
+                              {sample.text}
+                            </SpecimenText>
+                            <div style={{
+                              position: 'absolute',
+                              bottom: '-8px',
+                              left: '0',
+                              fontSize: '12px',
+                              color: 'rgba(16, 12, 8)',
+                              fontFamily: fontFamily,
+                              marginTop: '12px'
+                            }}>
+                              Font-size: {characterPairsFontSize}
                             </div>
                           </div>
                         ) : (
@@ -1357,7 +1433,7 @@ export default forwardRef(function SpecimenSection(
                   </FontDetails>
                   <FontDetails>
                     The forms hark of a universal case, with the use of a single story 'a' — no tail or hook on the lower-case 'i', coupled with non-lining figures as standard, offers a kind of medley of times and styles, while retaining both modular and humanist curves alongside proportional spacing within the same map.
-                  </FontDetails>
+                </FontDetails>
                 </div>
               </FontInfo>
             )}
