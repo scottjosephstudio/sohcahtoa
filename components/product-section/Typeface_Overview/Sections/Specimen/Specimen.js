@@ -865,7 +865,7 @@ const NaturalFlowBodyText = ({ text, fontSize, lineHeight, fontFamily }) => {
     <div ref={containerRef} style={{ 
       position: 'relative', 
       width: '100%',
-      marginBottom: '12px'
+      marginBottom: '18px'
     }}>
       <SpecimenText
         $fontFamily={fontFamily}
@@ -887,7 +887,7 @@ const NaturalBodyText = ({ text, fontSize, lineHeight, fontFamily }) => {
     <div style={{ 
       position: 'relative', 
       width: '100%',
-      marginBottom: '12px'
+      marginBottom: '18px'
     }}>
       <SpecimenText
         $fontFamily={fontFamily}
@@ -914,7 +914,7 @@ const SPECIMEN_SAMPLES = [
     isAnimated: true
   },
   {
-    title: "Educational Theorists",
+    title: "Titles",
     text: "Shadow Work, The Power of Yet, The Element, No Contest, Tool and Symbol,  By Head, Hand and Heart,  Gifts and Occupations, Punished by Rewards,The Hole in the Wall, Help Me To Do It Myself, What Do I Do Monday?, Never Too Late",
     description: "List of educational theorists and approaches",
     fontSize: "clamp(24px, 2vw, 36px)",
@@ -1016,7 +1016,7 @@ export default forwardRef(function SpecimenSection(
   // Calculate actual font-size for educational theorists sample
   useEffect(() => {
     const updateTheoristsFontSize = () => {
-      const theoristsSample = SPECIMEN_SAMPLES.find(sample => sample.title === "Educational Theorists");
+      const theoristsSample = SPECIMEN_SAMPLES.find(sample => sample.title === "Titles");
       if (theoristsSample) {
         setTheoristsFontSize(calculateActualFontSize(theoristsSample.fontSize));
       }
@@ -1181,7 +1181,7 @@ export default forwardRef(function SpecimenSection(
                     // Map sample titles to grid area names
                     const gridAreaMap = {
                       "Uppercase": "display",
-                      "Educational Theorists": "theorists", 
+                      "Titles": "theorists", 
                       "Lowercase Alphabet": "lowercase",
                       "Numbers & Symbols": "numbers",
                       "Pangram": "pangram",
@@ -1213,6 +1213,7 @@ export default forwardRef(function SpecimenSection(
                               fontSize={sample.fontSize}
                               lineHeight={sample.lineHeight}
                               fontFamily={fontFamily}
+                              style={{ marginBottom: '12px' }}
                             />
                             <div style={{
                               position: 'absolute',
@@ -1244,6 +1245,30 @@ export default forwardRef(function SpecimenSection(
                               marginTop: '12px'
                             }}>
                               Font-size: {bodyText2FontSize}
+                            </div>
+                          </div>
+                        ) : sample.title === "Titles" ? (
+                          <div style={{ position: 'relative' }}>
+                            <SpecimenText
+                              $fontFamily={fontFamily}
+                              $fontSize={sample.fontSize}
+                              $lineHeight={sample.lineHeight}
+                              $letterSpacing={sample.letterSpacing}
+                              $singleColumn={sample.isSingleColumn}
+                              style={{ marginBottom: '18px' }}
+                            >
+                              {sample.text}
+                            </SpecimenText>
+                            <div style={{
+                              position: 'absolute',
+                              bottom: '-8px',
+                              left: '0',
+                              fontSize: '12px',
+                              color: 'rgba(16, 12, 8)',
+                              fontFamily: fontFamily,
+                              marginTop: '12px'
+                            }}>
+                              Font-size: {theoristsFontSize}
                             </div>
                           </div>
                         ) : (
