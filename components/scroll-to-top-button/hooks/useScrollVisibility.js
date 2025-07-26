@@ -56,7 +56,7 @@ export const useScrollVisibility = () => {
       
       return () => clearTimeout(timer);
     }
-  }, [$isNavigating, isVisible, isFading]);
+  }, [$isNavigating, isVisible]);
 
   // Auto-reset fade state after animation completes
   useEffect(() => {
