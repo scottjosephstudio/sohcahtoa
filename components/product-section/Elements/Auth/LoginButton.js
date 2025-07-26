@@ -12,6 +12,7 @@ const LoginButton = ({ isLoggedIn, handleLoginClick, isNavigatingHome, currentUs
   const pathname = usePathname();
   const { $isNavigating } = useNavigation();
   const isTypefaces = pathname === "/Typefaces";
+  const isID = pathname === "/ID";
   const [isHovered, setIsHovered] = useState(false);
 
   // Hide when navigating home, or when navigating away from any page (including Typefaces)
@@ -48,6 +49,12 @@ const LoginButton = ({ isLoggedIn, handleLoginClick, isNavigatingHome, currentUs
         textDecorationColor: "#39ff14",
         transition: "background-color 0.2s, color 0.2s",
         "--underline-color": "#39ff14",
+      }
+    : isID
+    ? {
+        mixBlendMode: "difference",
+        color: "black",
+        transition: "background-color 0.2s, color 0.2s",
       }
     : {};
 
