@@ -52,7 +52,7 @@ const Content = styled(motion.div)`
 `;
 
 const FontInfo = styled.div`
-  margin-bottom: 116px;
+  margin-bottom: 110px;
   padding: 0px 0px;
   border-left: 2px solid rgb(16, 12, 8);
   border-right: 2px solid rgb(16, 12, 8);
