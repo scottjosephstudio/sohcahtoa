@@ -387,7 +387,7 @@ export const SubscribeButton = styled(motion.button)`
   line-height: 24px;
   letter-spacing: 0.8px;
   padding: 6px 15px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   margin-bottom: 0px;
   font-family: "Jant", sans-serif;

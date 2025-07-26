@@ -33,7 +33,7 @@ export const CookiesContainer = styled.div`
   background-color: rgb(16, 12, 8);
   color: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
   max-width: 380px;
   animation: ${(props) => (props.$isExiting ? slideOut : slideIn)} 0.5s ease
@@ -82,7 +82,7 @@ export const AcceptButton = styled(motion.button)`
   font-size: 14px;
   line-height: 18px;
   letter-spacing: 0.8px;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   transform: translateZ(0);
   transition: all 0.2s ease;
@@ -94,7 +94,7 @@ export const DeclineButton = styled(motion.button)`
   font-size: 14px;
   line-height: 18px;
   letter-spacing: 0.8px;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   transform: translateZ(0);
   transition: all 0.2s ease;
@@ -109,7 +109,7 @@ export const DebugButton = styled.button`
   border: none;
   padding: 8px 12px;
   font-size: 12px;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
   z-index: 10000;
 `;
