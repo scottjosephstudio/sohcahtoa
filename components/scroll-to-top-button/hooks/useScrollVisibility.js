@@ -12,7 +12,10 @@ export const useScrollVisibility = () => {
       setIsVisible(true);
     } else {
       setIsVisible(false);
-      setIsFading(false); // Reset fade state when button becomes invisible
+      // Only reset fade state when button becomes invisible and not navigating
+      if (!$isNavigating) {
+        setIsFading(false);
+      }
     }
   };
 
@@ -45,19 +48,29 @@ export const useScrollVisibility = () => {
   useEffect(() => {
     if ($isNavigating && isVisible) {
       setIsFading(true);
+    } else if (!$isNavigating && isFading) {
+      // Reset fade state when navigation completes
+      const timer = setTimeout(() => {
+        setIsFading(false);
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
-  }, [$isNavigating, isVisible]);
+  }, [$isNavigating, isVisible, isFading]);
 
   // Auto-reset fade state after animation completes
   useEffect(() => {
     if (isFading) {
       const timer = setTimeout(() => {
-        setIsFading(false);
+        // Only reset if we're not navigating
+        if (!$isNavigating) {
+          setIsFading(false);
+        }
       }, 500); // Match the CSS transition duration
       
       return () => clearTimeout(timer);
     }
-  }, [isFading]);
+  }, [isFading, $isNavigating]);
 
   useEffect(() => {
     window.addEventListener("scroll", toggleVisibility);
