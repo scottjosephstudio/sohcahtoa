@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useNavigation } from "../../context/NavigationContext";
+import { usePortal } from "../../context/PortalContext";
 import { HamburgerContainer, HamburgerButton } from "./styles/HamburgerStyles";
 import { useHamburgerState } from "./hooks/useHamburgerState";
 import HamburgerIcon from "./components/HamburgerIcon";
@@ -12,8 +13,9 @@ import MenuOverlay from "../menu-overlay";
 export default function Hamburger() {
   const pathname = usePathname();
   const { previousPath, $isNavigating } = useNavigation();
-  const { $isMenuOpen, isOnTypefaces, isClosingOnTypefaces, toggleMenu } =
+  const { $isMenuOpen, isOnTypefaces, isOnFontSpecificPath, isClosingOnTypefaces, toggleMenu } =
     useHamburgerState();
+  const { zIndex } = usePortal();
 
   // Handle hamburger fade animations for /Typefaces ↔ /ID navigation
   const [shouldFadeIn, setShouldFadeIn] = useState(false);
@@ -46,8 +48,8 @@ export default function Hamburger() {
     setIsSpinnerNavigating(false);
   }, [pathname]);
 
-  // Don't render on ID page (after all hooks are called)
-  if (pathname === "/ID") {
+  // Don't render on ID page or font-specific pages (after all hooks are called)
+  if (pathname === "/ID" || (pathname && pathname.startsWith("/Typefaces/") && pathname !== "/Typefaces")) {
     return null;
   }
 
@@ -86,7 +88,7 @@ export default function Hamburger() {
               },
             })}
       >
-        <HamburgerContainer $isOnTypefaces={isOnTypefaces}>
+        <HamburgerContainer $isOnTypefaces={isOnTypefaces} $zIndex={zIndex.navigation}>
           <HamburgerButton
             onClick={toggleMenu}
             whileHover="hover"

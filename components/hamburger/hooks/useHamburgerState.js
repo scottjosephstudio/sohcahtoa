@@ -11,6 +11,7 @@ export const useHamburgerState = () => {
   const { $isMenuOpen, set$isMenuOpen } = useNavigation();
   const pathname = usePathname();
   const isOnTypefaces = pathname === "/Typefaces";
+  const isOnFontSpecificPath = pathname && pathname.startsWith("/Typefaces/") && pathname !== "/Typefaces";
   const [isClosingOnTypefaces, setIsClosingOnTypefaces] = useState(false);
 
   // Clean up body overflow on unmount
@@ -34,6 +35,7 @@ export const useHamburgerState = () => {
   return {
     $isMenuOpen,
     isOnTypefaces,
+    isOnFontSpecificPath,
     isClosingOnTypefaces,
     toggleMenu,
   };

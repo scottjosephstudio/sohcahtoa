@@ -5,7 +5,7 @@ export const HamburgerContainer = styled.div`
   position: fixed;
   top: 30px;
   left: 20px;
-  z-index: 1000;
+  z-index: ${({ $zIndex }) => $zIndex || 1000};
   display: none;
   -webkit-mix-blend-mode: ${({ $isOnTypefaces }) =>
     $isOnTypefaces ? "normal" : "difference"};
