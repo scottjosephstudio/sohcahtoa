@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
-import styled from "styled-components";
-import ProjectImage from "../ProjectImage";
-import { aspectRatios } from "../../../lib/projectUtils";
+import React from 'react';
+import styled from 'styled-components';
+import ProjectImage from '../ProjectImage';
+import { aspectRatios } from '../../../lib/projectUtils';
 
 const ThreeByThreePlusOneGridContainer = styled.div`
   display: grid;
@@ -22,171 +22,171 @@ const ThreeByThreePlusOneGridContainer = styled.div`
       grid-column: 1 / span 2;
       grid-row: 1;
     }
-
+     
     & > .image1 {
       grid-column: 1;
       grid-row: 2;
     }
-
+    
     & > .image2 {
       grid-column: 2;
       grid-row: 2;
     }
-
+    
     & > .image3 {
       grid-column: 1;
       grid-row: 3;
     }
-
+    
     & > .image4 {
       grid-column: 2;
       grid-row: 3;
     }
-
+    
     & > .image5 {
       grid-column: 1;
       grid-row: 4;
     }
-
+    
     & > .image6 {
       grid-column: 2;
       grid-row: 4;
     }
-
+    
     & > .image7 {
       grid-column: 1 / span 2;
       grid-row: 5;
     }
   }
-
+    
   @media (max-width: 1439px) and (min-width: 1024px) {
     grid-template-columns: repeat(3, 1fr);
-
+    
     & > .image1 {
       grid-column: 1;
       grid-row: 1;
     }
-
+      
     & > .image2 {
       grid-column: 2;
       grid-row: 1;
     }
-
+    
     & > .image3 {
       grid-column: 1;
       grid-row: 2;
     }
-
+    
     & > .image4 {
       grid-column: 2;
       grid-row: 2;
     }
-
+    
     & > .image5 {
       grid-column: 1;
       grid-row: 3;
     }
-
+    
     & > .image6 {
       grid-column: 2;
       grid-row: 3;
     }
-
+    
     & > .image7 {
       grid-column: 1 / span 2;
       grid-row: 4;
     }
-
+    
     & > .description {
       grid-column: 3;
       grid-row: 1 / span 4;
     }
   }
-
+  
   @media (max-width: 1023px) {
     grid-template-columns: repeat(2, 1fr);
     margin-bottom: 30px;
-
+  
     & > .description {
       grid-column: 1 / span 2;
       grid-row: 1;
     }
-
+     
     & > .image1 {
       grid-column: 1;
       grid-row: 2;
     }
-
+    
     & > .image2 {
       grid-column: 2;
       grid-row: 2;
     }
-
+    
     & > .image3 {
       grid-column: 1;
       grid-row: 3;
     }
-
+    
     & > .image4 {
       grid-column: 2;
       grid-row: 3;
     }
-
+    
     & > .image5 {
       grid-column: 1;
       grid-row: 4;
     }
-
+    
     & > .image6 {
       grid-column: 2;
       grid-row: 4;
     }
-
+    
     & > .image7 {
       grid-column: 1 / span 2;
       grid-row: 5;
     }
   }
-
+  
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
     margin-bottom: 6px;
-
+    
     & > .description {
       grid-column: 1;
       grid-row: 1;
     }
-
+     
     & > .image1 {
       grid-column: 1;
       grid-row: 2;
     }
-
+    
     & > .image2 {
       grid-column: 1;
       grid-row: 3;
     }
-
+    
     & > .image3 {
       grid-column: 1;
       grid-row: 4;
     }
-
+    
     & > .image4 {
       grid-column: 1;
       grid-row: 5;
     }
-
+    
     & > .image5 {
       grid-column: 1;
       grid-row: 6;
     }
-
+    
     & > .image6 {
       grid-column: 1;
       grid-row: 7;
     }
-
+    
     & > .image7 {
       grid-column: 1;
       grid-row: 8;
@@ -194,16 +194,16 @@ const ThreeByThreePlusOneGridContainer = styled.div`
   }
 `;
 
-export default function ThreeByThreePlusOneGrid({
-  descriptionSection,
-  project,
-  placeholders,
-  isExiting,
+export default function ThreeByThreePlusOneGrid({ 
+  descriptionSection, 
+  project, 
+  placeholders, 
+  isExiting 
 }) {
   return (
     <ThreeByThreePlusOneGridContainer>
       {descriptionSection}
-
+      
       <ProjectImage
         images={project.imageGroups?.position1}
         aspectRatio={aspectRatios.ThreebyThree.image1}
@@ -213,7 +213,7 @@ export default function ThreeByThreePlusOneGrid({
         isExiting={isExiting}
         className="image1"
       />
-
+      
       <ProjectImage
         images={project.imageGroups?.position2}
         aspectRatio={aspectRatios.ThreebyThree.image2}
@@ -223,7 +223,7 @@ export default function ThreeByThreePlusOneGrid({
         isExiting={isExiting}
         className="image2"
       />
-
+      
       <ProjectImage
         images={project.imageGroups?.position3}
         aspectRatio={aspectRatios.ThreebyThree.image3}
@@ -233,7 +233,7 @@ export default function ThreeByThreePlusOneGrid({
         isExiting={isExiting}
         className="image3"
       />
-
+      
       <ProjectImage
         images={project.imageGroups?.position4}
         aspectRatio={aspectRatios.ThreebyThree.image4}
@@ -243,7 +243,7 @@ export default function ThreeByThreePlusOneGrid({
         isExiting={isExiting}
         className="image4"
       />
-
+      
       <ProjectImage
         images={project.imageGroups?.position5}
         aspectRatio={aspectRatios.ThreebyThree.image5}
@@ -253,7 +253,7 @@ export default function ThreeByThreePlusOneGrid({
         isExiting={isExiting}
         className="image5"
       />
-
+      
       <ProjectImage
         images={project.imageGroups?.position6}
         aspectRatio={aspectRatios.ThreebyThree.image6}
@@ -263,7 +263,7 @@ export default function ThreeByThreePlusOneGrid({
         isExiting={isExiting}
         className="image6"
       />
-
+      
       <ProjectImage
         images={project.imageGroups?.position7}
         aspectRatio={aspectRatios.ThreebyThree.image7}
@@ -275,4 +275,4 @@ export default function ThreeByThreePlusOneGrid({
       />
     </ThreeByThreePlusOneGridContainer>
   );
-}
+} 

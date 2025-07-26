@@ -1,43 +1,38 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import React, { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import styled from "styled-components";
-import TransitionWrapper from "../../../components/providers/TransitionWrapper";
-import HomeIcon from "../../../components/home-icon";
-import NavigationArrows from "../../../components/navigation-arrows";
-import {
-  getProjectType,
-  generatePlaceholder,
-  processLongDescription,
-} from "../../../lib/projectUtils";
-import { ensureImageGroups } from "../../../lib/compatibilityUtils";
-import { isSafari } from "../../../lib/browserUtils";
+import dynamic from 'next/dynamic';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import styled from 'styled-components';
+import TransitionWrapper from '../../../components/providers/TransitionWrapper';
+import HomeIcon from '../../../components/home-icon';
+import NavigationArrows from '../../../components/navigation-arrows';
+import { 
+  getProjectType, 
+  generatePlaceholder, 
+  processLongDescription
+} from '../../../lib/projectUtils';
+import { ensureImageGroups } from '../../../lib/compatibilityUtils';
+import { isSafari } from '../../../lib/browserUtils';
 
 // Import refactored components
-import ProjectDescription from "../../../components/project-detail/ProjectDescription";
-import { getGridComponent } from "../../../components/project-detail/grids";
-import {
-  getAnimationVariants,
-  getDescriptionDelay,
-} from "../../../components/project-detail/animations/animationVariants";
+import ProjectDescription from '../../../components/project-detail/ProjectDescription';
+import { getGridComponent } from '../../../components/project-detail/grids';
+import { getAnimationVariants, getDescriptionDelay } from '../../../components/project-detail/animations/animationVariants';
 
 // Dynamically import animation components
-const ParticleAnimation = dynamic(
-  () =>
-    import("../../../components/animation/ParticleCloud/Particle_Cloud")
-      .then((mod) => mod.default)
-      .catch(() => () => <div>Error loading animation</div>),
-  { ssr: false },
+const ParticleAnimation = dynamic(() => 
+  import('../../../components/animation/ParticleCloud/Particle_Cloud')
+    .then(mod => mod.default)
+    .catch(() => () => <div>Error loading animation</div>),
+  { ssr: false }
 );
 
-const ParticleInfo = dynamic(
-  () =>
-    import("../../../components/animation/ParticleCloud/Particle_Info")
-      .then((mod) => mod.default)
-      .catch(() => () => null),
-  { ssr: false },
+const ParticleInfo = dynamic(() => 
+  import('../../../components/animation/ParticleCloud/Particle_Info')
+    .then(mod => mod.default)
+    .catch(() => () => null),
+  { ssr: false }
 );
 
 // Animation container
@@ -62,49 +57,42 @@ const ProjectContent = styled.div`
   margin: 0 auto;
 `;
 
-export default function ProjectDetail({
-  project,
-  prevProjectId,
-  nextProjectId,
-}) {
+export default function ProjectDetail({ project, prevProjectId, nextProjectId }) {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
-  const [projectId, setProjectId] = useState(project?.id || "");
+  const [projectId, setProjectId] = useState(project?.id || '');
   const [isMounted, setIsMounted] = useState(false);
   const [animationMounted, setAnimationMounted] = useState(false);
   const [isSafariBrowser, setIsSafariBrowser] = useState(false);
-
+  
   // Ensure project data is in the new format with imageGroups
-  const compatibleProject = useMemo(
-    () => ensureImageGroups(project),
-    [project],
-  );
-
+  const compatibleProject = useMemo(() => ensureImageGroups(project), [project]);
+  
   // Determine the project type using the utility function
   const projectType = getProjectType(compatibleProject);
-
+  
   // Check if this is the Particle Cloud project
-  const isParticleCloud = compatibleProject?.id === "Particle_Cloud";
-
+  const isParticleCloud = compatibleProject?.id === 'Particle_Cloud';
+  
   useEffect(() => {
     // When the component mounts, trigger the entrance animation
     setIsVisible(true);
     setIsMounted(true);
-
+    
     // Detect Safari browser
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       const safariCheck = isSafari();
       setIsSafariBrowser(safariCheck);
-
+      
       // Add or remove HTML class for CSS selector
       if (safariCheck) {
-        document.documentElement.classList.add("safari");
+        document.documentElement.classList.add('safari');
       } else {
-        document.documentElement.classList.remove("safari");
+        document.documentElement.classList.remove('safari');
       }
     }
-
+    
     if (isParticleCloud) {
       setAnimationMounted(true);
     }
@@ -113,41 +101,37 @@ export default function ProjectDetail({
     if (projectId !== compatibleProject.id) {
       // Start exit animation
       setIsExiting(true);
-
+      
       // After exit animation, update project ID and start entrance animation
       const timer = setTimeout(() => {
         setProjectId(compatibleProject.id);
         setIsExiting(false);
         setIsVisible(true);
       }, 0); // Match the exit animation duration
-
+      
       return () => clearTimeout(timer);
     }
-
+    
     // Clear exit state on unmount
     return () => {
       setIsExiting(false);
       setIsMounted(false);
     };
   }, [compatibleProject.id, projectId, isParticleCloud]);
-
+  
   // Generate placeholders for image groups
   const placeholders = useMemo(() => {
     const placeholderMap = {};
-
+    
     if (compatibleProject.imageGroups) {
-      Object.entries(compatibleProject.imageGroups).forEach(
-        ([position, images]) => {
-          placeholderMap[position] = images.map((img) =>
-            generatePlaceholder(img),
-          );
-        },
-      );
+      Object.entries(compatibleProject.imageGroups).forEach(([position, images]) => {
+        placeholderMap[position] = images.map(img => generatePlaceholder(img));
+      });
     }
-
+    
     return placeholderMap;
   }, [compatibleProject.imageGroups]);
-
+  
   // Process the longDescription for consistent rendering using the utility function
   const processedLongDescription = useMemo(() => {
     return processLongDescription(compatibleProject.longDescription);
@@ -163,27 +147,26 @@ export default function ProjectDetail({
             {animationMounted && <ParticleInfo />}
           </AnimationContainer>
         </TransitionWrapper>
-
+        
         {/* Navigation components outside TransitionWrapper to avoid transform inheritance */}
         <HomeIcon />
-        <NavigationArrows
-          prevProjectId={prevProjectId}
-          nextProjectId={nextProjectId}
+        <NavigationArrows 
+          prevProjectId={prevProjectId} 
+          nextProjectId={nextProjectId} 
         />
       </>
     );
   }
-
+  
   // Get animation variants
-  const { containerVariants, itemVariants } =
-    getAnimationVariants(getDescriptionDelay);
-
+  const { containerVariants, itemVariants } = getAnimationVariants(getDescriptionDelay);
+  
   // Determine which grid layout to render
   const renderGrid = () => {
     const GridComponent = getGridComponent(projectType);
-
+    
     const descriptionSection = (
-      <ProjectDescription
+          <ProjectDescription
         project={compatibleProject}
         processedLongDescription={processedLongDescription}
         isVisible={isVisible}
@@ -193,8 +176,8 @@ export default function ProjectDetail({
         itemVariants={itemVariants}
       />
     );
-
-    return (
+    
+        return (
       <GridComponent
         descriptionSection={descriptionSection}
         project={compatibleProject}
@@ -203,20 +186,22 @@ export default function ProjectDetail({
       />
     );
   };
-
+  
   return (
     <>
       <TransitionWrapper>
         <ProjectContainer>
-          <ProjectContent>{renderGrid()}</ProjectContent>
+          <ProjectContent>
+            {renderGrid()}
+          </ProjectContent>
         </ProjectContainer>
       </TransitionWrapper>
-
+      
       {/* Navigation components outside TransitionWrapper to avoid transform inheritance */}
       <HomeIcon />
-      <NavigationArrows
-        prevProjectId={prevProjectId}
-        nextProjectId={nextProjectId}
+      <NavigationArrows 
+        prevProjectId={prevProjectId} 
+        nextProjectId={nextProjectId} 
       />
     </>
   );

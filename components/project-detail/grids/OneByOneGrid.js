@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
-import styled from "styled-components";
-import ProjectImage from "../ProjectImage";
-import { aspectRatios } from "../../../lib/projectUtils";
+import React from 'react';
+import styled from 'styled-components';
+import ProjectImage from '../ProjectImage';
+import { aspectRatios } from '../../../lib/projectUtils';
 
 const OneByOneGridContainer = styled.div`
   display: grid;
@@ -22,71 +22,71 @@ const OneByOneGridContainer = styled.div`
       grid-column: 1;
       grid-row: 1;
     }
-
+     
     & > .image1 {
       grid-column: 1;
       grid-row: 2;
     }
-
+    
     & > .image2 {
       grid-column: 1;
       grid-row: 3;
     }
   }
-
+    
   @media (max-width: 1439px) and (min-width: 1024px) {
     grid-template-columns: repeat(3, 1fr);
-
+    
     & > .image1 {
       grid-column: 1 / span 2;
       grid-row: 1;
     }
-
+      
     & > .image2 {
       grid-column: 1 / span 2;
       grid-row: 2;
     }
-
+    
     & > .description {
       grid-column: 3;
       grid-row: 1 / span 2;
     }
   }
-
+  
   @media (max-width: 1023px) {
     grid-template-columns: 1fr;
     margin-bottom: 30px;
-
+  
     & > .description {
       grid-column: 1;
       grid-row: 1;
     }
-
+     
     & > .image1 {
       grid-column: 1;
       grid-row: 2;
     }
-
+    
     & > .image2 {
       grid-column: 1;
       grid-row: 3;
     }
   }
-
+  
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
     margin-bottom: 6px;
-
+    
     & > .description {
       grid-column: 1;
       grid-row: 1;
     }
-
+     
     & > .image1 {
       grid-column: 1;
       grid-row: 2;
     }
-
+    
     & > .image2 {
       grid-column: 1;
       grid-row: 3;
@@ -94,16 +94,16 @@ const OneByOneGridContainer = styled.div`
   }
 `;
 
-export default function OneByOneGrid({
-  descriptionSection,
-  project,
-  placeholders,
-  isExiting,
+export default function OneByOneGrid({ 
+  descriptionSection, 
+  project, 
+  placeholders, 
+  isExiting 
 }) {
   return (
     <OneByOneGridContainer>
       {descriptionSection}
-
+      
       <ProjectImage
         images={project.imageGroups?.position1}
         aspectRatio={aspectRatios.OnebyOne.image1}
@@ -113,7 +113,7 @@ export default function OneByOneGrid({
         isExiting={isExiting}
         className="image1"
       />
-
+      
       <ProjectImage
         images={project.imageGroups?.position2}
         aspectRatio={aspectRatios.OnebyOne.image2}
@@ -125,4 +125,4 @@ export default function OneByOneGrid({
       />
     </OneByOneGridContainer>
   );
-}
+} 

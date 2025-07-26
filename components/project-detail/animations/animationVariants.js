@@ -7,8 +7,8 @@ export const getAnimationVariants = (getDescriptionDelay) => {
         duration: 0.3,
         when: "beforeChildren",
         staggerChildren: 0.1,
-        delay: getDescriptionDelay(),
-      },
+        delay: getDescriptionDelay()
+      }
     },
     exit: {
       opacity: 0,
@@ -16,9 +16,9 @@ export const getAnimationVariants = (getDescriptionDelay) => {
         duration: 0.2,
         when: "afterChildren",
         staggerChildren: 0.05,
-        staggerDirection: -1,
-      },
-    },
+        staggerDirection: -1
+      }
+    }
   };
 
   const itemVariants = {
@@ -30,24 +30,24 @@ export const getAnimationVariants = (getDescriptionDelay) => {
       opacity: 1,
       transition: {
         duration: 0.3,
-        ease: "easeOut",
-      },
+        ease: "easeOut"
+      }
     },
     exit: {
       opacity: 0,
       transition: {
         duration: 0.2,
-        ease: "easeIn",
-      },
-    },
+        ease: "easeIn"
+      }
+    }
   };
 
   return { containerVariants, itemVariants };
 };
 
 export const getDescriptionDelay = () => {
-  if (typeof window === "undefined") return 0;
-
+  if (typeof window === 'undefined') return 0;
+  
   const isDesktopRange = window.innerWidth >= 1024 && window.innerWidth <= 1440;
   return isDesktopRange ? 0.1 : 0;
-};
+}; 
