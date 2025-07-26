@@ -1395,7 +1395,7 @@ export default forwardRef(function SpecimenSection(
                         <SpecimenTitle>{sample.title}</SpecimenTitle>
                         {sample.isAnimated ? (
                           sample.title === "Uppercase" ? (
-                            <AnimatedDisplayHeadline fontFamily={fontFamily} />
+                          <AnimatedDisplayHeadline fontFamily={fontFamily} />
                           ) : sample.title === "Headline" ? (
                             <AnimatedLowercaseAlphabet fontFamily={fontFamily} />
                                                       ) : sample.title === "Headline (part 2)" ? (
@@ -1447,11 +1447,11 @@ export default forwardRef(function SpecimenSection(
                           </div>
                         ) : sample.title === "Titles" ? (
                           <div style={{ position: 'relative' }}>
-                            <SpecimenText
-                              $fontFamily={fontFamily}
-                              $fontSize={sample.fontSize}
-                              $lineHeight={sample.lineHeight}
-                              $letterSpacing={sample.letterSpacing}
+                          <SpecimenText
+                            $fontFamily={fontFamily}
+                            $fontSize={sample.fontSize}
+                            $lineHeight={sample.lineHeight}
+                            $letterSpacing={sample.letterSpacing}
                               $singleColumn={sample.isSingleColumn}
                               style={{ marginBottom: '18px' }}
                             >
