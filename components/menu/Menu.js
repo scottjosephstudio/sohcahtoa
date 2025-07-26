@@ -51,8 +51,8 @@ export default function Menu() {
   const pathname = usePathname();
   const { previousPath, $isNavigating } = useNavigation();
 
-  // Completely hide menu from /ID path - no rendering at all
-  if (pathname === "/ID") {
+  // Completely hide menu from /ID path and font-specific paths - no rendering at all
+  if (pathname === "/ID" || (pathname && pathname.startsWith("/Typefaces/") && pathname !== "/Typefaces")) {
     return null;
   }
 

@@ -34,11 +34,12 @@ export default function HomeIcon({
       ? customIsTypefacesPath
       : pathname === "/Typefaces";
   const isIDPath = pathname === "/ID";
+  const isFontSpecificPath = pathname && pathname.startsWith("/Typefaces/") && pathname !== "/Typefaces";
 
   // Only hide during specific transitions: Typefaces → ID (same logic as hamburger)
   const shouldHideForTransition =
     (pathname === "/Typefaces" && $isNavigating) || // Hide when navigating FROM Typefaces
-    (previousPath === "/Typefaces" && pathname === "/ID"); // Hide when arriving at ID from Typefaces
+    (previousPath === "/Typefaces" && (pathname === "/ID" || isFontSpecificPath)); // Hide when arriving at ID or font-specific path from Typefaces
 
   useEffect(() => {
     // Trigger animation for special pages after a delay
@@ -67,7 +68,7 @@ export default function HomeIcon({
   const $ShouldShow = pathname !== "/";
 
   // Create dynamic SVG variants based on current page state
-  const svgVariants = createSvgVariants(isTypefacesPage, isIDPath);
+  const svgVariants = createSvgVariants(isTypefacesPage, isIDPath || isFontSpecificPath);
 
   // Enhanced click handler with proper transition timing and iOS scroll fix
   const handleClick = useCallback(
@@ -123,7 +124,7 @@ export default function HomeIcon({
       $isSpecialPage={isSpecialPage}
       $animatedSlide={animatedSlide}
       $isTypefacesPage={isTypefacesPage}
-      $isIDPath={isIDPath}
+      $isIDPath={isIDPath || isFontSpecificPath}
       $forceShow={forceShow}
       $arrowAnimationComplete={arrowAnimationComplete}
       style={style}

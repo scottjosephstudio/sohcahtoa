@@ -75,7 +75,16 @@ export const FontSelectionProvider = ({ children }) => {
   };
 
   const selectFontBySlug = async (slug, userId = null, sessionId = null) => {
-    const fontIndex = availableFonts.findIndex(font => font.slug === slug);
+    // Try exact match first
+    let fontIndex = availableFonts.findIndex(font => font.slug === slug);
+    
+    // If not found, try case-insensitive match (for capitalized URLs)
+    if (fontIndex === -1) {
+      fontIndex = availableFonts.findIndex(font => 
+        font.slug.toLowerCase() === slug.toLowerCase()
+      );
+    }
+    
     if (fontIndex >= 0) {
       await selectFont(fontIndex, userId, sessionId);
     }
@@ -111,6 +120,15 @@ export const FontSelectionProvider = ({ children }) => {
     return style ? style.font_files : null;
   };
 
+  const getSelectedFontSlug = () => {
+    return selectedFont ? selectedFont.slug : null;
+  };
+
+  const getSelectedFontSlugCapitalized = () => {
+    if (!selectedFont || !selectedFont.slug) return null;
+    return selectedFont.slug.charAt(0).toUpperCase() + selectedFont.slug.slice(1);
+  };
+
   const value = {
     // State
     availableFonts,
@@ -131,6 +149,8 @@ export const FontSelectionProvider = ({ children }) => {
     getPreviousFont,
     getSelectedFontStyle,
     getSelectedFontFiles,
+    getSelectedFontSlug,
+    getSelectedFontSlugCapitalized,
     
     // Computed values
     hasMultipleFonts: availableFonts.length > 1,

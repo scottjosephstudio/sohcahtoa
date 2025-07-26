@@ -21,7 +21,7 @@ import { PageContainer } from "./ProductPage_Styles";
 import { calculateDefaultFontSize } from "../Typeface_Overview/Sections/Tester/LetterSpacingUtils";
 import { useNavigation } from "../../../context/NavigationContext";
 
-const ProductPage = ({ currentUser: prefetchedUser, databaseDataLoaded: prefetchedDatabaseDataLoaded }) => {
+const ProductPage = ({ currentUser: prefetchedUser, databaseDataLoaded: prefetchedDatabaseDataLoaded, initialFontSlug }) => {
   // IMPORTANT: Keep ALL hooks at the top level and in the same order on every render
   const [activeTab, setActiveTab] = useState("specimen");
   const [fontSettings, setFontSettings] = useState({
@@ -35,7 +35,7 @@ const ProductPage = ({ currentUser: prefetchedUser, databaseDataLoaded: prefetch
   const searchParams = useSearchParams();
 
   // Get selected font from slot machine
-  const { selectedFont, loading: fontsLoading } = useFontSelection();
+  const { selectedFont, loading: fontsLoading, selectFontBySlug } = useFontSelection();
   
   // Get navigation context for password reset mode
   const { isPasswordResetMode } = useNavigation();
@@ -76,6 +76,13 @@ const ProductPage = ({ currentUser: prefetchedUser, databaseDataLoaded: prefetch
       }
     }
   }, [selectedFont]);
+
+  // Handle initial font slug from URL
+  useEffect(() => {
+    if (initialFontSlug && selectFontBySlug && !fontsLoading) {
+      selectFontBySlug(initialFontSlug);
+    }
+  }, [initialFontSlug, selectFontBySlug, fontsLoading]);
 
   // Initialize hooks with conditional loading for better performance
   const cartState = useCartState();

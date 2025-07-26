@@ -63,8 +63,9 @@ export default function ClientLayout({ children }) {
   // Check if current page is the typefaces page (only the main listing, not individual product pages)
   const isTypefacesPage = pathname === "/Typefaces";
 
-  // Check if current page is the ID page
+  // Check if current page is the ID page or a font-specific page
   const isIDPage = pathname === "/ID";
+  const isFontSpecificPage = pathname && pathname.startsWith("/Typefaces/") && pathname !== "/Typefaces";
 
   // Apply body classes based on current route
   useEffect(() => {
@@ -106,7 +107,7 @@ export default function ClientLayout({ children }) {
           <div id="portal-root"></div>
 
           {/* Components rendered conditionally based on the current page */}
-          {!isPaymentConfirmation && !isIDPage && <Menu />}
+          {!isPaymentConfirmation && !isIDPage && !isFontSpecificPage && <Menu />}
           {!isPaymentConfirmation && <Hamburger />}
           {!isPaymentConfirmation && <TypefaceIcon />}
           {!isPaymentConfirmation && <ScrollToTopButton />}

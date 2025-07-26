@@ -17,12 +17,13 @@ export default function ShoppingBagIcon() {
   const isCurrentPage = pathname === "/Typefaces";
   const isTypefacesPage = pathname === "/Typefaces";
   const isIDPath = pathname === "/ID";
+  const isFontSpecificPath = pathname && pathname.startsWith("/Typefaces/") && pathname !== "/Typefaces";
 
-  // Fade in when navigating from ID or Typefaces to home
+  // Fade in when navigating from ID, Typefaces, or font-specific paths to home
   const shouldFadeIn =
     (pathname === "/" &&
-      (previousPath === "/ID" || previousPath === "/Typefaces")) ||
-    ((previousPath === "/ID" || previousPath === "/Typefaces") &&
+      (previousPath === "/ID" || previousPath === "/Typefaces" || (previousPath && previousPath.startsWith("/Typefaces/")))) ||
+    ((previousPath === "/ID" || previousPath === "/Typefaces" || (previousPath && previousPath.startsWith("/Typefaces/"))) &&
       $isNavigating);
 
   // Create dynamic SVG variants based on current page state
@@ -30,7 +31,7 @@ export default function ShoppingBagIcon() {
 
   // Handle click to trigger fade out and navigation
   const handleClick = (e) => {
-    if (pathname === "/ID") {
+    if (pathname === "/ID" || isFontSpecificPath) {
       e.preventDefault();
       // Set navigating state to trigger fade transition
       set$isNavigating(true);
@@ -48,7 +49,7 @@ export default function ShoppingBagIcon() {
     <ShoppingBagContainer
       $isTypefacesPage={isTypefacesPage}
       $isCurrentPage={isCurrentPage}
-      $isIDPath={isIDPath}
+      $isIDPath={isIDPath || isFontSpecificPath}
       $shouldFadeIn={shouldFadeIn}
       $isNavigating={$isNavigating}
     >

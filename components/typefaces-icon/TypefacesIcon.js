@@ -21,7 +21,7 @@ const TypefacesIcon = ({
 }) => {
   const pathname = usePathname();
   const { set$isNavigating } = useNavigation();
-  const isTypefacePath = pathname.includes("/ID");
+  const isTypefacePath = pathname.includes("/ID") || (pathname && pathname.startsWith("/Typefaces/") && pathname !== "/Typefaces");
   const [fadeIn, setFadeIn] = useState(false);
 
   // Create dynamic SVG variants based on current page state

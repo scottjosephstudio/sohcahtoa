@@ -42,6 +42,7 @@ export default function NavigationArrows({
       ? customIsTypefacesPage
       : pathname === "/Typefaces";
   const isIDPath = pathname === "/ID";
+  const isFontSpecificPath = pathname && pathname.startsWith("/Typefaces/") && pathname !== "/Typefaces";
 
   // Create dynamic SVG variants based on current page state
   const svgVariants = createSvgVariants(isTypefacesPage);
@@ -181,7 +182,7 @@ export default function NavigationArrows({
             : animatedSlide
         }
         $isTypefacesPage={isTypefacesPage}
-        $isIDPath={isIDPath}
+        $isIDPath={isIDPath || isFontSpecificPath}
         $forceShowOnIDPath={forceShowOnIDPath}
         data-force-show={forceShowOnIDPath ? "true" : "false"}
         data-component="nav-arrows"
@@ -263,7 +264,7 @@ export default function NavigationArrows({
       $isNavigating={$isNavigating}
       $ShouldShow={$ShouldShow}
       $isTypefacesPage={isTypefacesPage}
-      $isIDPath={isIDPath}
+      $isIDPath={isIDPath || isFontSpecificPath}
       $forceShowOnIDPath={forceShowOnIDPath}
       data-force-show={forceShowOnIDPath ? "true" : "false"}
       data-component="nav-arrows"

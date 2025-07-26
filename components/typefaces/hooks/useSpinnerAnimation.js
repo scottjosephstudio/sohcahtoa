@@ -5,18 +5,23 @@ import { gsap } from "gsap";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useNavigation } from "../../../context/NavigationContext";
+import { useFontSelection } from "../../../context/FontSelectionContext";
 
 export default function useSpinnerAnimation() {
   const router = useRouter();
   const pathname = usePathname();
   const { set$isNavigating } = useNavigation();
+  const { selectedFont, getSelectedFontSlug, getSelectedFontSlugCapitalized } = useFontSelection();
 
-  // Prefetch the ID route when on Typefaces page for faster navigation
+  // Prefetch the font-specific route when on Typefaces page for faster navigation
   useEffect(() => {
-    if (pathname === "/Typefaces") {
-      router.prefetch("/ID");
+    if (pathname === "/Typefaces" && selectedFont) {
+      const fontSlug = getSelectedFontSlugCapitalized();
+      if (fontSlug) {
+        router.prefetch(`/Typefaces/${fontSlug}`);
+      }
     }
-  }, [pathname, router]);
+  }, [pathname, router, selectedFont, getSelectedFontSlugCapitalized]);
 
   const handleSpinnerClick = useCallback(
     (event) => {
@@ -28,9 +33,15 @@ export default function useSpinnerAnimation() {
       // Create a timeline for coordinated animations
       const tl = gsap.timeline({
         onComplete: () => {
-          // Simple direct navigation after animation
+          // Navigate to font-specific route after animation
           if (pathname === "/Typefaces") {
-            router.push("/ID");
+            const fontSlug = getSelectedFontSlugCapitalized();
+            if (fontSlug) {
+              router.push(`/Typefaces/${fontSlug}`);
+            } else {
+              // Fallback to ID route if no font slug available
+              router.push("/ID");
+            }
           }
         },
       });
@@ -82,7 +93,7 @@ export default function useSpinnerAnimation() {
         0,
       );
     },
-    [router, pathname, set$isNavigating],
+    [router, pathname, set$isNavigating, getSelectedFontSlugCapitalized],
   );
 
   return {
