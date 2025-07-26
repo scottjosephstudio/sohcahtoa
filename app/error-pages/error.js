@@ -180,7 +180,7 @@ const ErrorAcceptButton = styled(motion.button)`
   font-size: 16px;
   line-height: 20px;
   letter-spacing: 0.8px;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
   width: 100%;
   text-align: center;
@@ -193,7 +193,7 @@ const ErrorDeclineButton = styled(motion.button)`
   font-size: 16px;
   line-height: 20px;
   letter-spacing: 0.8px;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
   width: 100%;
   text-align: center;

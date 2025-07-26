@@ -102,7 +102,7 @@ const GlobalErrorContainer = styled.div`
   background-color: rgb(16, 12, 8);
   color: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   width: 320px;
   min-width: 320px;
@@ -145,7 +145,7 @@ const GlobalAcceptButton = styled(motion.button)`
   font-size: 16px;
   line-height: 20px;
   letter-spacing: 0.8px;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
   white-space: nowrap;
   text-align: center;
