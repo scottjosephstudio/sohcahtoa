@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getSupabaseClient } from "../../../lib/database/supabaseClient";
+import { addSubscriber, testSupabaseConnection } from "../../supabase/Supabase";
 import {
   NewsletterTitle,
   NewsletterInput,
