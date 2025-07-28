@@ -318,8 +318,8 @@ const FontSelectionModal = ({
                           opacity: 0, 
                           height: 0,
                           transition: {
-                            height: { duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] },
-                            opacity: { duration: 0.2, ease: "easeIn" }
+                            height: { duration: 0.15, ease: "easeIn" },
+                            opacity: { duration: 0.1, ease: "easeIn" }
                           }
                         }}
                         style={{ overflow: 'hidden' }}
@@ -341,7 +341,7 @@ const FontSelectionModal = ({
                               exit={{ 
                                 opacity: 0,
                                 transition: {
-                                  duration: 0.2,
+                                  duration: 0.1,
                                   ease: "easeIn"
                                 }
                               }}
