@@ -1555,8 +1555,8 @@ export const CartProvider = ({ children, onClose, isOpen, setIsLoggedIn, current
       event.preventDefault();
     }
     
-    // Special handling for navigation from ID path to Typefaces - use the same event system as typefaces icon
-    if (path === "/Typefaces" && pathname === "/ID") {
+    // Special handling for navigation from ID path or font-specific path to Typefaces - use the same event system as typefaces icon
+    if (path === "/Typefaces" && (pathname === "/ID" || (pathname && pathname.startsWith("/Typefaces/") && pathname !== "/Typefaces"))) {
       // Dispatch the same event that the typefaces icon uses
       const pageTransitionEvent = new CustomEvent("pageTransitionStart", {
         detail: {
