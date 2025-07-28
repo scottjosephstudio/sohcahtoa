@@ -156,7 +156,7 @@ const Button = styled.button`
   font-weight: 500;
   letter-spacing: 0.8px;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: all 0.2s ease;
   
   ${props => props.$primary ? `
     background: rgb(16, 12, 8);
@@ -252,13 +252,14 @@ const FontSelectionModal = ({
   };
 
   const contentVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
+    hidden: { opacity: 0, scale: 0.95, y: 20 },
     visible: { 
       opacity: 1, 
-      scale: 1,
+      scale: 1, 
+      y: 0,
       transition: { delay: 0.1 }
     },
-    exit: { opacity: 0, scale: 0.95 }
+    exit: { opacity: 0, scale: 0.95, y: 20 }
   };
 
   const modalContent = (
@@ -329,9 +330,10 @@ const FontSelectionModal = ({
                           {font.font_styles?.map((style, index) => (
                             <motion.div
                               key={style.id}
-                              initial={{ opacity: 0 }}
+                              initial={{ opacity: 0, y: 0 }}
                               animate={{ 
-                                opacity: 1,
+                                opacity: 1, 
+                                y: 0,
                                 transition: {
                                   delay: 0.3 + (index * 0.1),
                                   duration: 0.3,
@@ -339,9 +341,10 @@ const FontSelectionModal = ({
                                 }
                               }}
                               exit={{ 
-                                opacity: 0,
+                                opacity: 0, 
+                                y: -5,
                                 transition: {
-                                  duration: 0.1,
+                                  duration: 0.2,
                                   ease: "easeIn"
                                 }
                               }}
