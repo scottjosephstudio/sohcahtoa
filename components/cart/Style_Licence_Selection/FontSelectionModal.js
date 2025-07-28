@@ -252,14 +252,13 @@ const FontSelectionModal = ({
   };
 
   const contentVariants = {
-    hidden: { opacity: 0, scale: 0.95, y: 20 },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: { 
       opacity: 1, 
-      scale: 1, 
-      y: 0,
+      scale: 1,
       transition: { delay: 0.1 }
     },
-    exit: { opacity: 0, scale: 0.95, y: 20 }
+    exit: { opacity: 0, scale: 0.95 }
   };
 
   const modalContent = (
