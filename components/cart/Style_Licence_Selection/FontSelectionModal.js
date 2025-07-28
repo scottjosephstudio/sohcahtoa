@@ -156,7 +156,7 @@ const Button = styled.button`
   font-weight: 500;
   letter-spacing: 0.8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   
   ${props => props.$primary ? `
     background: rgb(16, 12, 8);
@@ -329,10 +329,9 @@ const FontSelectionModal = ({
                           {font.font_styles?.map((style, index) => (
                             <motion.div
                               key={style.id}
-                              initial={{ opacity: 0, y: 0 }}
+                              initial={{ opacity: 0 }}
                               animate={{ 
-                                opacity: 1, 
-                                y: 0,
+                                opacity: 1,
                                 transition: {
                                   delay: 0.3 + (index * 0.1),
                                   duration: 0.3,
@@ -340,8 +339,7 @@ const FontSelectionModal = ({
                                 }
                               }}
                               exit={{ 
-                                opacity: 0, 
-                                y: -5,
+                                opacity: 0,
                                 transition: {
                                   duration: 0.2,
                                   ease: "easeIn"
