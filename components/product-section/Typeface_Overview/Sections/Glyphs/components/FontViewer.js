@@ -326,10 +326,10 @@ const FontViewer = forwardRef(
           animate="animate"
           exit="exit"
         >
-          {font && (
+          {font && selectedFont && (
             <GlyphMapGrid
               ref={glyphMapGridRef}
-              font={font}
+              font={{ ...font, name: selectedFont.name }}
               selectedFont={selectedFont}
               isGlyphsExiting={isGlyphsExiting}
               isNavigatingHome={isNavigatingHome}

@@ -1247,8 +1247,10 @@ export default forwardRef(function SpecimenSection(
 
   // Set font family when font loads
   useEffect(() => {
-    if (font && font.names) {
-      const familyName = font.names.fontFamily?.en || selectedFont?.name || 'inherit';
+    if (selectedFont?.name) {
+      setFontFamily(selectedFont.name);
+    } else if (font && font.names) {
+      const familyName = font.names.fontFamily?.en || 'inherit';
       setFontFamily(familyName);
     }
   }, [font, selectedFont]);
