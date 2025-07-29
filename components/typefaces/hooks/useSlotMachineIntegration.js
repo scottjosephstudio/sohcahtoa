@@ -52,10 +52,13 @@ export default function useSlotMachineIntegration() {
 
   const handleLetterChange = useCallback(
     (deltaY) => {
+      // Don't animate if menu is open or fonts are loading
+      if (isAnyMenuOpen || fontsLoading) return;
+      
       const now = Date.now();
       const timeSinceLastScroll = now - lastScrollTime.current;
 
-      if (timeSinceLastScroll < 100) return; // Throttle for better performance
+      if (timeSinceLastScroll < 50) return; // Faster throttling for better responsiveness
 
       lastScrollTime.current = now;
       setIsAnimating(true);
@@ -64,66 +67,30 @@ export default function useSlotMachineIntegration() {
         clearTimeout(scrollTimeout);
       }
 
-      // Determine direction for letter cycling
-      const direction = deltaY > 0 ? 'next' : 'previous';
+      const velocity = Math.abs(deltaY);
+      const duration = Math.min(300, Math.max(50, velocity * 2)); // Adaptive timing based on scroll speed
 
-      // Create spinning animation through letters
-      const spinLetters = () => {
-        let spinCount = 0;
-        const maxSpins = 3; // Shorter spin for letter changes
-        
-        const spinInterval = setInterval(() => {
-          if (spinCount >= maxSpins) {
-            clearInterval(spinInterval);
-            
-            // Final letter selection
-            const newLetter = direction === 'next' 
-              ? getNextLetter(currentLetter) 
-              : getPreviousLetter(currentLetter);
-            
-            gsap.to(letterRef.current, {
-              opacity: 0.6,
-              scale: 0.9,
-              duration: 0.1,
-              onComplete: () => {
-                setCurrentLetter(newLetter);
-                gsap.to(letterRef.current, { 
-                  opacity: 1, 
-                  scale: 1, 
-                  duration: 0.1,
-                  onComplete: () => {
-                    setIsAnimating(false);
-                  }
-                });
-              },
-            });
-            
-            return;
-          }
-          
-          // Show random letter during spin
-          const randomLetter = getRandomLetter();
-          gsap.to(letterRef.current, {
-            opacity: 0.6,
-            scale: 0.9,
-            duration: 0.05,
-            onComplete: () => {
-              setCurrentLetter(randomLetter);
-              gsap.to(letterRef.current, { 
-                opacity: 1, 
-                scale: 1, 
-                duration: 0.05 
-              });
-            },
-          });
-          
-          spinCount++;
-        }, 60);
+      const slowDownLetterChange = (interval) => {
+        if (interval >= duration) {
+          setIsAnimating(false);
+          return;
+        }
+        const newLetter = getRandomLetter();
+        gsap.to(letterRef.current, {
+          opacity: 0.75,
+          duration: 0.25,
+          onComplete: () => {
+            setCurrentLetter(newLetter);
+            gsap.to(letterRef.current, { opacity: 1, duration: 0.25 });
+          },
+        });
+        const newTimeout = setTimeout(() => slowDownLetterChange(interval + 20), interval);
+        setScrollTimeout(newTimeout);
       };
 
-      spinLetters();
+      slowDownLetterChange(20);
     },
-    [scrollTimeout, currentLetter]
+    [scrollTimeout, isAnyMenuOpen, fontsLoading]
   );
 
   const handleFontChange = useCallback(() => {
@@ -194,8 +161,11 @@ export default function useSlotMachineIntegration() {
   );
 
   const handleTouchStart = useCallback((e) => {
+    // Don't handle touch if menu is open or fonts are loading
+    if (isAnyMenuOpen || fontsLoading) return;
+    
     touchStartY.current = e.touches[0].clientY;
-  }, []);
+  }, [isAnyMenuOpen, fontsLoading]);
 
   const handleTouchMove = useCallback(
     (e) => {
