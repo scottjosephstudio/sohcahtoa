@@ -789,10 +789,18 @@ export const TextColumn = styled.div`
 `;
 
 export const ProductName = styled.div`
-  font-size: 16px;
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: 0.8px;
   ${textDecorationMixin4px}
   margin-bottom: 0px;
-  line-height: 1;
+  color: rgb(16, 12, 8);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (min-width: 1420px) {
+    letter-spacing: 0.8px;
+  }
 `;
 
 export const ProductPrice = styled.div`
@@ -805,17 +813,22 @@ export const RemoveButton = styled(motion.button)`
   ${fontNormalization}
   background: none;
   border: none;
-  color: rgb(16, 12, 8);
-  cursor: normal;
-  padding: 0;
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 20px;
+  line-height: 24px;
   letter-spacing: 0.8px;
+  color: rgb(16, 12, 8);
+  text-decoration: none;
+  font-weight: normal;
+  padding: 0;
+  cursor: pointer;
   text-align: left;
   width: fit-content;
-  font-family: "Jant", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  @media (min-width: 1420px) {
+    letter-spacing: 0.8px;
+  }
 `;
 
 export const MobileRemoveButton = styled(motion.button)`
@@ -823,16 +836,27 @@ export const MobileRemoveButton = styled(motion.button)`
   display: none;
   background: none;
   border: none;
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: 0.8px;
   color: rgb(16, 12, 8);
+  text-decoration: none;
+  font-weight: normal;
+  padding: 0;
   cursor: pointer;
   position: absolute;
   top: 42px;
   right: 0px;
   transform: rotate(45deg);
-  padding: 0px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
   @media (max-width: 600px) {
     display: block;
+  }
+
+  @media (min-width: 1420px) {
+    letter-spacing: 0.8px;
   }
 `;
 
@@ -1477,21 +1501,6 @@ export const removeButtonVariants = {
   },
 };
 
-export const loginButtonVariants = {
-  initial: {
-    textDecoration: "none",
-    textDecorationThickness: "0px",
-    textUnderlineOffset: "0px",
-  },
-  hover: {
-    textDecoration: "underline",
-    textDecorationThickness: "2px",
-    textUnderlineOffset: "3px",
-    textDecorationColor: "currentColor",
-    transition: { duration: 0.2 },
-  },
-};
-
 export const mobileRemoveButtonVariants = {
   initial: {
     color: "rgb(16, 12, 8)",
@@ -1509,6 +1518,21 @@ export const mobileRemoveButtonVariants = {
   },
   tap: {
     color: "#006efe",
+    textDecoration: "underline",
+    textDecorationThickness: "2px",
+    textUnderlineOffset: "3px",
+    textDecorationColor: "currentColor",
+    transition: { duration: 0.2 },
+  },
+};
+
+export const loginButtonVariants = {
+  initial: {
+    textDecoration: "none",
+    textDecorationThickness: "0px",
+    textUnderlineOffset: "0px",
+  },
+  hover: {
     textDecoration: "underline",
     textDecorationThickness: "2px",
     textUnderlineOffset: "3px",

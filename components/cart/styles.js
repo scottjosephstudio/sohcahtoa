@@ -1637,21 +1637,25 @@ export const UsageText = styled.span`
 export const RemoveLink = styled(motion.button)`
   background: none;
   border: none;
-  color: rgb(16, 12, 8);
-  cursor: pointer;
-  font-family: "Jant", sans-serif;
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 20px;
+  line-height: 24px;
   letter-spacing: 0.8px;
-  padding: 0px 0px;
+  color: rgb(16, 12, 8);
+  text-decoration: none;
+  font-weight: normal;
+  padding: 0;
   margin-left: 12px;
-  margin-top: 2px;
+  cursor: pointer;
   white-space: nowrap;
   overflow: visible;
   text-overflow: ellipsis;
   max-width: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  @media (min-width: 1420px) {
+    letter-spacing: 0.8px;
+  }
 `;
 
 export const AddLicenseLink = styled(motion.span)`
