@@ -17,7 +17,7 @@ export const FooterWrapper = styled.div`
 export const ControlsContainer = styled.div`
   position: fixed;
   bottom: 28px;
-  left: 184px;
+  left: 188px;
   right: ${(props) => (props.$isViewCart ? "154px" : "174px")};
   pointer-events: auto;
   transition: right 0.5s ease;
@@ -69,7 +69,7 @@ export const ToggleButton = styled.button`
 export const SearchContainer = styled.div`
   position: fixed;
   bottom: 28px;
-  left: 132px;
+  left: 188px;
   right: ${(props) => (props.$isViewCart ? "154px" : "154px")};
   pointer-events: auto;
   z-index: 46;
