@@ -5,11 +5,14 @@ import {
   SvgIcon,
   SquareFolioHomeTypefaceRoute,
   TypefacesIconTypefaceRoute,
+  ThemeIconTypefaceRoute,
   ArrowLeft,
   ArrowRight,
 } from "./styled";
 import { svgIconVariants } from "../product-section/Controller/ProductPage_Styles";
 import styled from "styled-components";
+import ThemeToggleIcon from "./ThemeToggleIcon";
+import { useTheme } from "../../context/ThemeContext";
 
 // Add the Tooltip styled component based on the HomeIcon component
 const Tooltip = styled(motion.div)`
@@ -17,8 +20,9 @@ const Tooltip = styled(motion.div)`
   top: -30px;
   left: 50%; /* Positioning is handled by parent containers with specific overrides */
   transform: translateX(-50%);
-  background-color: ${({ $customColor }) => $customColor || "#006efe"};
-  color: white;
+  background-color: ${({ $customColor, $isDarkMode }) => 
+    $isDarkMode ? 'white' : ($customColor || "#006efe")};
+  color: ${({ $isDarkMode }) => $isDarkMode ? 'rgb(16, 12, 8)' : 'white'};
   padding: 10px 10px;
   border-radius: 8px;
   font-size: 12px;
@@ -99,6 +103,7 @@ const TypefaceFooter = ({
   homeIconTooltipPosition = "50%",
   typefacesIconTooltipPosition = "84%",
 }) => {
+  const { isDarkMode } = useTheme();
   const handleNavigationClick = (e, link) => {
     e.preventDefault();
 
@@ -236,7 +241,7 @@ const TypefaceFooter = ({
               initial="initial"
               whileHover="hover"
             >
-              <Tooltip $customColor="#006efe" variants={tooltipVariants}>
+              <Tooltip $customColor="#006efe" $isDarkMode={isDarkMode} variants={tooltipVariants}>
                 Home
               </Tooltip>
               <motion.div variants={svgGlowVariants}>
@@ -247,8 +252,12 @@ const TypefaceFooter = ({
                   initial="initial"
                   whileHover="hover"
                   custom={{ $isTypefacePath: true }}
+                  $isDarkMode={isDarkMode}
                 >
-                  <path d="M22.06,8.21L12.95,3.72c-.11-.05-.23-.09-.35-.1-.19-.02-.38.01-.55.1L2.94,8.21c-.34.17-.56.52-.56.9v11.27c0,.55.45,1,1,1h7.11c.55,0,1-.45,1-1v-4.23h2.02v4.23c0,.55.45,1,1,1h7.11c.55,0,1-.45,1-1v-11.27c0-.38-.22-.73-.56-.9ZM10.19,13.9c-.55,0-1,.45-1,1v4.23h-4.51v-9.26l7.82-3.85,7.82,3.85v9.26h-4.51v-4.23c0-.55-.45-1-1-1h-4.62Z" />
+                  <path 
+                    d="M22.06,8.21L12.95,3.72c-.11-.05-.23-.09-.35-.1-.19-.02-.38.01-.55.1L2.94,8.21c-.34.17-.56.52-.56.9v11.27c0,.55.45,1,1,1h7.11c.55,0,1-.45,1-1v-4.23h2.02v4.23c0,.55.45,1,1,1h7.11c.55,0,1-.45,1-1v-11.27c0-.38-.22-.73-.56-.9ZM10.19,13.9c-.55,0-1,.45-1,1v4.23h-4.51v-9.26l7.82-3.85,7.82,3.85v9.26h-4.51v-4.23c0-.55-.45-1-1-1h-4.62Z" 
+                    fill={isDarkMode ? 'white' : 'rgb(16, 12, 8)'}
+                  />
                 </SvgIcon>
               </motion.div>
             </HomeIconContainer>
@@ -283,7 +292,7 @@ const TypefaceFooter = ({
               initial="initial"
               whileHover="hover"
             >
-              <Tooltip $customColor="#006efe" variants={tooltipVariants}>
+              <Tooltip $customColor="#006efe" $isDarkMode={isDarkMode} variants={tooltipVariants}>
                 Typefaces
               </Tooltip>
               <motion.div variants={svgGlowVariants}>
@@ -295,13 +304,14 @@ const TypefaceFooter = ({
                   initial="initial"
                   whileHover="hover"
                   custom={{ $isTypefacePath: true }}
+                  $isDarkMode={isDarkMode}
                 >
                   <circle
                     cx="12.5"
                     cy="13"
                     r="8.5"
                     fill="none"
-                    stroke="currentColor"
+                    stroke={isDarkMode ? 'white' : 'rgb(16, 12, 8)'}
                     strokeWidth="2"
                   />
                   <text
@@ -309,20 +319,45 @@ const TypefaceFooter = ({
                     y="11.5"
                     textAnchor="middle"
                     fontSize="7"
-                    fill="currentColor"
+                    fill={isDarkMode ? 'white' : 'rgb(16, 12, 8)'}
                   >
                     A
                   </text>
-                  <text x="8.6" y="17.25" fontSize="7" fill="currentColor">
+                  <text x="8.6" y="17.25" fontSize="7" fill={isDarkMode ? 'white' : 'rgb(16, 12, 8)'}>
                     B
                   </text>
-                  <text x="12.6" y="17.25" fontSize="7" fill="currentColor">
+                  <text x="12.6" y="17.25" fontSize="7" fill={isDarkMode ? 'white' : 'rgb(16, 12, 8)'}>
                     C
                   </text>
                 </SvgIcon>
               </motion.div>
             </TypefacesIconContainer>
           </TypefacesIconTypefaceRoute>
+
+          <ThemeIconTypefaceRoute
+            key="theme-icon"
+            as={motion.div}
+            {...(!hasInitialAnimationOccurred
+              ? {
+                  initial: { left: "218px", opacity: 1 },
+                  animate: {
+                    left: "122px",
+                    opacity: 1,
+                    transition: {
+                      duration: 1,
+                      ease: [0.6, -0.05, 0.01, 0.99],
+                    },
+                  },
+                }
+              : {})}
+            style={{
+              position: "fixed",
+              left: hasInitialAnimationOccurred ? "122px" : undefined,
+            }}
+            data-theme="true"
+          >
+            <ThemeToggleIcon />
+          </ThemeIconTypefaceRoute>
         </FooterWrapper>
       )}
     </AnimatePresence>

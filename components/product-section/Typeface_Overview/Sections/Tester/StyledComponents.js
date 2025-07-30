@@ -62,7 +62,7 @@ export const EditableText = styled.p`
   font-kerning: none;
   font-feature-settings: "kern" 0;
   pointer-events: auto;
-  caret-color: rgb(16, 12, 8);
+  caret-color: var(--text-primary);
   text-decoration-line: none;
   -webkit-text-decoration-line: none;
   vertical-align: baseline;
@@ -93,8 +93,8 @@ export const ControlPanel = styled.div`
   backdrop-filter: blur(6px);
   height: 46px;
   border-radius: 10px;
-  border: 2px solid rgb(16, 12, 8);
-  box-shadow: 0 4px 8px rgb(16, 12, 8);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 8px var(--border-color);
   display: flex;
   align-items: center;
   padding: 0 12px;
@@ -148,14 +148,14 @@ export const Slider = styled.input`
   -webkit-appearance: none;
   width: 100%;
   height: 2px;
-  background: rgb(16, 12, 8);
+  background: var(--border-color);
   outline: none;
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 16px;
     height: 16px;
-    background: rgb(16, 12, 8);
+    background: var(--border-color);
     border-radius: 50%;
     cursor: pointer;
     margin-top: -7px;
@@ -164,7 +164,7 @@ export const Slider = styled.input`
   &::-moz-range-thumb {
     width: 16px;
     height: 16px;
-    background: rgb(16, 12, 8);
+    background: var(--border-color);
     border: none;
     border-radius: 50%;
     cursor: pointer;
@@ -173,14 +173,14 @@ export const Slider = styled.input`
   &::-webkit-slider-runnable-track {
     width: 100%;
     height: 2px;
-    background: rgb(16, 12, 8);
+    background: var(--border-color);
     border-radius: 1px;
   }
 
   &::-moz-range-track {
     width: 100%;
     height: 2px;
-    background: rgb(16, 12, 8);
+    background: var(--border-color);
     border-radius: 1px;
   }
 `;
@@ -189,7 +189,7 @@ export const Value = styled.span`
   font-size: 12px;
   line-height: 14px;
   letter-spacing: 0.8px;
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   white-space: nowrap;
   min-width: ${(props) => {
     if (props.type === "fontSize") return "36px";
@@ -204,7 +204,7 @@ export const ResetButton = styled(motion.button)`
   padding: 4px;
   width: 22px;
   height: 22px;
-  border: 2px solid rgb(16, 12, 8);
+  border: 2px solid var(--border-color);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -218,20 +218,21 @@ export const ResetButton = styled(motion.button)`
     letter-spacing: 0.8px;
     font-weight: normal;
     transform: translate(0.3px, 0.2px);
+    color: ${props => props.$isDarkMode ? 'white' : 'var(--text-primary)'};
   }
 `;
 
 // Motion variants for ResetButton
 export const resetButtonVariants = {
   hover: {
-    backgroundColor: "rgb(16, 12, 8)",
+    backgroundColor: "var(--text-primary)",
     transition: { duration: 0.2 },
   },
 };
 
 export const resetButtonSpanVariants = {
   hover: {
-    color: "white",
+    color: "var(--bg-primary)",
     transition: { duration: 0.2 },
   },
 };

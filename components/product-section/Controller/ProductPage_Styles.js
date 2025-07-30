@@ -64,7 +64,8 @@ export const PageContainer = styled.div`
   flex-direction: column;
   padding: 24px;
   overflow-x: hidden;
-  background-color: #f9f9f9;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 `;
 
 export const PortalContainer = styled.div`
@@ -89,7 +90,7 @@ export const UserDashboard = styled(motion.div)`
   width: 100%;
   max-width: 100%;
   height: 100vh;
-  background: #e0e0e0; // Changed to match cart
+  background: var(--bg-secondary);
   z-index: 891;
   display: flex;
   flex-direction: column;
@@ -254,7 +255,7 @@ export const ModalTitleContainer = styled(motion.div)`
 export const ModalTitleUserDashboard = styled.span`
   ${typographyBase}
   ${textDecorationMixin}
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   margin: 0;
   top: 34px;
   text-align: center;
@@ -271,7 +272,7 @@ export const CloseButton = styled(motion.button)`
   top: 14px;
   font-size: 64px;
   cursor: pointer;
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   padding: 8px;
   transition:
     opacity 0.2s,
@@ -286,7 +287,7 @@ export const LogoutButton = styled(motion.button)`
   border: none;
   cursor: pointer;
   font-size: 20px;
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: visible;
   position: fixed;
@@ -308,7 +309,7 @@ export const LogoutButton = styled(motion.button)`
 `;
 
 export const Section = styled(motion.div)`
-  background-color: #f9f9f9;
+  background-color: var(--content-bg);
   padding: 24px;
   border-radius: 10px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -324,7 +325,7 @@ export const Section = styled(motion.div)`
 export const UserInfoSection = styled(motion.div)`
   display: flex;
   flex-direction: column;
-  background-color: #f9f9f9;
+  background-color: var(--content-bg);
   padding: 24px;
   border-radius: 10px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -341,8 +342,8 @@ export const ListItem = styled.div`
 
   &:not(:last-child) {
     margin-top: 24px;
-    border-top: 2px solid rgb(16, 12, 8);
-    border-bottom: 2px solid rgb(16, 12, 8);
+    border-top: 2px solid var(--border-color);
+    border-bottom: 2px solid var(--border-color);
   }
 `;
 
@@ -715,8 +716,8 @@ export const CartCount = styled(motion.a)`
   justify-content: center;
   width: 34px;
   height: 34px;
-  background-color: rgb(16, 12, 8);
-  color: #f9f9f9;
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
   border-radius: 10px;
   z-index: 5001;
   font-size: 24px;
@@ -897,7 +898,7 @@ export const LoginButtonStyled = styled(motion.button)`
   border: none;
   cursor: pointer;
   font-size: 20px;
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   margin-left: auto;
   white-space: nowrap;
   overflow: visible;
@@ -1334,9 +1335,9 @@ export const AddToCartButton = styled(motion.button)`
   padding: 10px 12px 8px 12px;
   border-radius: 10px;
   margin-bottom: -4px;
-  background-color: rgb(16, 12, 8);
-  color: #f9f9f9;
-  border: 2px solid rgb(16, 12, 8);
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  border: 2px solid var(--text-primary);
   cursor: pointer;
   transition:
     background-color 0.2s,
@@ -1388,15 +1389,24 @@ export const AddToCartButton = styled(motion.button)`
 
 // Animation Variants
 export const cartCountVariants = {
-  hidden: { scale: 0, opacity: 0 },
+  hidden: { 
+    scale: 0, 
+    opacity: 0,
+    backgroundColor: "var(--text-primary)",
+    color: "var(--bg-primary)",
+  },
   visible: {
     scale: 1,
     opacity: 1,
+    backgroundColor: "var(--text-primary)",
+    color: "var(--bg-primary)",
     transition: { type: "spring", duration: 0.2, bounce: 0.2 },
   },
   exit: {
     scale: 0,
     opacity: 0,
+    backgroundColor: "var(--text-primary)",
+    color: "var(--bg-primary)",
     transition: { duration: 0.2 },
   },
 };
@@ -1442,9 +1452,9 @@ export const buttonVariants = {
 
 export const hoverButtonVariants = {
   initial: {
-    backgroundColor: "rgb(16, 12, 8)",
-    borderColor: "rgb(16, 12, 8)",
-    color: "#f9f9f9",
+    backgroundColor: "var(--text-primary)",
+    borderColor: "var(--text-primary)",
+    color: "var(--bg-primary)",
   },
   hover: {
     backgroundColor: "#006efe",
@@ -1462,17 +1472,17 @@ export const hoverButtonVariants = {
 
 export const removeButtonVariants = {
   initial: {
-    color: "rgb(16, 12, 8)",
+    color: "var(--text-primary)",
     textDecoration: "none",
     textDecorationThickness: "0px",
     textUnderlineOffset: "0px",
   },
   hover: {
-    color: "rgb(16, 12, 8)",
+    color: "var(--text-primary)",
     textDecoration: "underline",
     textDecorationThickness: "2px",
     textUnderlineOffset: "3px",
-    textDecorationColor: "currentColor",
+    textDecorationColor: "var(--text-secondary)",
     transition: { duration: 0.2 },
   },
 };
@@ -1494,25 +1504,25 @@ export const loginButtonVariants = {
 
 export const mobileRemoveButtonVariants = {
   initial: {
-    color: "rgb(16, 12, 8)",
+    color: "var(--text-primary)",
     textDecoration: "none",
     textDecorationThickness: "0px",
     textUnderlineOffset: "0px",
   },
   hover: {
-    color: "#006efe",
+    color: "var(--text-secondary)",
     textDecoration: "underline",
     textDecorationThickness: "2px",
-    textUnderlineOffset: "1px",
-    textDecorationColor: "currentColor",
+    textUnderlineOffset: "3px",
+    textDecorationColor: "var(--text-secondary)",
     transition: { duration: 0.2 },
   },
   tap: {
-    color: "#006efe",
+    color: "var(--text-secondary)",
     textDecoration: "underline",
     textDecorationThickness: "2px",
-    textUnderlineOffset: "1px",
-    textDecorationColor: "currentColor",
+    textUnderlineOffset: "3px",
+    textDecorationColor: "var(--text-secondary)",
     transition: { duration: 0.2 },
   },
 };
@@ -1628,12 +1638,12 @@ export const saveButtonVariants = {
 
 export const cartCountHoverVariants = {
   initial: {
-    backgroundColor: "rgb(16, 12, 8)",
-    color: "#f9f9f9",
+    backgroundColor: "var(--text-primary)",
+    color: "var(--bg-primary)",
   },
   hover: {
-    backgroundColor: "#006efe",
-    color: "#f9f9f9",
+    backgroundColor: "var(--text-secondary)",
+    color: "var(--bg-primary)",
     transition: { duration: 0.2 },
   },
 };

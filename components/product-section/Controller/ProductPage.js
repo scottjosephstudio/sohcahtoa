@@ -77,6 +77,18 @@ const ProductPage = ({ currentUser: prefetchedUser, databaseDataLoaded: prefetch
     }
   }, [selectedFont]);
 
+  // Set product page attribute for dark mode styling
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      document.body.setAttribute('data-product-page', 'true');
+      
+      // Cleanup function to remove the attribute when component unmounts
+      return () => {
+        document.body.removeAttribute('data-product-page');
+      };
+    }
+  }, []);
+
   // Handle initial font slug from URL
   useEffect(() => {
     if (initialFontSlug && selectFontBySlug && !fontsLoading) {

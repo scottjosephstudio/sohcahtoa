@@ -234,7 +234,7 @@ const FontViewer = forwardRef(
               width: '100%',
               fontSize: '16px',
               letterSpacing: '0.8px',
-              color: 'rgb(16, 12, 8)'
+              color: 'var(--text-primary)'
             }}>
               <AnimatedLoading>
                 <LoadingText>Loading {selectedFont?.name || 'font'}</LoadingText>

@@ -25,8 +25,8 @@ const SearchInput = styled.input`
   font-family: "Jant", sans-serif;
   width: 100%;
   padding: 10px 42px 8px 12px;
-  border: 2px solid rgb(16, 12, 8);
-  box-shadow: 0 4px 8px rgb(16, 12, 8);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 8px var(--border-color);
   border-radius: 10px;
   font-size: 20px;
   line-height: 24px;
@@ -45,12 +45,12 @@ const SearchInput = styled.input`
 
   &:focus {
     outline: none;
-    border: 2px solid rgb(16, 12, 8);
-    box-shadow: 0 4px 8px rgb(16, 12, 8);
+    border: 2px solid var(--border-color);
+    box-shadow: 0 4px 8px var(--border-color);
   }
 
   &::placeholder {
-    color: ${(props) => (props.error ? "red" : "rgb(16, 12, 8)")};
+    color: ${(props) => (props.error ? "red" : "var(--text-primary)")};
     text-overflow: ellipsis;
       font-size: 20px;
   line-height: 24px;
@@ -65,7 +65,7 @@ const SearchIcon = styled.svg`
   transform: translateY(-50%);
   width: 24px;
   height: 24px;
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   pointer-events: none;
   background: none;
 `;

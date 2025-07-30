@@ -17,7 +17,7 @@ export const FooterWrapper = styled.div`
 export const ControlsContainer = styled.div`
   position: fixed;
   bottom: 28px;
-  left: 132px;
+  left: 184px;
   right: ${(props) => (props.$isViewCart ? "154px" : "174px")};
   pointer-events: auto;
   transition: right 0.5s ease;
@@ -41,12 +41,12 @@ export const ToggleButton = styled.button`
   height: 47px;
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(6px);
-  border: 2px solid rgb(16, 12, 8);
+  border: 2px solid var(--border-color);
   border-radius: 10px;
   cursor: pointer;
   z-index: 30;
   padding: 12px 8px;
-  box-shadow: 0 4px 8px rgb(16, 12, 8);
+  box-shadow: 0 4px 8px var(--border-color);
 
   @media (max-width: 768px) {
     display: flex;
@@ -60,7 +60,7 @@ export const ToggleButton = styled.button`
     display: block;
     width: 100%;
     height: 2px;
-    background: rgb(16, 12, 8);
+    background: var(--border-color);
     transition: all 0.3s ease;
     transform-origin: center;
   }

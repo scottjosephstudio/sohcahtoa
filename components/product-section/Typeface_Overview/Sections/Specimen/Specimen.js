@@ -54,8 +54,8 @@ const Content = styled(motion.div)`
 const FontInfo = styled.div`
   margin-bottom: 110px;
   padding: 0px 0px;
-  border-left: 2px solid rgb(16, 12, 8);
-  border-right: 2px solid rgb(16, 12, 8);
+  border-left: 2px solid var(--border-color);
+  border-right: 2px solid var(--border-color);
   position: relative;
   
   /* Mobile: hide second div (author details only) */
@@ -97,7 +97,7 @@ const FontInfo = styled.div`
       top: 0;
       bottom: 0;
       width: 2px;
-      background: rgb(16, 12, 8);
+      background: var(--border-color);
     }
   }
   
@@ -115,7 +115,7 @@ const FontInfo = styled.div`
       top: 0;
       bottom: 0;
       width: 2px;
-      background: rgb(16, 12, 8);
+      background: var(--border-color);
     }
     
     &::after {
@@ -125,18 +125,18 @@ const FontInfo = styled.div`
       top: 0;
       bottom: 0;
       width: 2px;
-      background: rgb(16, 12, 8);
+      background: var(--border-color);
     }
   }
 `;
 
 const FontName = styled.div`
-  background: #e0e0e0;
+  background: var(--bg-secondary);
   padding: 1px 12px;
   border-radius: 30px;
   font-size: 12px;
   letter-spacing: 0.8px;
-  color: rgb(16, 2, 8);
+  color: var(--text-primary);
   margin: 0 0 0px 0;
   display: inline-block;
   width: fit-content;
@@ -148,7 +148,7 @@ const FontDetails = styled.div`
   letter-spacing: 0.8px;
   line-height: 20px;
   margin: 0px;
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   
   &.mobile-tablet-only {
     @media (min-width: 1200px) {
@@ -205,7 +205,7 @@ const SpecimenCard = styled(motion.div)`
   height: auto;
   display: flex;
   flex-direction: column;
-  border-left: 2px solid rgb(16, 12, 8);
+  border-left: 2px solid var(--border-color);
   
   /* Desktop: 3 columns - specific border logic based on grid areas */
   @media (min-width: 1200px) {
@@ -214,7 +214,7 @@ const SpecimenCard = styled(motion.div)`
     &[style*="grid-area: numbers"],
     &[style*="grid-area: ligatures"],
     &[style*="grid-area: theorists"] {
-      border-right: 2px solid rgb(16, 12, 8);
+      border-right: 2px solid var(--border-color);
     }
     &[style*="grid-area: pangram"],
     &[style*="grid-area: lowercase"] {
@@ -232,7 +232,7 @@ const SpecimenCard = styled(motion.div)`
     &[style*="grid-area: numbers"],
     &[style*="grid-area: ligatures"],
     &[style*="grid-area: theorists"] {
-      border-right: 2px solid rgb(16, 12, 8);
+      border-right: 2px solid var(--border-color);
     }
     &[style*="grid-area: pangram"],
     &[style*="grid-area: lowercase"] {
@@ -245,7 +245,7 @@ const SpecimenCard = styled(motion.div)`
   
   /* Mobile: single column - no right border needed */
   @media (max-width: 767px) {
-    border-right: 2px solid rgb(16, 12, 8);
+    border-right: 2px solid var(--border-color);
     &[style*="grid-area: display"] {
       padding-right: 6px;
     }
@@ -253,12 +253,12 @@ const SpecimenCard = styled(motion.div)`
 `;
 
 const SpecimenTitle = styled.h3`
-  background: #e0e0e0;
+  background: var(--bg-secondary);
   padding: 1px 12px;
   border-radius: 30px;
   font-size: 12px;
   letter-spacing: 0.8px;
-  color: rgb(16, 2, 8);
+  color: var(--text-primary);
   margin: 0 0 12px 0;
   display: inline-block;
   width: fit-content;
@@ -269,7 +269,7 @@ const SpecimenText = styled.div`
   font-size: ${props => props.$fontSize || '20px'};
   line-height: ${props => props.$lineHeight || '24ox'};
   letter-spacing: ${props => props.$letterSpacing || '0.8px'};
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   font-family: ${props => props.$fontFamily || 'inherit'};
   margin-bottom: ${props => props.$twoColumns ? '0' : '12px'};
   word-wrap: break-word;
@@ -1268,7 +1268,7 @@ export default forwardRef(function SpecimenSection(
               width: '100%',
               fontSize: '16px',
               letterSpacing: '0.8px',
-              color: 'rgb(16, 12, 8)'
+              color: 'var(--text-primary)'
             }}>
               <AnimatedLoading>
                 <LoadingText>Loading {selectedFont?.name || 'font'} specimen</LoadingText>
@@ -1539,7 +1539,7 @@ export default forwardRef(function SpecimenSection(
                 <div style={{ paddingLeft: '12px', paddingRight: '20px' }}>
                   <FontName>{selectedFont?.name || 'Font Name'}</FontName>
                   <div style={{ marginTop: '12px', marginBottom: '-2px' }}>
-                    <div style={{ fontSize: '12px', marginBottom: '6px', color: 'rgb(16, 12, 8)' }}>
+                    <div style={{ fontSize: '12px', marginBottom: '6px', color: 'var(--text-primary)' }}>
                       Specimen PDF
                     </div>
                     <svg 

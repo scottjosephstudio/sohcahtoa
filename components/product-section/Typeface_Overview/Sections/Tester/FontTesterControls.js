@@ -13,6 +13,7 @@ import {
   resetButtonVariants,
   resetButtonSpanVariants,
 } from "./StyledComponents";
+import { useTheme } from "../../../../../context/ThemeContext";
 
 const slideVariants = {
   initial: ({ isMobile }) => ({
@@ -53,6 +54,7 @@ export const FontTesterControls = ({
   isTestExiting,
   isMobile,
 }) => {
+  const { isDarkMode } = useTheme();
   return (
     <AnimatePresence mode="wait">
       {!isNavigatingHome && !isTestExiting && (
@@ -88,6 +90,7 @@ export const FontTesterControls = ({
                     onClick={() => resetSetting("fontSize")}
                     variants={resetButtonVariants}
                     whileHover="hover"
+                    $isDarkMode={isDarkMode}
                   >
                     <motion.span variants={resetButtonSpanVariants}>
                       ×
@@ -117,6 +120,7 @@ export const FontTesterControls = ({
                     onClick={() => resetSetting("lineHeight")}
                     variants={resetButtonVariants}
                     whileHover="hover"
+                    $isDarkMode={isDarkMode}
                   >
                     <motion.span variants={resetButtonSpanVariants}>
                       ×
@@ -151,6 +155,7 @@ export const FontTesterControls = ({
                     onClick={() => resetSetting("letterSpacing")}
                     variants={resetButtonVariants}
                     whileHover="hover"
+                    $isDarkMode={isDarkMode}
                   >
                     <motion.span variants={resetButtonSpanVariants}>
                       ×

@@ -62,6 +62,20 @@ export const TypefacesIconTypefaceRoute = styled.div`
   }
 `;
 
+export const ThemeIconTypefaceRoute = styled.div`
+  position: fixed;
+  left: 236px;
+  bottom: 0px;
+  z-index: 50;
+  cursor: pointer;
+  height: 80px;
+  ${fixedPositionStyles}
+
+  @media (min-width: 1420px) {
+    bottom: 0px; /* Maintain same position at larger screens */
+  }
+`;
+
 export const SvgIcon = styled(motion.svg)`
   width: 60px;
   height: 60px;
@@ -70,13 +84,13 @@ export const SvgIcon = styled(motion.svg)`
   ${(props) =>
     !props.$isTypeface &&
     `
-    fill: ${props.$isTypefacePath ? "rgb(16, 12, 8)" : "#39ff14"};
+    fill: ${props.$isTypefacePath ? (props.$isDarkMode ? 'white' : 'rgb(16, 12, 8)') : "var(--accent-color)"};
   `}
   
   ${(props) =>
     props.$isTypeface &&
     `
-    color: ${props.$isTypefacePath ? "rgb(16, 12, 8)" : "#39ff14"};
+    color: ${props.$isTypefacePath ? (props.$isDarkMode ? 'white' : 'rgb(16, 12, 8)') : "var(--accent-color)"};
   `}
 
   @media (min-width: 1420px) {

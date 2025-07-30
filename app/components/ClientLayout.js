@@ -10,6 +10,7 @@ import { NavigationProvider } from "../../context/NavigationContext";
 import { PortalProvider } from "../../context/PortalContext";
 import { MenuOverlayProvider } from "../../components/menu-overlay/MenuOverlayContext";
 import { FontSelectionProvider } from "../../context/FontSelectionContext";
+import { ThemeProvider } from "../../context/ThemeContext";
 
 // Utility to clear invalid Supabase tokens
 const clearInvalidSupabaseTokens = async () => {
@@ -98,6 +99,7 @@ export default function ClientLayout({ children }) {
   }, [pathname, isTypefacesPage, isPaymentConfirmation]);
 
   return (
+    <ThemeProvider>
     <FontSelectionProvider>
     <MenuOverlayProvider>
       <NavigationProvider>
@@ -123,5 +125,6 @@ export default function ClientLayout({ children }) {
       </NavigationProvider>
     </MenuOverlayProvider>
     </FontSelectionProvider>
+    </ThemeProvider>
   );
 }

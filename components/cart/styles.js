@@ -1637,7 +1637,7 @@ export const UsageText = styled.span`
 export const RemoveLink = styled(motion.button)`
   background: none;
   border: none;
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   cursor: pointer;
   font-family: "Jant", sans-serif;
   font-size: 16px;
@@ -2120,17 +2120,17 @@ export const dashboardCheckboxVariants = {
 
 export const removeLinkVariants = {
   initial: {
-    color: "rgb(16, 12, 8)",
+    color: "var(--text-primary)",
     textDecoration: "none",
     textDecorationThickness: "0px",
     textUnderlineOffset: "0px",
   },
   hover: {
-    color: "rgb(16, 12, 8)",
+    color: "var(--text-primary)",
     textDecoration: "underline",
     textDecorationThickness: "2px",
-    textUnderlineOffset: "3px",
-    textDecorationColor: "currentColor",
+    textUnderlineOffset: "1px",
+    textDecorationColor: "var(--text-secondary)",
     transition: { duration: 0.2 },
   },
 };

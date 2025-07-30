@@ -44,6 +44,45 @@ body {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   
+  /* Theme CSS Variables */
+  --bg-primary: #f9f9f9;
+  --bg-secondary: #e0e0e0;
+  --text-primary: rgb(16, 12, 8);
+  --text-secondary: #006efe;
+  --border-color: rgb(16, 12, 8);
+  --accent-color: #39ff14;
+  --content-bg: #f9f9f9;
+  --nav-bg: rgba(145, 145, 145, 0.4);
+  --nav-text: rgb(16, 12, 8);
+  --cart-bg: #f9f9f9;
+  
+  /* Dark mode variables (will be applied when .dark-mode class is added) */
+  &.dark-mode {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2a2a2a;
+    --text-primary: #ffffff;
+    --text-secondary: #4a9eff;
+    --border-color: #ffffff;
+    --accent-color: #39ff14;
+    --content-bg: #0a0a0a;
+    --nav-bg: rgba(255, 255, 255, 0.1);
+    --nav-text: #ffffff;
+    --cart-bg: #ffffff;
+  }
+  
+  /* Light mode variables (default) */
+  &.light-mode {
+    --bg-primary: #f9f9f9;
+    --bg-secondary: #e0e0e0;
+    --text-primary: rgb(16, 12, 8);
+    --text-secondary: #006efe;
+    --border-color: rgb(16, 12, 8);
+    --accent-color: #39ff14;
+    --content-bg: #f9f9f9;
+    --nav-bg: rgba(145, 145, 145, 0.4);
+    --nav-text: rgb(16, 12, 8);
+    --cart-bg: #f9f9f9;
+  }
 }
 
 /* Primary mottled paper texture - with finer grain */
@@ -59,6 +98,12 @@ body::before {
   mix-blend-mode: multiply;
   z-index: -1;
   pointer-events: none;
+}
+
+/* Dark mode styles for product page - before pseudo-element */
+body.dark-mode[data-product-page="true"]::before {
+  background-color: var(--bg-primary);
+  opacity: 0.1;
 }
 
 /* Test alignment wrapper styles */
@@ -151,7 +196,7 @@ body::after {
   right: 0;
   width: 100%;
   height: 20px;
-  background: #f9f9f9;
+  background: var(--bg-primary);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   mask: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
@@ -161,6 +206,8 @@ body::after {
   z-index: 889;
   pointer-events: none;
 }
+
+
 
 /* Bottom blur overlay with mottled texture */
 .bottom-blur-overlay {

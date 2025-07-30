@@ -12,7 +12,7 @@ export const TypefaceOverviewContainer = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   z-index: 0;
-  background-color: #f9f9f9;
+  background-color: var(--content-bg);
 
   &::before {
     content: "";
@@ -40,7 +40,7 @@ export const TypefaceTabWrapper = styled.div`
 `;
 
 export const TypefaceTabContainer = styled.div`
-  background: rgba(145, 145, 145, 0.4);
+  background: var(--nav-bg);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   border-radius: 9999px;
@@ -70,7 +70,7 @@ export const TypefaceTab = styled(motion.button)`
   cursor: pointer;
   position: relative;
   z-index: 4;
-  color: ${(props) => (props.$isActive ? "#000" : "#333")};
+  color: ${(props) => props.$isActive ? "rgb(16, 12, 8) !important" : "var(--nav-text)"};
   text-align: center;
   white-space: nowrap;
   min-width: max-content;
@@ -98,7 +98,7 @@ export const TypefaceTab = styled(motion.button)`
 
   @media (max-width: 600px) {
     background: ${(props) =>
-      props.$isActive ? "#fff" : "rgba(145, 145, 145, 0.4)"};
+      props.$isActive ? "var(--bg-primary)" : "var(--nav-bg)"};
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border-radius: 9999px;
@@ -109,7 +109,7 @@ export const TypefaceTab = styled(motion.button)`
 // Motion variants for TypefaceTab
 export const typefaceTabVariants = {
   hover: (props) => ({
-    color: props.$isActive ? "#000" : "#fff",
+    color: props.$isActive ? "rgb(16, 12, 8)" : "#f9f9f9",
     transition: { duration: 0.1 },
   }),
 };

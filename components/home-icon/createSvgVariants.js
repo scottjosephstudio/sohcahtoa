@@ -1,18 +1,22 @@
 // Motion variants for SVG icon - will be dynamically created in component
-const createSvgVariants = (isTypefacesPage, isIDPath) => ({
+export const createSvgVariants = (isTypefacesPage, isTypefacePath) => ({
   initial: {
     scale: 1,
     filter: `drop-shadow(0 0 8px rgba(255, 255, 255, 0.6))`,
-    color: isIDPath
-      ? "rgb(16, 12, 8)"
+    color: isTypefacePath
+      ? "var(--text-primary)"
       : isTypefacesPage
-        ? "rgb(16, 12, 8)"
-        : "white",
+      ? "var(--text-primary)"
+      : "var(--accent-color)",
   },
   hover: {
     scale: 1,
     filter: "drop-shadow(0 0 12px rgba(255, 255, 255, 0.8))",
-    color: isIDPath ? "#006efe" : "#39ff14",
+    color: isTypefacePath
+      ? "var(--text-secondary)"
+      : isTypefacesPage
+      ? "var(--text-secondary)"
+      : "var(--accent-color)",
     transition: { duration: 0.2 },
   },
 });

@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useCallback } from "react";
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { getCharacterName } from './CharacterNames';
+import { useTheme } from '../../../../../../context/ThemeContext';
 
 const Container = styled(motion.div)`
   height: 100%;
@@ -17,7 +18,7 @@ const Header = styled.div`
   margin-bottom: 12px;
   margin-right: 0px;
   padding-bottom: 12px;
-  border-bottom: 2px solid rgb(16, 12, 8);
+  border-bottom: 2px solid var(--border-color);
 
   @media (max-width: 768px) {
   margin-right: -12px;
@@ -37,7 +38,7 @@ const GlyphContainer = styled.div`
   width: 100%;
   position: relative;
   aspect-ratio: 1.5;
-  border: 0px solid rgb(16, 12, 8);
+  border: 0px solid var(--border-color);
   flex: 1;
   min-height: 0px;
   overflow: hidden;
@@ -72,7 +73,7 @@ const MetricLine = styled.div`
   position: absolute;
   width: 100%;
   height: 1px;
-  background: rgb(16, 12, 8);
+  background: var(--border-color);
   left: 0;
 `;
 
@@ -81,7 +82,7 @@ const MetricLabel = styled.span`
   font-size: 12px;
   line-height: 14px;
   letter-spacing: 0.8px;
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   white-space: nowrap;
 `;
 
@@ -89,7 +90,7 @@ const BearingLine = styled.div`
   position: absolute;
   width: 1px;
   height: 100%;
-  background: rgb(16, 12, 8);
+  background: var(--border-color);
   top: 0;
 `;
 
@@ -120,6 +121,7 @@ const InfoValue = styled.span`
 export const HighlightedGlyph = ({ glyph, font = {} }) => {
   const canvasRef = useRef(null);
   const [metrics, setMetrics] = useState({});
+  const { isDarkMode } = useTheme();
 
   const calculateMetrics = useCallback(() => {
     const canvas = canvasRef.current;
@@ -133,8 +135,10 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
     
-    // Clear canvas
+    // Clear canvas more thoroughly
     ctx.clearRect(0, 0, rect.width, rect.height);
+    ctx.fillStyle = 'transparent';
+    ctx.fillRect(0, 0, rect.width, rect.height);
 
     // Get OpenType.js glyph
     const opentypeGlyph = font.opentype.charToGlyph(glyph);
@@ -176,18 +180,39 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
     const x0 = glyphStartX;
     
     // Use OpenType.js built-in draw method
-    ctx.fillStyle = 'rgb(16, 12, 8)';
+    const fillColor = isDarkMode ? 'rgb(255, 255, 255)' : 'rgb(16, 12, 8)';
+    ctx.fillStyle = fillColor;
+    console.log('Drawing glyph with color:', fillColor, 'isDarkMode:', isDarkMode);
     
     try {
-      // This is the official way to draw glyphs with OpenType.js
-      opentypeGlyph.draw(ctx, x0, baseline, fontSize);
+      // Use getPath() method for better color control while maintaining scaling
+      const path = opentypeGlyph.getPath(x0, baseline, fontSize);
+      
+      // Set the fill style and draw the path
+      ctx.fillStyle = fillColor;
+      path.fill(ctx);
+      
+      // Also try to stroke the path with the same color for better visibility
+      ctx.strokeStyle = fillColor;
+      ctx.lineWidth = 0.5;
+      path.stroke(ctx);
     } catch (error) {
-      // Fallback: use system font rendering
-      const fontSize = Math.min(rect.width * 0.3, rect.height * 0.3);
-      ctx.font = `${fontSize}px serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(glyph, rect.width / 2, baseline);
+      console.log('getPath failed, trying draw method');
+      try {
+        // Fallback to draw method but with color override
+        ctx.fillStyle = fillColor;
+        ctx.strokeStyle = fillColor;
+        opentypeGlyph.draw(ctx, x0, baseline, fontSize);
+      } catch (drawError) {
+        console.log('draw method also failed, using fallback rendering');
+        // Final fallback: use system font rendering
+        const fallbackFontSize = Math.min(rect.width * 0.3, rect.height * 0.3);
+        ctx.font = `${fallbackFontSize}px "${font.opentype?.names?.fontFamily?.en || 'serif'}"`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = fillColor;
+        ctx.fillText(glyph, rect.width / 2, baseline);
+      }
     }
 
     // Bearing line positions
@@ -213,15 +238,22 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
       widthValue: Math.round(glyphAdvanceWidth)
     });
 
-  }, [glyph, font]);
+  }, [glyph, font, isDarkMode]);
 
   useEffect(() => {
-    calculateMetrics();
+    // Small delay to ensure proper redraw
+    const timer = setTimeout(() => {
+      calculateMetrics();
+    }, 10);
+    
     const resizeObserver = new ResizeObserver(calculateMetrics);
     if (canvasRef.current) {
       resizeObserver.observe(canvasRef.current);
     }
-    return () => resizeObserver.disconnect();
+    return () => {
+      clearTimeout(timer);
+      resizeObserver.disconnect();
+    };
   }, [calculateMetrics]);
 
   // Get glyph data directly from OpenType.js
@@ -234,7 +266,7 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
       </Header>
 
       <GlyphContainer>
-        <Canvas ref={canvasRef} />
+        <Canvas ref={canvasRef} key={`canvas-${isDarkMode}`} />
         <MetricOverlay>
           {/* Horizontal metric lines */}
           {Number.isFinite(metrics.ascenderY) && (

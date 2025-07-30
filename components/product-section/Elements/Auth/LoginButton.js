@@ -41,13 +41,13 @@ const LoginButton = ({ isLoggedIn, handleLoginClick, isNavigatingHome, currentUs
 
   const buttonStyle = isTypefaces
     ? {
-        color: "#39ff14",
+        color: "var(--accent-color)",
         textShadow:
-          "0 0 20px rgb(16, 12, 8), 0 0 30px rgb(16, 12, 8), 0 0 40px rgb(16, 12, 8)",
+          "0 0 20px var(--text-primary), 0 0 30px var(--text-primary), 0 0 40px var(--text-primary)",
         textDecoration: "none",
-        textDecorationColor: "#39ff14",
+        textDecorationColor: "var(--accent-color)",
         transition: "background-color 0.2s, color 0.2s",
-        "--underline-color": "#39ff14",
+        "--underline-color": "var(--accent-color)",
       }
     : {};
 

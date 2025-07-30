@@ -25,7 +25,7 @@ const Header = styled.div`
   margin-bottom: 12px;
   margin-right: -12px;
   padding-bottom: 12px;
-  border-bottom: 2px solid rgb(16, 12, 8);
+  border-bottom: 2px solid var(--border-color);
   
   @media (min-width: 768px) and (max-width: 1366px) and (orientation: portrait) {
     /* iPad portrait: Extend border to full width */
@@ -38,7 +38,7 @@ const Title = styled.span`
   font-size: 16px;
   line-height: 20px;
   letter-spacing: 0.8px;
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 2px;
@@ -51,7 +51,7 @@ const SectionName = styled.div`
  text-decoration: underline;
  text-underline-offset: 4px;
  text-decoration-thickness: 1px;
- color: rgb(16, 12, 8);
+ color: var(--text-primary);
  margin-top: 0px;
  margin-bottom: 4px;
  font-weight: 500;
@@ -136,7 +136,7 @@ const GlyphCode = styled.span`
   font-size: 10px;
   line-height: 12px;
   letter-spacing: 0.8px;
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   margin-top: 4px;
   margin-bottom: 0px;
   transition: color 0.1s ease;
@@ -157,7 +157,7 @@ const GlyphDisplay = styled.div`
   justify-content: center;
   font-size: 32px;
   line-height: 1;
-  color: rgb(16, 12, 8);
+  color: var(--text-primary);
   transition: color 0.1s ease;
   font-family: inherit;
 
@@ -174,8 +174,8 @@ const GlyphCard = styled.button`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: ${(props) => (props.selected ? "rgb(16, 12, 8)" : "none")};
-  border: 1px solid rgb(16, 12, 8);
+  background: ${(props) => (props.selected ? "var(--text-primary)" : "none")};
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 0px;
   position: relative;
@@ -183,12 +183,12 @@ const GlyphCard = styled.button`
   
   &:hover {
     cursor: pointer;
-    background: rgb(16, 12, 8);
-    border-color: rgb(16, 12, 8);
+    background: var(--text-primary);
+    border-color: var(--border-color);
     z-index: 1;
 
     ${GlyphCode}, ${GlyphDisplay} {
-      color: #f9f9f9;
+      color: var(--bg-primary);
     }
   }
 
@@ -196,7 +196,7 @@ const GlyphCard = styled.button`
     props.selected &&
     `
     ${GlyphCode}, ${GlyphDisplay} {
-      color: #f9f9f9;
+      color: var(--bg-primary);
     }
   `}
 

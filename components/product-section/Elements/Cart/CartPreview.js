@@ -1,5 +1,6 @@
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTheme } from "../../../../context/ThemeContext";
 import {
   CartContainer,
   CartCountContainer,
@@ -85,6 +86,17 @@ const CartPreview = ({
   cartSelectedFont,
 }) => {
   const [isRemoving, setIsRemoving] = React.useState(false);
+  
+  // Always call useTheme to maintain hooks order
+  let themeContext;
+  try {
+    themeContext = useTheme();
+  } catch (error) {
+    // ThemeProvider not available yet, use default
+    themeContext = { theme: 'light' };
+  }
+  
+  const theme = themeContext.theme;
 
   const handleMobileRemove = async (e) => {
     e.stopPropagation();
@@ -130,6 +142,7 @@ const CartPreview = ({
               {cartItems > 0 && !isRemoving && (
                 <>
                   <CartCount
+                    key={`cart-count-${theme}`} // Force re-render when theme changes
                     ref={cartCountRef}
                     href="#"
                     onClick={handleCartClick}
@@ -168,7 +181,7 @@ const CartPreview = ({
                     >
                       <path
                         d="M8.44,6.71l4.62-4.62c.23-.23.36-.54.36-.87s-.13-.64-.36-.87c-.48-.48-1.26-.48-1.73,0l-4.62,4.62L2.09.36C1.61-.12.84-.12.36.36c-.23.23-.36.54-.36.87s.13.63.36.87l4.62,4.62L.36,11.32c-.23.23-.36.54-.36.87s.13.63.36.87c.46.46,1.27.46,1.73,0l4.62-4.62,4.62,4.62c.23.23.54.36.87.36s.64-.13.87-.36c.23-.23.36-.54.36-.87s-.13-.64-.36-.87l-4.62-4.62Z"
-                        fill="black"
+                        fill="var(--text-primary)"
                         strokeWidth="0"
                       />
                     </svg>

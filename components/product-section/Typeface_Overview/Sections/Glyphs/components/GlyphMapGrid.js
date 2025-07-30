@@ -51,7 +51,7 @@ const ContentArea = styled.div`
 
 const GlyphPanel = styled(motion.div)`
   background: none;
-  border-right: 2px solid rgb(16, 12, 8);
+  border-right: 2px solid var(--border-color);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -94,7 +94,7 @@ const MapPanel = styled(motion.div)`
 
 const SearchContainer = styled(motion.div)`
   background: none;
-  border-top: 2px solid rgb(16, 12, 8);
+  border-top: 2px solid var(--border-color);
   padding: 98px;
   pointer-events: none;
 

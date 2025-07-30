@@ -116,14 +116,14 @@ const CustomInput = styled.input`
   }
 
   &:hover {
-    color: #f9f9f9;
-    background-color: rgb(16, 12, 8);
+    color: var(--bg-primary);
+    background-color: var(--text-primary);
     border: 2px solid ${(props) => (props.$hasError ? "#FF0000" : "#006efe")};
     cursor: pointer;
   }
 
   &:hover::placeholder {
-    color: #f9f9f9;
+    color: var(--bg-primary);
   }
 
   &:-webkit-autofill {
@@ -135,15 +135,15 @@ const CustomInput = styled.input`
   &:-webkit-autofill:focus {
     -webkit-text-fill-color: ${(props) =>
       props.$hasError ? "#FF0000" : "#006efe"};
-    -webkit-box-shadow: 0 0 0px 1000px #f9f9f9 inset;
+    -webkit-box-shadow: 0 0 0px 1000px var(--bg-primary) inset;
     transition:
       background-color 0s 600000s,
       color 0.15s ease;
   }
 
   &:-webkit-autofill:hover {
-    -webkit-text-fill-color: #f9f9f9;
-    -webkit-box-shadow: 0 0 0px 1000px rgb(16, 12, 8) inset;
+    -webkit-text-fill-color: var(--bg-primary);
+    -webkit-box-shadow: 0 0 0px 1000px var(--text-primary) inset;
   }
 
   &:focus {
@@ -208,9 +208,9 @@ const ResendVerificationButton = styled(motion.button)`
   overflow: hidden;
 
   &:hover {
-    background-color: rgb(16, 12, 8);
+    background-color: var(--text-primary);
     border: 2px solid #006efe;
-    color: #f9f9f9;
+    color: var(--bg-primary);
     cursor: pointer;
   }
   
