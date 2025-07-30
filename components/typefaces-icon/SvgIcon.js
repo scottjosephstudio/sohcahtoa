@@ -7,6 +7,10 @@ const SvgIcon = styled(motion.svg)`
   color: ${({ $isTypefacePath }) =>
     $isTypefacePath ? "rgb(16, 12, 8)" : "#39ff14"};
 
+  &:hover {
+    color: #006efe !important;
+  }
+
   /* Performance optimizations */
   transform: translateZ(0);
   backface-visibility: hidden;

@@ -91,6 +91,8 @@ const TypefacesIcon = ({
           viewBox="0 0 25 25"
           $isTypefacePath={isTypefacePath}
           variants={svgVariants}
+          whileHover="hover"
+          initial="initial"
         >
           <circle
             cx="12.5"

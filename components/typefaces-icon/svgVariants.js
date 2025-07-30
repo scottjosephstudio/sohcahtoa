@@ -16,4 +16,11 @@ export const createSvgVariants = (isTypefacesPage, isTypefacePath) => ({
       ease: "easeInOut",
     },
   },
+  hover: {
+    color: "#006efe",
+    transition: {
+      duration: 0.2,
+      ease: "easeInOut",
+    },
+  },
 });

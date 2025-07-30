@@ -14,7 +14,7 @@ const ThemeIconContainer = styled(motion.div)`
 const Tooltip = styled(motion.div)`
   position: absolute;
   top: -30px;
-  left: 86%;
+  left: 80%;
   transform: translateX(-50%);
   background-color: ${props => props.isDarkMode ? 'white' : '#006efe'};
   color: ${props => props.isDarkMode ? 'rgb(16, 12, 8)' : 'white'};
@@ -39,7 +39,22 @@ const SvgIcon = styled(motion.svg)`
   perspective: 1000px;
   will-change: transform;
   color: ${props => props.isDarkMode ? 'white' : 'rgb(16, 12, 8)'};
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: ${props => props.isDarkMode ? 'white' : '#006efe'} !important;
+  }
 `;
+
+const svgColorVariants = {
+  initial: {
+    color: (props) => props.isDarkMode ? 'white' : 'rgb(16, 12, 8)',
+  },
+  hover: {
+    color: (props) => props.isDarkMode ? 'white' : '#006efe',
+    transition: { duration: 0.2 },
+  },
+};
 
 const iconContainerVariants = {
   hover: {
@@ -103,6 +118,9 @@ const ThemeToggleIcon = ({ onClick, tooltipPosition = "50%" }) => {
       <motion.div variants={svgGlowVariants}>
         <SvgIcon
           viewBox="0 0 25 25"
+          variants={svgColorVariants}
+          whileHover="hover"
+          initial="initial"
           isDarkMode={isDarkMode}
         >
           {/* Sun icon for both dark and light modes */}

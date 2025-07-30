@@ -4,6 +4,10 @@ import { motion } from "framer-motion";
 const SvgIcon = styled(motion.svg)`
   width: 60px;
   height: 60px;
+  
+  &:hover {
+    color: #006efe !important;
+  }
 `;
 
 export default SvgIcon;

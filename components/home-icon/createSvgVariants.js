@@ -13,10 +13,10 @@ export const createSvgVariants = (isTypefacesPage, isTypefacePath) => ({
     scale: 1,
     filter: "drop-shadow(0 0 12px rgba(255, 255, 255, 0.8))",
     color: isTypefacePath
-      ? "var(--text-secondary)"
+      ? "#006efe"
       : isTypefacesPage
-      ? "var(--text-secondary)"
-      : "var(--accent-color)",
+      ? "#006efe"
+      : "#006efe",
     transition: { duration: 0.2 },
   },
 });
