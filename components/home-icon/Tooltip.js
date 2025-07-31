@@ -12,9 +12,9 @@ const Tooltip = styled(motion.div)`
     return "white";
   }};
   color: ${({ $isTypefacesPage, $isTypefacePath }) => {
-    if ($isTypefacesPage) return "var(--text-primary)";
-    if ($isTypefacePath) return "var(--text-primary)";
-    return "var(--text-primary)";
+    if ($isTypefacesPage) return "white";
+    if ($isTypefacePath) return "white";
+    return "rgb(16, 12, 8)";
   }};
   padding: 10px 10px;
   border-radius: 8px;
