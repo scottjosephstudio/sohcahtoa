@@ -24,6 +24,9 @@ const TypefacesIcon = ({
   const isTypefacePath = pathname.includes("/ID") || (pathname && pathname.startsWith("/Typefaces/") && pathname !== "/Typefaces");
   const [fadeIn, setFadeIn] = useState(false);
 
+  // Check if we're on a product page (ID or font-specific paths)
+  const isProductPage = isTypefacePath;
+
   // Create dynamic SVG variants based on current page state
   const svgVariants = createSvgVariants(isTypefacePath);
 
@@ -93,6 +96,7 @@ const TypefacesIcon = ({
           variants={svgVariants}
           whileHover="hover"
           initial="initial"
+          $isProductPage={isProductPage}
         >
           <circle
             cx="12.5"

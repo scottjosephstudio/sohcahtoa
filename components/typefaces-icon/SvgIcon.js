@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 const SvgIcon = styled(motion.svg)`
   width: 60px;
   height: 60px;
-  color: ${({ $isTypefacePath }) =>
+  color: ${props =>
     $isTypefacePath ? "rgb(16, 12, 8)" : "#39ff14"};
-
+  
   &:hover {
-    color: #006efe !important;
+    color: ${props => props.$isProductPage ? '#006efe !important' : 'inherit'};
   }
 
   /* Performance optimizations */

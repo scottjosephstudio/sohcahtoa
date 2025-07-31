@@ -67,6 +67,9 @@ export default function HomeIcon({
   // Only show home icon when not on the homepage
   const $ShouldShow = pathname !== "/";
 
+  // Check if we're on a product page (ID or font-specific paths)
+  const isProductPage = isIDPath || isFontSpecificPath;
+
   // Create dynamic SVG variants based on current page state
   const svgVariants = createSvgVariants(isTypefacesPage, isIDPath || isFontSpecificPath);
 
@@ -174,6 +177,7 @@ export default function HomeIcon({
             variants={svgVariants}
             whileHover="hover"
             initial="initial"
+            $isProductPage={isProductPage}
           >
             <path
               fill="currentColor"
