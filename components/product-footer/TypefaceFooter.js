@@ -306,7 +306,6 @@ const TypefaceFooter = ({
                   whileHover="hover"
                   custom={{ $isTypefacePath: true }}
                   $isDarkMode={isDarkMode}
-                  $isTypeface={true}
                 >
                   <circle
                     cx="12.5"
@@ -343,7 +342,7 @@ const TypefaceFooter = ({
               ? {
                   initial: { left: "218px", opacity: 1 },
                   animate: {
-                    left: "124px",
+                    left: "123px",
                     opacity: 1,
                     transition: {
                       duration: 1,
