@@ -733,7 +733,7 @@ export const CartCount = styled(motion.a)`
 
 export const CartDetails = styled(motion.div)`
   position: absolute;
-  background: rgba(145, 145, 145, 0.4);
+  background: var(--nav-bg);
   padding: 16px;
   border-radius: 10px;
   backdrop-filter: blur(6px);
