@@ -109,6 +109,15 @@ const GridWrapper = styled.div`
   bottom: 0;
     background: linear-gradient(to top, #f3f3f3 0%, transparent 100%);
 }
+
+/* Dark mode styling for the blur overlays */
+body.dark-mode &::before {
+  background: linear-gradient(to bottom, #1a1a1a 0%, transparent 100%);
+}
+
+body.dark-mode &::after {
+  background: linear-gradient(to top, #1a1a1a 0%, transparent 100%);
+}
 `;
 
 const Grid = styled.div`
