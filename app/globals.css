@@ -100,6 +100,12 @@ body::before {
   pointer-events: none;
 }
 
+/* Dark mode styles for product pages - before pseudo-element */
+body.dark-mode[data-product-page="true"]::before {
+  background-color: var(--bg-primary);
+  opacity: 0.1;
+}
+
 
 
 /* Test alignment wrapper styles */
