@@ -13,9 +13,11 @@ import {
   RemoveButton,
   GoToCartButton,
   hoverButtonVariants,
+  hoverButtonVariantsDark,
   mobileRemoveButtonVariants,
   removeButtonVariants,
   cartCountHoverVariants,
+  cartCountHoverVariantsDark,
 } from "../../Controller/ProductPage_Styles";
 
 const cartCountVariants = {
@@ -93,10 +95,11 @@ const CartPreview = ({
     themeContext = useTheme();
   } catch (error) {
     // ThemeProvider not available yet, use default
-    themeContext = { theme: 'light' };
+    themeContext = { theme: 'light', isDarkMode: false };
   }
   
   const theme = themeContext.theme;
+  const isDarkMode = themeContext.isDarkMode;
 
   const handleMobileRemove = async (e) => {
     e.stopPropagation();
@@ -148,7 +151,7 @@ const CartPreview = ({
                     onClick={handleCartClick}
                     variants={{
                       ...cartCountVariants,
-                      ...cartCountHoverVariants,
+                      ...(isDarkMode ? cartCountHoverVariantsDark : cartCountHoverVariants),
                     }}
                     initial="hidden"
                     animate="visible"
@@ -221,7 +224,7 @@ const CartPreview = ({
                     </TextColumn>
                     <GoToCartButton
                       onClick={handleGoToCart}
-                      variants={hoverButtonVariants}
+                      variants={isDarkMode ? hoverButtonVariantsDark : hoverButtonVariants}
                       initial="initial"
                       whileHover="hover"
                       whileTap="tap"

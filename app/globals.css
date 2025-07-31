@@ -103,8 +103,38 @@ body::before {
 
 /* Dark mode styling only for product pages */
 body.dark-mode[data-product-page="true"]::before {
-  background-color: var(--bg-primary);
+  background-image: none;
+  background-color: #1a1a1a;
   opacity: 0.1;
+}
+
+/* Top blur overlay with mottled texture */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 20px;
+  background: #f9f9f9;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  mask: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+  -webkit-mask: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  z-index: 889;
+  pointer-events: none;
+}
+
+/* Dark mode styling only for product pages */
+body.dark-mode[data-product-page="true"]::after {
+  background: #1a1a1a !important;
+}
+
+body.dark-mode[data-product-page="true"] .bottom-blur-overlay {
+  background: #1a1a1a !important;
 }
 
 
@@ -192,30 +222,7 @@ a, button, [role="button"] {
   }
 }
 
-/* Top blur overlay with mottled texture */
-body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 20px;
-  background: #f9f9f9;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  mask: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
-  -webkit-mask: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  z-index: 889;
-  pointer-events: none;
-}
 
-/* Dark mode styling only for product pages */
-body.dark-mode[data-product-page="true"]::after {
-  background: var(--bg-primary);
-}
 
 
 

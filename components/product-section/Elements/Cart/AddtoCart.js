@@ -4,7 +4,9 @@ import {
   AddToCartContainer,
   AddToCartButton,
   hoverButtonVariants,
+  hoverButtonVariantsDark,
 } from "../../Controller/ProductPage_Styles";
+import { useTheme } from "../../../../context/ThemeContext";
 
 const EyeIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="-.5 1.5 24 20">
@@ -48,6 +50,7 @@ const AddToCart = ({
   windowWidth,
   buttonPadding,
 }) => {
+  const { isDarkMode } = useTheme();
   // Add a local state to track the delayed button state
   const [displayState, setDisplayState] = useState(isInCart);
 
@@ -120,7 +123,7 @@ const AddToCart = ({
           <AddToCartButton
             className="AddToCartButton"
             onClick={isInCart ? handleViewCart : handleAddToCart}
-            variants={hoverButtonVariants}
+            variants={isDarkMode ? hoverButtonVariantsDark : hoverButtonVariants}
             initial="initial"
             whileHover="hover"
             whileTap="tap"

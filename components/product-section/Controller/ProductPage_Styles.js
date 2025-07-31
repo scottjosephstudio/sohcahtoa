@@ -719,6 +719,7 @@ export const CartCount = styled(motion.a)`
   background-color: var(--text-primary);
   color: var(--bg-primary);
   border-radius: 10px;
+  border: 2px solid transparent;
   z-index: 5001;
   font-size: 24px;
   cursor: pointer;
@@ -1470,6 +1471,26 @@ export const hoverButtonVariants = {
   },
 };
 
+export const hoverButtonVariantsDark = {
+  initial: {
+    backgroundColor: "var(--text-primary)",
+    borderColor: "var(--text-primary)",
+    color: "var(--bg-primary)",
+  },
+  hover: {
+    backgroundColor: "rgb(16, 12, 8)",
+    borderColor: "white",
+    color: "white",
+    transition: { duration: 0.2 },
+  },
+  tap: {
+    backgroundColor: "rgb(16, 12, 8)",
+    borderColor: "white",
+    color: "white",
+    transition: { duration: 0.2 },
+  },
+};
+
 export const removeButtonVariants = {
   initial: {
     color: "var(--text-primary)",
@@ -1644,6 +1665,20 @@ export const cartCountHoverVariants = {
   hover: {
     backgroundColor: "var(--text-secondary)",
     color: "var(--bg-primary)",
+    transition: { duration: 0.2 },
+  },
+};
+
+export const cartCountHoverVariantsDark = {
+  initial: {
+    backgroundColor: "var(--text-primary)",
+    color: "var(--bg-primary)",
+  },
+  hover: {
+    backgroundColor: "rgb(16, 12, 8)",
+    borderColor: "white",
+    borderWidth: "2px",
+    color: "white",
     transition: { duration: 0.2 },
   },
 };
