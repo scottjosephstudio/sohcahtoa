@@ -1650,8 +1650,8 @@ export const cartCountHoverVariants = {
 
 export const svgIconVariants = {
   initial: (props) => ({
-    fill: props.$isTypefacePath ? "rgb(16, 12, 8)" : "#39ff14",
-    color: props.$isTypefacePath ? "rgb(16, 12, 8)" : "#39ff14",
+    fill: props.$isTypefacePath ? "var(--text-primary)" : "#39ff14",
+    color: props.$isTypefacePath ? "var(--text-primary)" : "#39ff14",
   }),
   hover: (props) => ({
     fill: props.$isTypefacePath ? "#006efe" : "rgb(169, 169, 169)",
