@@ -98,7 +98,7 @@ export const TypefaceTab = styled(motion.button)`
 
   @media (max-width: 600px) {
     background: ${(props) =>
-      props.$isActive ? "var(--bg-primary)" : "var(--nav-bg)"};
+      props.$isActive ? "white" : "var(--nav-bg)"};
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border-radius: 9999px;
