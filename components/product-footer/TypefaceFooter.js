@@ -342,7 +342,7 @@ const TypefaceFooter = ({
               ? {
                   initial: { left: "218px", opacity: 1 },
                   animate: {
-                    left: "123px",
+                    left: "124px",
                     opacity: 1,
                     transition: {
                       duration: 1,
