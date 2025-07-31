@@ -82,7 +82,20 @@ export const SvgIcon = styled(motion.svg)`
   ${fixedPositionStyles}
 
   ${(props) =>
+    props.$isHomeIcon &&
+    `
+    && {
+      color: ${props.$isDarkMode ? 'white !important' : (props.$isTypefacePath ? 'rgb(16, 12, 8)' : 'var(--accent-color)')};
+      transition: color 0.2s;
+    }
+    &:hover {
+      color: ${props.$isDarkMode ? 'white !important' : '#006efe !important'};
+    }
+  `}
+
+  ${(props) =>
     !props.$isTypeface &&
+    !props.$isHomeIcon &&
     `
     fill: ${props.$isTypefacePath ? (props.$isDarkMode ? 'white' : 'rgb(16, 12, 8)') : "var(--accent-color)"};
   `}
@@ -90,7 +103,18 @@ export const SvgIcon = styled(motion.svg)`
   ${(props) =>
     props.$isTypeface &&
     `
-    color: ${props.$isTypefacePath ? (props.$isDarkMode ? 'white' : 'rgb(16, 12, 8)') : "var(--accent-color)"};
+    && {
+      color: ${props.$isDarkMode ? 'white !important' : (props.$isTypefacePath ? 'rgb(16, 12, 8)' : 'var(--accent-color)')};
+      transition: color 0.2s;
+    }
+  `}
+
+  ${(props) =>
+    props.$isTypeface &&
+    `
+    &:hover {
+      color: ${props.$isDarkMode ? 'white' : '#006efe'} !important;
+    }
   `}
 
   @media (min-width: 1420px) {

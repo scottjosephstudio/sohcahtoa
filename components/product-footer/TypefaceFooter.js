@@ -45,7 +45,7 @@ const HomeIconContainer = styled(motion.div)`
   cursor: pointer;
 
   ${Tooltip} {
-    left: ${({ $tooltipLeftPos }) => $tooltipLeftPos || "50%"};
+    left: ${({ $tooltipLeftPos }) => $tooltipLeftPos};
   }
 `;
 
@@ -57,7 +57,7 @@ const TypefacesIconContainer = styled(motion.div)`
   cursor: pointer;
 
   ${Tooltip} {
-    left: ${({ $tooltipLeftPos }) => $tooltipLeftPos || "50%"};
+    left: ${({ $tooltipLeftPos }) => $tooltipLeftPos};
   }
 `;
 
@@ -100,8 +100,8 @@ const TypefaceFooter = ({
   setIsNavigatingHome,
   onNavigate,
   activeTab,
-  homeIconTooltipPosition = "50%",
-  typefacesIconTooltipPosition = "84%",
+  homeIconTooltipPosition = "54%",
+  typefacesIconTooltipPosition = "80%",
 }) => {
   const { isDarkMode } = useTheme();
   const handleNavigationClick = (e, link) => {
@@ -248,6 +248,7 @@ const TypefaceFooter = ({
                 <SvgIcon
                   viewBox="0 0 25 25"
                   $isTypefacePath={true}
+                  $isHomeIcon={true}
                   variants={svgIconVariants}
                   initial="initial"
                   whileHover="hover"
@@ -256,7 +257,7 @@ const TypefaceFooter = ({
                 >
                   <path 
                     d="M22.06,8.21L12.95,3.72c-.11-.05-.23-.09-.35-.1-.19-.02-.38.01-.55.1L2.94,8.21c-.34.17-.56.52-.56.9v11.27c0,.55.45,1,1,1h7.11c.55,0,1-.45,1-1v-4.23h2.02v4.23c0,.55.45,1,1,1h7.11c.55,0,1-.45,1-1v-11.27c0-.38-.22-.73-.56-.9ZM10.19,13.9c-.55,0-1,.45-1,1v4.23h-4.51v-9.26l7.82-3.85,7.82,3.85v9.26h-4.51v-4.23c0-.55-.45-1-1-1h-4.62Z" 
-                    fill={isDarkMode ? 'white' : 'rgb(16, 12, 8)'}
+                    fill="currentColor"
                   />
                 </SvgIcon>
               </motion.div>
@@ -305,13 +306,14 @@ const TypefaceFooter = ({
                   whileHover="hover"
                   custom={{ $isTypefacePath: true }}
                   $isDarkMode={isDarkMode}
+                  $isTypeface={true}
                 >
                   <circle
                     cx="12.5"
                     cy="13"
                     r="8.5"
                     fill="none"
-                    stroke={isDarkMode ? 'white' : 'rgb(16, 12, 8)'}
+                    stroke="currentColor"
                     strokeWidth="2"
                   />
                   <text
@@ -319,14 +321,14 @@ const TypefaceFooter = ({
                     y="11.5"
                     textAnchor="middle"
                     fontSize="7"
-                    fill={isDarkMode ? 'white' : 'rgb(16, 12, 8)'}
+                    fill="currentColor"
                   >
                     A
                   </text>
-                  <text x="8.6" y="17.25" fontSize="7" fill={isDarkMode ? 'white' : 'rgb(16, 12, 8)'}>
+                  <text x="8.6" y="17.25" fontSize="7" fill="currentColor">
                     B
                   </text>
-                  <text x="12.6" y="17.25" fontSize="7" fill={isDarkMode ? 'white' : 'rgb(16, 12, 8)'}>
+                  <text x="12.6" y="17.25" fontSize="7" fill="currentColor">
                     C
                   </text>
                 </SvgIcon>

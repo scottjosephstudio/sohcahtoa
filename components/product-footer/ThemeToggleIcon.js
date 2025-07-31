@@ -131,7 +131,7 @@ const ThemeToggleIcon = ({ onClick, tooltipPosition = "50%" }) => {
                     cy="13"
                     r="8.5"
                     fill="none"
-                    stroke={isDarkMode ? 'white' : 'rgb(16, 12, 8)'}
+                    stroke="currentColor"
                     strokeWidth="2"
                   />
         </SvgIcon>
