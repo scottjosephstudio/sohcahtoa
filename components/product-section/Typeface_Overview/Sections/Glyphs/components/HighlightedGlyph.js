@@ -64,7 +64,7 @@ const MetricOverlay = styled.div`
   right: 0;
   bottom: 0;
   pointer-events: none;
-  right: -12px;
+
 
 
 `;
@@ -181,30 +181,63 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
     
     // Use OpenType.js built-in draw method
     const fillColor = isDarkMode ? 'rgb(255, 255, 255)' : 'rgb(16, 12, 8)';
-    ctx.fillStyle = fillColor;
     console.log('Drawing glyph with color:', fillColor, 'isDarkMode:', isDarkMode);
     
+    // Primary solution: Manual path drawing for better color control
     try {
-      // Use getPath() method for better color control while maintaining scaling
       const path = opentypeGlyph.getPath(x0, baseline, fontSize);
       
-      // Set the fill style and draw the path
+      // Clear any existing paths and set fill color
+      ctx.beginPath();
       ctx.fillStyle = fillColor;
-      path.fill(ctx);
       
-      // Also try to stroke the path with the same color for better visibility
-      ctx.strokeStyle = fillColor;
-      ctx.lineWidth = 0.5;
-      path.stroke(ctx);
+      // Convert OpenType.js path to Canvas API path
+      const commands = path.commands;
+      for (let i = 0; i < commands.length; i++) {
+        const cmd = commands[i];
+        if (cmd.type === 'M') {
+          ctx.moveTo(cmd.x, cmd.y);
+        } else if (cmd.type === 'L') {
+          ctx.lineTo(cmd.x, cmd.y);
+        } else if (cmd.type === 'C') {
+          ctx.bezierCurveTo(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y);
+        } else if (cmd.type === 'Q') {
+          ctx.quadraticCurveTo(cmd.x1, cmd.y1, cmd.x, cmd.y);
+        } else if (cmd.type === 'Z') {
+          ctx.closePath();
+        }
+      }
+      
+      // Fill the path with your desired color
+      ctx.fill();
+      
     } catch (error) {
-      console.log('getPath failed, trying draw method');
-      try {
-        // Fallback to draw method but with color override
+      console.log('Manual path drawing failed, trying context override method');
+      
+      // Fallback: Override canvas context methods temporarily
+      const originalFill = ctx.fill;
+      const originalStroke = ctx.stroke;
+      
+      ctx.fill = function() {
+        const currentStyle = ctx.fillStyle;
         ctx.fillStyle = fillColor;
+        const result = originalFill.apply(ctx, arguments);
+        ctx.fillStyle = currentStyle;
+        return result;
+      };
+      
+      ctx.stroke = function() {
+        const currentStyle = ctx.strokeStyle;
         ctx.strokeStyle = fillColor;
+        const result = originalStroke.apply(ctx, arguments);
+        ctx.strokeStyle = currentStyle;
+        return result;
+      };
+      
+      try {
         opentypeGlyph.draw(ctx, x0, baseline, fontSize);
       } catch (drawError) {
-        console.log('draw method also failed, using fallback rendering');
+        console.log('OpenType draw method also failed, using fallback rendering');
         // Final fallback: use system font rendering
         const fallbackFontSize = Math.min(rect.width * 0.3, rect.height * 0.3);
         ctx.font = `${fallbackFontSize}px "${font.opentype?.names?.fontFamily?.en || 'serif'}"`;
@@ -212,6 +245,10 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
         ctx.textBaseline = 'middle';
         ctx.fillStyle = fillColor;
         ctx.fillText(glyph, rect.width / 2, baseline);
+      } finally {
+        // Always restore original methods
+        ctx.fill = originalFill;
+        ctx.stroke = originalStroke;
       }
     }
 
@@ -363,4 +400,4 @@ export const HighlightedGlyph = ({ glyph, font = {} }) => {
   );
 };
 
-export default HighlightedGlyph; 
+export default HighlightedGlyph;
