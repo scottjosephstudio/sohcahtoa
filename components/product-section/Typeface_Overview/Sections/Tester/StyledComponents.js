@@ -89,8 +89,9 @@ export const EditableText = styled.p`
 `;
 
 export const ControlPanel = styled.div`
-  background-color: rgba(255, 255, 255, 0.5);
+  background: var(--nav-bg);
   backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   height: 46px;
   border-radius: 10px;
   border: 2px solid var(--border-color);

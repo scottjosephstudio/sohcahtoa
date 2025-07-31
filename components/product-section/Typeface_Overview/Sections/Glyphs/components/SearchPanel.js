@@ -32,7 +32,7 @@ const SearchInput = styled.input`
   line-height: 24px;
   letter-spacing: 0.8px;
   transition: all 0.2s ease;
-  background-color: rgba(255, 255, 255, 0.5);
+  background: var(--nav-bg);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   text-overflow: ellipsis;
