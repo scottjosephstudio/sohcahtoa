@@ -43,7 +43,7 @@ const LoginButton = ({ isLoggedIn, handleLoginClick, isNavigatingHome, currentUs
     ? {
         color: "var(--accent-color)",
         textShadow:
-          "0 0 20px var(--text-primary), 0 0 30px var(--text-primary), 0 0 40px var(--text-primary)",
+          "0 0 20px rgb(16, 12, 8), 0 0 30px rgb(16, 12, 8), 0 0 40px rgb(16, 12, 8)",
         textDecoration: "none",
         textDecorationColor: "var(--accent-color)",
         transition: "background-color 0.2s, color 0.2s",
