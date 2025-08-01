@@ -20,6 +20,7 @@ import ClientOnly from "./ClientOnly";
 import { PageContainer } from "./ProductPage_Styles";
 import { calculateDefaultFontSize } from "../Typeface_Overview/Sections/Tester/LetterSpacingUtils";
 import { useNavigation } from "../../../context/NavigationContext";
+import { useTheme } from "../../../context/ThemeContext";
 
 const ProductPage = ({ currentUser: prefetchedUser, databaseDataLoaded: prefetchedDatabaseDataLoaded, initialFontSlug }) => {
   // IMPORTANT: Keep ALL hooks at the top level and in the same order on every render
@@ -39,6 +40,9 @@ const ProductPage = ({ currentUser: prefetchedUser, databaseDataLoaded: prefetch
   
   // Get navigation context for password reset mode
   const { isPasswordResetMode } = useNavigation();
+  
+  // Get theme context for dark mode handling
+  const { isDarkMode } = useTheme();
 
   // Search handler function
   const handleSearch = (query) => {
@@ -81,6 +85,16 @@ const ProductPage = ({ currentUser: prefetchedUser, databaseDataLoaded: prefetch
   useEffect(() => {
     if (typeof window !== "undefined") {
       document.body.setAttribute('data-product-page', 'true');
+      
+      // Fade in dark mode backgrounds when returning to product page
+      if (isDarkMode) {
+        // Remove any existing fade-out styles
+        document.body.classList.remove('fade-out-background');
+        const fadeOutStyle = document.getElementById('fade-out-style');
+        if (fadeOutStyle) {
+          fadeOutStyle.remove();
+        }
+      }
       
       // Cleanup function to remove the attribute when component unmounts
       return () => {
