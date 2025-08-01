@@ -93,11 +93,13 @@ const FontInfo = styled.div`
     &::before {
       content: '';
       position: absolute;
-      left: calc(50% - 1px);
+      left: 50%;
       top: 0;
       bottom: 0;
       width: 2px;
       background: var(--border-color);
+      transform: translateX(-50%);
+      -webkit-transform: translateX(-50%);
     }
   }
   
@@ -223,6 +225,41 @@ const SpecimenCard = styled(motion.div)`
     &[style*="grid-area: display"] {
       padding-right: 6px;
     }
+    
+    /* Safari-specific fix for character pairs border in 3 columns */
+    &:nth-child(8) {
+      border-right: 2px solid var(--border-color);
+    }
+    
+    /* Safari-specific fix for Body Text Sample 2 border in 3 columns */
+    &:nth-child(7) {
+      border-right: 2px solid var(--border-color);
+    }
+    
+    /* Safari-specific fix for Headline (part 2) border in 3 columns */
+    &:nth-child(4) {
+      border-right: 2px solid var(--border-color);
+    }
+    
+    /* Safari-specific fix for Body Text Sample border in 3 columns */
+    &:nth-child(6) {
+      border-right: 2px solid var(--border-color);
+    }
+    
+    /* Safari-specific fix for Titles border in 3 columns */
+    &:nth-child(2) {
+      border-right: 2px solid var(--border-color);
+    }
+    
+    /* Safari-specific fix for Titles border in 3 columns */
+    &:nth-child(2) {
+      border-right: 2px solid var(--border-color);
+    }
+    
+    /* Safari-specific fix for Uppercase border in 3 columns */
+    &:nth-child(1) {
+      border-right: 2px solid var(--border-color);
+    }
   }
   
   /* Tablet: 2 columns - show right border on 1st column and specific areas */
@@ -240,6 +277,28 @@ const SpecimenCard = styled(motion.div)`
     }
     &[style*="grid-area: display"] {
       padding-right: 6px;
+    }
+    
+    /* Safari-specific fix for character pairs border */
+    &:nth-child(8) {
+      border-right: 2px solid var(--border-color);
+      border-left: none;
+    }
+    
+    /* Safari-specific fix for Headline part 2 border */
+    &:nth-child(4) {
+      border-left: none;
+      border-right: 2px solid var(--border-color);
+    }
+    
+    /* Safari-specific fix for Titles border */
+    &:nth-child(2) {
+      border-right: 2px solid var(--border-color);
+    }
+    
+    /* Safari-specific fix for Body Text Sample border */
+    &:nth-child(6) {
+      border-right: 2px solid var(--border-color);
     }
   }
   

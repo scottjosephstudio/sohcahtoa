@@ -219,7 +219,7 @@ export const ResetButton = styled(motion.button)`
     letter-spacing: 0.8px;
     font-weight: normal;
     transform: translate(0.3px, 0.2px);
-    color: ${props => props.$isDarkMode ? 'white' : 'var(--text-primary)'};
+    color: ${props => props.$isDarkMode ? 'white' : 'rgb(12, 8, 6)'};
   }
 `;
 
@@ -233,7 +233,7 @@ export const resetButtonVariants = {
 
 export const resetButtonSpanVariants = {
   hover: {
-    color: "var(--bg-primary)",
+    color: "rgb(145, 145, 145)",
     transition: { duration: 0.2 },
   },
 };
