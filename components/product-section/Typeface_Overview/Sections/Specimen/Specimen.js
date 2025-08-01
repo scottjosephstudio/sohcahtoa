@@ -1526,6 +1526,7 @@ export default forwardRef(function SpecimenSection(
                             $lineHeight={sample.lineHeight}
                             $letterSpacing={sample.letterSpacing}
                               $singleColumn={sample.isSingleColumn}
+                              $noHyphens={true}
                               style={{ marginBottom: '18px' }}
                             >
                               {sample.text}

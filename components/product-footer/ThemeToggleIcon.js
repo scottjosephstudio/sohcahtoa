@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "../../context/ThemeContext";
 import styled from "styled-components";
+import { Sun, Moon, Star } from "lucide-react";
 
 const ThemeIconContainer = styled(motion.div)`
   position: relative;
@@ -123,17 +124,25 @@ const ThemeToggleIcon = ({ onClick, tooltipPosition = "50%" }) => {
           initial="initial"
           isDarkMode={isDarkMode}
         >
-          {/* Sun icon for both dark and light modes */}
-    
-
-         <circle
-                    cx="12.5"
-                    cy="13"
-                    r="8.5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  />
+          {/* Circle background */}
+          <circle
+            cx="12.5"
+            cy="13"
+            r="8.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+          
+          {/* Icons inside the circle */}
+          {isDarkMode ? (
+            <>
+              
+              <Sun size={10} x="7.7" y="7.7" />
+            </>
+          ) : (
+            <Moon size={10} x="7.75" y="7.75" />
+          )}
         </SvgIcon>
       </motion.div>
     </ThemeIconContainer>

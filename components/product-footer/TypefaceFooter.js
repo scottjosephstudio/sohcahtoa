@@ -107,6 +107,44 @@ const TypefaceFooter = ({
   const handleNavigationClick = (e, link) => {
     e.preventDefault();
 
+    // Add fade-out effect for body background in dark mode
+    if (isDarkMode) {
+      // Add a class to trigger the fade-out effect
+      document.body.classList.add('fade-out-background');
+      
+      // Create a single style element for the fade effect
+      const style = document.createElement('style');
+      style.id = 'fade-out-style';
+      style.textContent = `
+        /* Fade out all dark mode backgrounds and overlays */
+        body.fade-out-background.dark-mode[data-product-page="true"] {
+          background-color: transparent !important;
+          transition: background-color 0.4s ease !important;
+        }
+        body.fade-out-background.dark-mode[data-product-page="true"]::before {
+          opacity: 0 !important;
+          transition: opacity 0.4s ease !important;
+          background-color: transparent !important;
+        }
+        body.fade-out-background.dark-mode[data-product-page="true"]::after {
+          opacity: 0 !important;
+          transition: opacity 0.4s ease !important;
+          background-color: transparent !important;
+        }
+        body.fade-out-background.dark-mode[data-product-page="true"] .bottom-blur-overlay {
+          opacity: 0 !important;
+          transition: opacity 0.4s ease !important;
+          background-color: transparent !important;
+        }
+        /* Target any other dark mode elements */
+        body.fade-out-background.dark-mode[data-product-page="true"] * {
+          background-color: transparent !important;
+          transition: background-color 0.4s ease !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
     // First notify parent about navigation start AND trigger exit animation
     if (onNavigate && activeTab === "test") {
       onNavigate();
