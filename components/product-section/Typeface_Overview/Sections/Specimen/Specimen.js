@@ -703,7 +703,19 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
           whiteSpace: isMobile ? 'normal' : 'nowrap'
         }}
       >
-        {displayText}
+        {isMobile ? (
+          <>
+            {displayText.slice(0, 14)} {/* A-N */}
+            {displayText.length > 14 && (
+              <>
+                <br />
+                {displayText.slice(14)} {/* O-Z */}
+              </>
+            )}
+          </>
+        ) : (
+          displayText
+        )}
         <span style={{ 
           position: 'absolute',
           visibility: 'hidden',
@@ -718,7 +730,7 @@ const AnimatedDisplayHeadline = ({ fontFamily }) => {
         bottom: '-8px',
         left: '0',
         fontSize: '12px',
-        color: 'rgba(16, 12, 8)',
+        color: 'var(--text-primary)',
         fontFamily: fontFamily,
         marginTop: '12px'
       }}>
@@ -841,7 +853,7 @@ const AnimatedLowercaseAlphabet = ({ fontFamily }) => {
         bottom: '-8px',
         left: '0',
         fontSize: '12px',
-        color: 'rgba(16, 12, 8)',
+        color: 'var(--text-primary)',
         fontFamily: fontFamily,
         marginTop: '12px'
       }}>
@@ -963,7 +975,7 @@ const AnimatedNumbersSymbols = ({ fontFamily }) => {
         bottom: '-8px',
         left: '0',
         fontSize: '12px',
-        color: 'rgba(16, 12, 8)',
+        color: 'var(--text-primary)',
         fontFamily: fontFamily,
         marginTop: '12px'
       }}>
@@ -1478,7 +1490,7 @@ export default forwardRef(function SpecimenSection(
                               bottom: '-8px',
                               left: '0',
                               fontSize: '12px',
-                              color: 'rgba(16, 12, 8)',
+                              color: 'var(--text-primary)',
                               fontFamily: fontFamily,
                               marginTop: '12px'
                             }}>
@@ -1499,7 +1511,7 @@ export default forwardRef(function SpecimenSection(
                               bottom: '-8px',
                               left: '0',
                               fontSize: '12px',
-                              color: 'rgba(16, 12, 8)',
+                              color: 'var(--text-primary)',
                               fontFamily: fontFamily,
                               marginTop: '12px'
                             }}>
@@ -1523,7 +1535,7 @@ export default forwardRef(function SpecimenSection(
                               bottom: '-8px',
                               left: '0',
                               fontSize: '12px',
-                              color: 'rgba(16, 12, 8)',
+                              color: 'var(--text-primary)',
                               fontFamily: fontFamily,
                               marginTop: '12px'
                             }}>
@@ -1546,7 +1558,7 @@ export default forwardRef(function SpecimenSection(
                               bottom: '-8px',
                               left: '0',
                               fontSize: '12px',
-                              color: 'rgba(16, 12, 8)',
+                              color: 'var(--text-primary)',
                               fontFamily: fontFamily,
                               marginTop: '12px'
                             }}>
@@ -1569,7 +1581,7 @@ export default forwardRef(function SpecimenSection(
                               bottom: '-8px',
                               left: '0',
                               fontSize: '12px',
-                              color: 'rgba(16, 12, 8)',
+                              color: 'var(--text-primary)',
                               fontFamily: fontFamily,
                               marginTop: '12px'
                             }}>
