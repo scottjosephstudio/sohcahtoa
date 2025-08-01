@@ -233,6 +233,13 @@ export const resetButtonVariants = {
 
 export const resetButtonSpanVariants = {
   hover: {
+    color: "white",
+    transition: { duration: 0.2 },
+  },
+};
+
+export const resetButtonSpanVariantsDark = {
+  hover: {
     color: "rgb(145, 145, 145)",
     transition: { duration: 0.2 },
   },

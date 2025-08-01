@@ -12,6 +12,7 @@ import {
   ResetButton,
   resetButtonVariants,
   resetButtonSpanVariants,
+  resetButtonSpanVariantsDark,
 } from "./StyledComponents";
 import { useTheme } from "../../../../../context/ThemeContext";
 
@@ -92,7 +93,7 @@ export const FontTesterControls = ({
                     whileHover="hover"
                     $isDarkMode={isDarkMode}
                   >
-                    <motion.span variants={resetButtonSpanVariants}>
+                    <motion.span variants={isDarkMode ? resetButtonSpanVariantsDark : resetButtonSpanVariants}>
                       ×
                     </motion.span>
                   </ResetButton>
@@ -122,7 +123,7 @@ export const FontTesterControls = ({
                     whileHover="hover"
                     $isDarkMode={isDarkMode}
                   >
-                    <motion.span variants={resetButtonSpanVariants}>
+                    <motion.span variants={isDarkMode ? resetButtonSpanVariantsDark : resetButtonSpanVariants}>
                       ×
                     </motion.span>
                   </ResetButton>
@@ -157,7 +158,7 @@ export const FontTesterControls = ({
                     whileHover="hover"
                     $isDarkMode={isDarkMode}
                   >
-                    <motion.span variants={resetButtonSpanVariants}>
+                    <motion.span variants={isDarkMode ? resetButtonSpanVariantsDark : resetButtonSpanVariants}>
                       ×
                     </motion.span>
                   </ResetButton>
