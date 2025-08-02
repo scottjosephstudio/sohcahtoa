@@ -322,6 +322,10 @@ const SpecimenTitle = styled.h3`
   display: inline-block;
   width: fit-content;
   font-weight: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
 `;
 
 const SpecimenText = styled.div`
@@ -332,7 +336,10 @@ const SpecimenText = styled.div`
   font-family: ${props => props.$fontFamily || 'inherit'};
   margin-bottom: ${props => props.$twoColumns ? '0' : '12px'};
   word-wrap: break-word;
-  hyphens: ${props => props.$noHyphens ? 'none' : 'auto'};
+  hyphens: ${props => props.$noHyphens ? 'none' : 'none'};
+  -webkit-hyphens: ${props => props.$noHyphens ? 'none' : 'none'};
+  -moz-hyphens: ${props => props.$noHyphens ? 'none' : 'none'};
+  -ms-hyphens: ${props => props.$noHyphens ? 'none' : 'none'};
   overflow-wrap: break-word;
   word-break: break-word;
   max-width: 100%;

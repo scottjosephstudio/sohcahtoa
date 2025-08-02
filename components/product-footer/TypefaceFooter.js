@@ -380,7 +380,7 @@ const TypefaceFooter = ({
               ? {
                   initial: { left: "218px", opacity: 1 },
                   animate: {
-                    left: "125px",
+                    left: "124px",
                     opacity: 1,
                     transition: {
                       duration: 1,
@@ -391,7 +391,7 @@ const TypefaceFooter = ({
               : {})}
             style={{
               position: "fixed",
-              left: hasInitialAnimationOccurred ? "125px" : undefined,
+              left: hasInitialAnimationOccurred ? "124px" : undefined,
             }}
             data-theme="true"
           >
