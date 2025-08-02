@@ -116,7 +116,7 @@ const TypefaceFooter = ({
       const style = document.createElement('style');
       style.id = 'fade-out-style';
       style.textContent = `
-        /* Fade out all dark mode backgrounds and overlays */
+        /* Fade out only the dark mode background layers, not the tab content */
         body.fade-out-background.dark-mode[data-product-page="true"] {
           background-color: transparent !important;
           transition: background-color 0.4s ease !important;
@@ -135,11 +135,6 @@ const TypefaceFooter = ({
           opacity: 0 !important;
           transition: opacity 0.4s ease !important;
           background-color: transparent !important;
-        }
-        /* Target any other dark mode elements */
-        body.fade-out-background.dark-mode[data-product-page="true"] * {
-          background-color: transparent !important;
-          transition: background-color 0.4s ease !important;
         }
       `;
       document.head.appendChild(style);
