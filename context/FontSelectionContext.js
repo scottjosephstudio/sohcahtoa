@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { getFontFamilies, recordFontSelection } from '../lib/database/supabaseClient';
 
 const FontSelectionContext = createContext();
@@ -52,7 +52,7 @@ export const FontSelectionProvider = ({ children }) => {
     }
   };
 
-  const selectFont = async (fontIndex, userId = null, sessionId = null) => {
+  const selectFont = useCallback(async (fontIndex, userId = null, sessionId = null) => {
     if (fontIndex >= 0 && fontIndex < availableFonts.length) {
       const font = availableFonts[fontIndex];
       setSelectedFont(font);
@@ -72,9 +72,9 @@ export const FontSelectionProvider = ({ children }) => {
         // Don't throw error - selection still works without recording
       }
     }
-  };
+  }, [availableFonts]);
 
-  const selectFontBySlug = async (slug, userId = null, sessionId = null) => {
+  const selectFontBySlug = useCallback(async (slug, userId = null, sessionId = null) => {
     // Try exact match first
     let fontIndex = availableFonts.findIndex(font => font.slug === slug);
     
@@ -88,7 +88,7 @@ export const FontSelectionProvider = ({ children }) => {
     if (fontIndex >= 0) {
       await selectFont(fontIndex, userId, sessionId);
     }
-  };
+  }, [availableFonts, selectFont]);
 
   const getNextFont = () => {
     return availableFonts[(currentFontIndex + 1) % availableFonts.length];

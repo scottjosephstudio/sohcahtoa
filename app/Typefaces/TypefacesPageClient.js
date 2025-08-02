@@ -20,18 +20,23 @@ import { useUIState } from "../../components/product-section/hooks/useUIState";
 import LoginButton from "../../components/product-section/Elements/Auth/LoginButton";
 import AuthenticationWrapper from "../../components/product-section/Controller/AuthenticationWrapper";
 
-// Dynamic Imports
+// Dynamic Imports with preloading
 const Banner = dynamic(() => import("../../components/typefaces/Banner"), {
   loading: () => <div></div>,
+  ssr: false,
 });
 
 const Spinner = dynamic(() => import("../../components/typefaces/Spinner"), {
   loading: () => <div></div>,
+  ssr: false,
 });
 
 const SlotMachine = dynamic(
   () => import("../../components/typefaces/SlotMachine"),
-  { loading: () => <div></div> },
+  { 
+    loading: () => <div></div>,
+    ssr: false,
+  },
 );
 
 // Import font info styled components
@@ -70,6 +75,24 @@ export default function TypefacesContent({ currentUser, databaseDataLoaded }) {
   const { setIsModalOpen } = usePortal();
   const { $isNavigating } = useNavigation();
   const { selectedFont, availableFonts, currentFontIndex } = useFontSelection();
+
+  // Preload components on mount
+  useEffect(() => {
+    // Preload critical components
+    const preloadComponents = async () => {
+      try {
+        await Promise.all([
+          import("../../components/typefaces/Banner"),
+          import("../../components/typefaces/Spinner"),
+          import("../../components/typefaces/SlotMachine"),
+        ]);
+      } catch (error) {
+        // Silently handle preload errors
+      }
+    };
+    
+    preloadComponents();
+  }, []);
 
   // Handle completed payment redirect
   useEffect(() => {
@@ -183,16 +206,15 @@ export default function TypefacesContent({ currentUser, databaseDataLoaded }) {
           {MemoizedLoginButton}
         </HeaderContainer>
 
-        <Suspense fallback={<div></div>}>
-          {!$isNavigating && <Banner bannerText="// UNDER CONSTRUCTION //" />}
-          <Spinner />
-          <SlotMachine />
-          <AuthenticationWrapper
-            authState={authState}
-            formState={formState}
-            uiState={uiState}
-          />
-        </Suspense>
+        {/* Optimized rendering without Suspense for faster transitions */}
+        {!$isNavigating && <Banner bannerText="// UNDER CONSTRUCTION //" />}
+        <Spinner />
+        <SlotMachine />
+        <AuthenticationWrapper
+          authState={authState}
+          formState={formState}
+          uiState={uiState}
+        />
 
         {/* Font info - completely separate from SlotMachine animations */}
         {fontInfo && totalFonts > 0 && (

@@ -31,3 +31,6 @@ export default async function TypefacesPage() {
     </>
   );
 }
+
+// Enable static generation for faster loading
+export const dynamic = 'force-static';

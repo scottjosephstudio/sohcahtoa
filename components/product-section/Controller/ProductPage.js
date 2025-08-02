@@ -96,6 +96,15 @@ const ProductPage = ({ currentUser: prefetchedUser, databaseDataLoaded: prefetch
         }
       }
       
+      // Prefetch Typefaces route for faster navigation
+      const prefetchTypefaces = () => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = '/Typefaces';
+        document.head.appendChild(link);
+      };
+      prefetchTypefaces();
+      
       // Cleanup function to remove the attribute when component unmounts
       return () => {
         document.body.removeAttribute('data-product-page');
