@@ -26,7 +26,7 @@ export function PortalProvider({ children }) {
   // Z-index values
   // When modal is open, navigation ALWAYS goes behind backdrop
   const zIndex = {
-    navigation: isModalOpen ? 30 : 50, // Lower when modal is open
+    navigation: isModalOpen ? 30 : 1000, // Keep hamburger above menu overlay
     backdrop: 50,
     modal: 1100, // Increased to be above hamburger menu (1000)
   };

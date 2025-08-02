@@ -240,13 +240,16 @@ export const useMenuOverlayState = ($isOpen, onClose) => {
     }
   };
 
-  // Custom link handler that clears status messages
+  // Custom link handler that closes menu and clears status messages
   const handleLinkClick = (originalOnClick) => (e) => {
     // Clear status messages
     setSubmitStatus(null);
     setErrorMessage("");
 
-    // Call the original onClick if provided (close menu)
+    // Close the menu overlay
+    onClose();
+
+    // Call the original onClick if provided
     if (originalOnClick) {
       originalOnClick(e);
     }
